@@ -1,0 +1,11 @@
+Cần chuẩn bị các API cần thiết để hỗ trợ giao diện người dùng frontend
+
+Cần phát triển các API cung cấp dữ liệu cho các tính năng sau:
+1. Tra cứu chuyến bay
+   + API cung cấp danh sách các địa điểm có sẵn cho các chuyến bay
+   + API cung cấp thông tin chi tiết của một chuyến bay (bao gồm tất cả thông tin cần hiển thị trên vé máy bay)
+
+2. Quản lý phiếu đặt chỗ
+   + API cung cấp thông tin chi tiết của một phiếu đặt chỗ (bao gồm tất cả thông tin cần hiển thị trên phiếu đặt chỗ)
+
+Lưu ý: Các API này chủ yếu phục vụ việc hiển thị dữ liệu trên giao diện người dùng, vì vậy chúng nên được thiết kế để trả về dữ liệu phù hợp với yêu cầu hiển thị.

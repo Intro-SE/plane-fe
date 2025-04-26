@@ -1,0 +1,231 @@
+.form-container {
+    background-color: white;
+    border-radius: 10px;
+    padding: 16px;
+    max-width: 680px;
+    margin: 20px auto;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    font-family: Arial, sans-serif;
+}
+
+.form-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.form-header h2 {
+    margin: 0;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.clear-btn {
+    background: none;
+    border: none;
+    color: #666;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    font-size: 13px;
+}
+
+.trash-icon {
+    margin-left: 5px;
+}
+
+.form-row {
+    display: flex;
+    gap: 10px; /* Giảm khoảng cách giữa các cột */
+    margin-bottom: 10px; /* Giảm khoảng cách giữa các hàng */
+    width: 100%;
+}
+
+.form-row.three-columns .form-group {
+    flex: 1;
+}
+
+.form-row.three-columns .form-group:nth-child(1) {
+    flex: 1;
+}
+
+.form-row.three-columns .form-group:nth-child(2) {
+    flex: 1;
+}
+
+.form-row.three-columns .form-group:nth-child(3) {
+    flex: 0.8;
+}
+
+.form-group {
+    flex: 1;
+    margin-bottom: 8px; /* Giảm margin bottom */
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 3px; /* Giảm khoảng cách giữa label và input */
+    font-size: 13px;
+    color: #555;
+}
+
+.form-control {
+    width: 100%;
+    padding: 8px; /* Giảm padding của input */
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-sizing: border-box;
+    font-size: 13px;
+    height: 36px; /* Đặt chiều cao cố định cho tất cả input */
+}
+
+.form-control:focus {
+    border-color: #c6930a;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(198, 147, 10, 0.2);
+}
+
+.gender-container {
+    display: flex;
+    flex-direction: column;
+}
+
+.gender-group {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 4px 8px;
+    height: 36px; /* Đồng bộ chiều cao với các input khác */
+    box-sizing: border-box;
+}
+
+.gender-option {
+    display: flex;
+    align-items: center;
+    gap: 4px; /* Giảm khoảng cách giữa text và checkbox */
+}
+
+.gender-option span {
+    font-size: 13px;
+}
+
+.checkbox-group {
+    display: flex;
+    gap: 16px; /* Giảm khoảng cách giữa các option */
+    align-items: center;
+}
+
+/* Thay đổi cho dòng cuối cùng */
+.bottom-row {
+    display: flex;
+    align-items: center;
+    margin-top: 14px;
+    width: 100%;
+    justify-content: space-between;
+}
+
+.ticket-retrieval {
+    display: flex;
+    align-items: center;
+    margin: 0;
+    flex: 1;
+}
+
+.ticket-retrieval label {
+    margin-right: 10px;
+    margin-bottom: 0;
+    white-space: nowrap;
+}
+
+.ticket-option {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.ticket-option span {
+    font-size: 13px;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 8px; /* Giảm khoảng cách giữa các nút */
+    flex: 1;
+    justify-content: flex-end;
+}
+
+.btn {
+    padding: 8px 24px; /* Giảm padding của nút */
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 13px;
+    transition: background-color 0.2s;
+}
+
+.btn-primary {
+    background-color: #c6930a;
+    color: white;
+}
+
+.btn-secondary {
+    background-color: #c6930a;
+    color: white;
+}
+
+.btn:hover {
+    background-color: #a97908;
+}
+
+.currency-input {
+    position: relative;
+}
+
+.currency-symbol {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #666;
+    font-size: 13px;
+}
+
+.select-wrapper {
+    position: relative;
+}
+
+.select-wrapper select {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    width: 100%;
+    padding-right: 25px;
+    cursor: pointer;
+}
+
+.select-wrapper::after {
+    content: "▼";
+    font-size: 10px;
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    color: #666;
+}
+
+.person-icon {
+    color: #888;
+    margin-left: auto;
+    font-size: 14px;
+}
+
+/* Điều chỉnh các trường input có trạng thái readOnly */
+input[readOnly] {
+    background-color: #f9f9f9;
+    cursor: not-allowed;
+}
