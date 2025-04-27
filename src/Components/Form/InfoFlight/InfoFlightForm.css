@@ -37,8 +37,8 @@
 
 .form-row {
     display: flex;
-    gap: 10px; /* Giảm khoảng cách giữa các cột */
-    margin-bottom: 10px; /* Giảm khoảng cách giữa các hàng */
+    gap: 10px;
+    margin-bottom: 10px;
     width: 100%;
 }
 
@@ -60,24 +60,24 @@
 
 .form-group {
     flex: 1;
-    margin-bottom: 8px; /* Giảm margin bottom */
+    margin-bottom: 8px;
 }
 
 .form-group label {
     display: block;
-    margin-bottom: 3px; /* Giảm khoảng cách giữa label và input */
+    margin-bottom: 3px;
     font-size: 13px;
     color: #555;
 }
 
 .form-control {
     width: 100%;
-    padding: 8px; /* Giảm padding của input */
+    padding: 8px;
     border: 1px solid #ddd;
     border-radius: 5px;
     box-sizing: border-box;
     font-size: 13px;
-    height: 36px; /* Đặt chiều cao cố định cho tất cả input */
+    height: 36px;
 }
 
 .form-control:focus {
@@ -98,14 +98,14 @@
     border: 1px solid #ddd;
     border-radius: 5px;
     padding: 4px 8px;
-    height: 36px; /* Đồng bộ chiều cao với các input khác */
+    height: 36px;
     box-sizing: border-box;
 }
 
 .gender-option {
     display: flex;
     align-items: center;
-    gap: 4px; /* Giảm khoảng cách giữa text và checkbox */
+    gap: 4px;
 }
 
 .gender-option span {
@@ -114,11 +114,10 @@
 
 .checkbox-group {
     display: flex;
-    gap: 16px; /* Giảm khoảng cách giữa các option */
+    gap: 16px;
     align-items: center;
 }
 
-/* Thay đổi cho dòng cuối cùng */
 .bottom-row {
     display: flex;
     align-items: center;
@@ -152,13 +151,13 @@
 
 .action-buttons {
     display: flex;
-    gap: 8px; /* Giảm khoảng cách giữa các nút */
+    gap: 8px;
     flex: 1;
     justify-content: flex-end;
 }
 
 .btn {
-    padding: 8px 24px; /* Giảm padding của nút */
+    padding: 8px 24px;
     border: none;
     border-radius: 5px;
     cursor: pointer;
@@ -224,7 +223,6 @@
     font-size: 14px;
 }
 
-/* Điều chỉnh các trường input có trạng thái readOnly */
 input[readOnly] {
     background-color: #f9f9f9;
     cursor: not-allowed;

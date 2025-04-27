@@ -3,9 +3,9 @@ import { AiOutlineUserAdd } from "react-icons/ai";
 import { LuTicketsPlane, LuClock } from "react-icons/lu";
 import { MdOutlineCalendarMonth } from "react-icons/md";
 import { TbBuildingAirport } from "react-icons/tb";
-import "./FlightAddForm.css";
+import "./AddFlightForm.css";
 
-export default function FlightForm() {
+export default function AddFlightForm() {
     const [flightData, setFlightData] = useState({
         flightCode: "",
         departureAirport: "",
@@ -26,7 +26,6 @@ export default function FlightForm() {
     const handleSubmit = (e) => {
         e.preventDefault();
         console.log("Flight data submitted:", flightData);
-        // Xử lý logic thêm chuyến bay ở đây
     };
 
     return (

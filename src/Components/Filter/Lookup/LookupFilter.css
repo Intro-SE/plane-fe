@@ -1,4 +1,4 @@
-.travel-search-container {
+.lookup-container {
     width: 100%;
     max-width: 1200px;
     margin: 0 auto;
@@ -8,14 +8,14 @@
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.search-row {
+.lookup-row {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 20px;
     position: relative;
 }
 
-.search-column {
+.lookup-column {
     position: relative;
     width: 100%;
 }
@@ -158,8 +158,7 @@ label {
     color: #6c757d;
 }
 
-/* Đảm bảo dropdown không bị chặn bởi các phần tử khác */
-.search-column:nth-child(1) .location-dropdown,
-.search-column:nth-child(2) .location-dropdown {
+.lookup-column:nth-child(1) .location-dropdown,
+.lookup-column:nth-child(2) .location-dropdown {
     z-index: 1001;
 }

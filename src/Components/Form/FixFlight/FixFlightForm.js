@@ -3,9 +3,9 @@ import { AiOutlineUserAdd } from "react-icons/ai";
 import { LuTicketsPlane, LuClock } from "react-icons/lu";
 import { MdOutlineCalendarMonth } from "react-icons/md";
 import { TbBuildingAirport } from "react-icons/tb";
-import "./FlightFixForm.css";
+import "./FixFlightForm.css";
 
-export default function FlightFixForm() {
+export default function FixFlightForm() {
     const [flightData, setFlightData] = useState({
         flightCode: "",
         departureAirport: "",
@@ -27,16 +27,14 @@ export default function FlightFixForm() {
     const handleSubmit = (e) => {
         e.preventDefault();
         console.log("Flight data updated:", flightData);
-        // Logic to update flight here
     };
 
     const handleConfirm = (field) => {
         console.log(`Confirmed ${field}: ${flightData[field]}`);
-        // Handle confirmation logic for the specific field
     };
 
     return (
-        <div className="flight-form-container">
+        <div className="flight-fix-container">
             <form onSubmit={handleSubmit}>
                 <div className="form-row">
                     <div className="input-group full-width">

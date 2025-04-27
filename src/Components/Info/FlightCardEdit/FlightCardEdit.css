@@ -1,4 +1,4 @@
-.flight-ticket {
+.flight-card {
     display: flex;
     align-items: center;
     width: 100%;
@@ -12,7 +12,6 @@
     gap: 15px;
 }
 
-/* Flight code section */
 .flight-code-section {
     display: flex;
     flex-direction: column;
@@ -50,7 +49,6 @@
     vertical-align: middle;
 }
 
-/* Divider */
 .divider {
     width: 1px;
     height: 38px;
@@ -59,7 +57,6 @@
     flex-shrink: 0;
 }
 
-/* Route section with departure, path, arrival */
 .route-section {
     display: flex;
     align-items: center;
@@ -67,7 +64,6 @@
     flex: 1;
 }
 
-/* Time and location section */
 .time-location-section {
     display: flex;
     flex-direction: column;
@@ -75,7 +71,6 @@
     min-width: 70px;
 }
 
-/* Điều chỉnh phần Arrival để căn phải */
 .route-section .time-location-section:last-child {
     text-align: right;
     padding-left: 10px;
@@ -94,7 +89,6 @@
     margin-top: 2px;
 }
 
-/* Flight path visualization */
 .flight-path-section {
     flex: 1;
     display: flex;
@@ -136,7 +130,6 @@
     right: 0;
 }
 
-/* Fix cho mã sân bay */
 .airport-codes {
     position: relative;
     width: 100%;
@@ -159,7 +152,6 @@
     right: 0;
 }
 
-/* Layover section */
 .layover-section {
     display: flex;
     flex-direction: column;
@@ -177,7 +169,6 @@
     color: #333;
 }
 
-/* Seat information section */
 .seat-info-section {
     display: flex;
     flex-direction: column;
@@ -190,7 +181,6 @@
     color: #666;
 }
 
-/* Action buttons section */
 .action-section {
     display: flex;
     flex-direction: column;
@@ -216,9 +206,8 @@ input[type="checkbox"] {
     border: 1px solid #ddd;
 }
 
-/* Responsive adjustments */
 @media (max-width: 768px) {
-    .flight-ticket {
+    .flight-card {
         flex-wrap: wrap;
         padding: 12px 16px;
     }

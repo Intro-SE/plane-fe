@@ -1,35 +1,35 @@
-.flight-search-container {
+.ticket-filter-container {
     width: 100%;
     max-width: 1200px;
     margin: 0 auto;
-    padding: 12px; /* Giảm padding */
+    padding: 12px;
     background-color: #f8f9fa;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.search-grid {
+.filter-grid {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
     grid-template-rows: auto auto;
-    gap: 6px; /* Giảm khoảng cách xuống thêm nữa */
+    gap: 6px;
     position: relative;
 }
 
-.search-item {
+.filter-item {
     position: relative;
     min-width: 0;
     display: flex;
     flex-direction: column;
-    align-items: flex-start; /* Căn trái để thẳng hàng */
-    padding: 0 2px; /* Giảm padding */
+    align-items: flex-start;
+    padding: 0 2px;
 }
 
 label {
     display: block;
-    margin-bottom: 3px; /* Giảm margin */
+    margin-bottom: 3px;
     font-weight: 500;
-    font-size: 11px; /* Giảm font size */
+    font-size: 11px;
     color: #333;
     white-space: nowrap;
     overflow: hidden;
@@ -39,46 +39,46 @@ label {
 
 .input-with-icon {
     position: relative;
-    width: 75%; /* Giảm xuống 75% */
+    width: 75%;
 }
 
 .location-selector {
     position: relative;
-    width: 75%; /* Giảm xuống 75% */
+    width: 75%;
 }
 
 .input-with-icon input {
     width: 100%;
-    padding: 4px 6px; /* Giảm padding */
+    padding: 4px 6px;
     padding-right: 22px;
     border: 1px solid #ced4da;
     border-radius: 4px;
     box-sizing: border-box;
-    font-size: 11px; /* Giảm font size */
-    height: 28px; /* Giảm chiều cao */
+    font-size: 11px;
+    height: 28px;
 }
 
 .input-icon {
     position: absolute;
-    right: 5px; /* Giảm khoảng cách */
+    right: 5px;
     top: 50%;
     transform: translateY(-50%);
     color: #6c757d;
-    font-size: 12px; /* Giảm kích thước icon */
+    font-size: 12px;
 }
 
 .selected-location {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 4px 6px; /* Giảm padding */
+    padding: 4px 6px;
     background-color: #dc3545;
     color: white;
     border-radius: 4px;
     cursor: pointer;
-    height: 28px; /* Giảm chiều cao */
+    height: 28px;
     box-sizing: border-box;
-    font-size: 11px; /* Giảm font size */
+    font-size: 11px;
 }
 
 .selected-location.arrival {
@@ -104,7 +104,7 @@ label {
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 10px; /* Giảm font size */
+    font-size: 10px;
 }
 
 .location-dropdown {
@@ -112,25 +112,25 @@ label {
     top: 100%;
     left: 0;
     width: 100%;
-    max-height: 200px; /* Giảm chiều cao */
+    max-height: 200px;
     background-color: white;
     border: 1px solid #ced4da;
     border-radius: 4px;
     z-index: 1000;
-    margin-top: 2px; /* Giảm margin */
+    margin-top: 2px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
     overflow: hidden;
 }
 
 .search-box {
     position: relative;
-    padding: 5px; /* Giảm padding */
+    padding: 5px;
     border-bottom: 1px solid #ced4da;
 }
 
 .search-box input {
     width: 100%;
-    padding: 4px 6px; /* Giảm padding */
+    padding: 4px 6px;
     padding-right: 20px;
     border: 1px solid #ced4da;
     border-radius: 4px;
@@ -144,44 +144,42 @@ label {
     top: 50%;
     transform: translateY(-50%);
     color: #6c757d;
-    font-size: 10px; /* Giảm font size */
+    font-size: 10px;
 }
 
 .location-list {
-    max-height: 160px; /* Giảm chiều cao */
+    max-height: 160px;
     overflow-y: auto;
 }
 
 .location-item {
-    padding: 5px 6px; /* Giảm padding */
+    padding: 5px 6px;
     cursor: pointer;
     transition: background-color 0.2s;
-    font-size: 11px; /* Giảm font size */
+    font-size: 11px;
 }
 
 .location-item:hover {
     background-color: #f0f0f0;
 }
 
-/* Căn chỉnh các phần tử để thẳng hàng */
-.search-grid {
-    align-items: start; /* Đảm bảo các hàng bắt đầu từ trên cùng */
+.filter-grid {
+    align-items: start;
 }
 
-/* Responsive breakpoints */
 @media (max-width: 1200px) {
-    .search-grid {
+    .filter-grid {
         grid-template-columns: repeat(4, 1fr);
     }
 
     .input-with-icon,
     .location-selector {
-        width: 85%; /* Tăng lên khi số cột giảm */
+        width: 85%;
     }
 }
 
 @media (max-width: 992px) {
-    .search-grid {
+    .filter-grid {
         grid-template-columns: repeat(3, 1fr);
     }
 
@@ -192,7 +190,7 @@ label {
 }
 
 @media (max-width: 768px) {
-    .search-grid {
+    .filter-grid {
         grid-template-columns: repeat(2, 1fr);
     }
 
@@ -203,21 +201,21 @@ label {
 }
 
 @media (max-width: 576px) {
-    .search-grid {
+    .filter-grid {
         grid-template-columns: 1fr;
     }
 
-    .search-item {
+    .filter-item {
         width: 100%;
     }
 
     .input-with-icon,
     .location-selector {
-        width: 90%; /* Cho mobile, để lại chút khoảng trống hai bên */
+        width: 90%;
     }
 
     .input-with-icon input,
     .selected-location {
-        height: 32px; /* Tăng một chút trên mobile để dễ thao tác */
+        height: 32px;
     }
 }

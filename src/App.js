@@ -1,42 +1,31 @@
 import "./App.css";
-import SideBar from "./Components/SideBar/SideBar.js";
-import FlightFilter from "./Components/FlightFilter/FlightFilter.js";
-import TicketFilter from "./Components/TicketFilter/TicketFilter.js";
-import FlightCard from "./Components/FlightCard/FlightCard.js";
-import FlightBooking from "./Components/FlightBooking/FlightBooking.js";
-import FlightTicket from "./Components/FlightTicket/FlightTicket.js";
-import FlightInfoForm from "./Components/FlightInfoForm/FlightInfoForm.js";
-import FlightInfo from "./Components/FlightInfo/FlightInfo.js";
-import FlightAddForm from "./Components/FlightAddForm/FlightAddForm.js";
-import FlightFixForm from "./Components/FlightFixForm/FlightFixForm.js";
 
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import FlightLookup from "./Pages/FlightLookup/FlightLookup";
+import FlightManagement from "./Pages/FlightManagement/FlightManagement";
+import BookingManagement from "./Pages/BookingManagement/BookingManagement";
+import Regulation from "./Pages/RegulationSetting/RegulationSetting";
 
 function App() {
     return (
         <>
-            {/* <BrowserRouter>
-                <SideBar />
+            <BrowserRouter>
                 <Routes>
-                    <Route index element={<FlightFilter />} />
                     <Route
                         path="/tra-cuu-chuyen-bay"
-                        element={<FlightBooking />}
+                        element={<FlightLookup />}
                     />
-                    <Route path="/ve-chuyen-bay" element={<FlightInfo />} />
+                    <Route
+                        path="/quan-ly-chuyen-bay"
+                        element={<FlightManagement />}
+                    />
+                    <Route
+                        path="/quan-ly-phieu-dat-cho"
+                        element={<BookingManagement />}
+                    />
+                    <Route path="/thay-doi-quy-dinh" element={<Regulation />} />
                 </Routes>
-                ;
-            </BrowserRouter> */}
-            {/* <SideBar /> */}
-            <FlightFilter />
-            <TicketFilter />
-            <FlightCard />
-            <FlightBooking />
-            <FlightTicket />
-            <FlightInfoForm />
-            <FlightInfo />
-            <FlightAddForm />
-            <FlightFixForm />
+            </BrowserRouter>
         </>
     );
 }

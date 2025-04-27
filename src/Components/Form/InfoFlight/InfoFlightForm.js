@@ -2,10 +2,9 @@ import React, { useState, useEffect, useCallback } from "react";
 import { FiTrash2 } from "react-icons/fi";
 import { FaRegUser } from "react-icons/fa";
 import { BiMoneyWithdraw } from "react-icons/bi";
-import "./FlightInfoForm.css";
+import "./InfoFlightForm.css";
 
-export default function FlightInfoForm() {
-    // Định nghĩa giá vé tương ứng với từng hạng vé ngoài component để tránh tái tạo trong mỗi render
+export default function InfoFlightForm() {
     const ticketPrices = {
         ECO: "1,500,000 VND",
         BUS: "3,500,000 VND",
@@ -24,15 +23,10 @@ export default function FlightInfoForm() {
         getTicket: "",
     });
 
-    // Sử dụng callback để cập nhật giá khi hạng vé thay đổi
-    const updatePriceByTicketClass = useCallback(
-        (ticketClass) => {
-            return ticketPrices[ticketClass] || "0 VND";
-        },
-        [ticketPrices],
-    );
+    const updatePriceByTicketClass = useCallback((ticketClass) => {
+        return ticketPrices[ticketClass] || "0 VND";
+    }, []);
 
-    // Cập nhật giá tiền khi hạng vé thay đổi - sử dụng functional update
     useEffect(() => {
         if (formData.ticketClass) {
             setFormData((prevData) => ({
@@ -63,7 +57,6 @@ export default function FlightInfoForm() {
     const handleSubmit = (e) => {
         e.preventDefault();
         console.log("Form submitted:", formData);
-        // Xử lý dữ liệu form ở đây
     };
 
     const handleClear = () => {

@@ -34,12 +34,12 @@ export default function SideBar() {
         {
             name: "Quản lý phiếu đặt chỗ",
             icon: <IoTicketOutline />,
-            path: "/phieu-dat-cho",
+            path: "/quan-ly-phieu-dat-cho",
         },
         {
             name: "Quản lý vé chuyến bay",
             icon: <LuTicketCheck />,
-            path: "/ve-chuyen-bay",
+            path: "/quan-ly-ve-chuyen-bay",
         },
         {
             name: "Báo cáo doanh thu",

@@ -1,14 +1,26 @@
 import React, { useState, useRef, useEffect } from "react";
 import { FaTimes, FaSearch } from "react-icons/fa";
+import { GoPeople } from "react-icons/go";
 import { MdOutlineCalendarMonth } from "react-icons/md";
-import "./FlightFilter.css";
+import { LuTicketsPlane } from "react-icons/lu";
+import { TbBuildingAirport } from "react-icons/tb";
+import { BiMoneyWithdraw } from "react-icons/bi";
+import "./TicketFilter.css";
 
-export default function FlightFilter() {
+export default function TicketFilter() {
+    const [flightCode, setFlightCode] = useState("");
+    const [ticketCode, setTicketCode] = useState("");
     const [departure, setDeparture] = useState("");
     const [arrival, setArrival] = useState("");
-    const [departureDate, setDepartureDate] = useState("");
+    const [availableSeats, setAvailableSeats] = useState("");
+    const [bookedSeats, setBookedSeats] = useState("");
+    const [stopPoints, setStopPoints] = useState("");
     const [minPrice, setMinPrice] = useState("");
     const [maxPrice, setMaxPrice] = useState("");
+    const [departureDate, setDepartureDate] = useState("");
+    const [arrivalDate, setArrivalDate] = useState("");
+
+    const [sortOption, setSortOption] = useState("");
 
     const [showDepartureDropdown, setShowDepartureDropdown] = useState(false);
     const [showArrivalDropdown, setShowArrivalDropdown] = useState(false);
@@ -18,7 +30,6 @@ export default function FlightFilter() {
     const departureRef = useRef(null);
     const arrivalRef = useRef(null);
 
-    // Danh sách các địa điểm mẫu
     const locations = [
         "Hà Nội",
         "TPHCM",
@@ -32,7 +43,6 @@ export default function FlightFilter() {
         "Quy Nhơn",
     ];
 
-    // Lọc địa điểm dựa trên từ khóa tìm kiếm
     const filteredDepartureLocations = locations.filter((location) =>
         location.toLowerCase().includes(departureSearch.toLowerCase()),
     );
@@ -41,7 +51,6 @@ export default function FlightFilter() {
         location.toLowerCase().includes(arrivalSearch.toLowerCase()),
     );
 
-    // Xử lý click bên ngoài để đóng dropdown
     useEffect(() => {
         const handleClickOutside = (event) => {
             if (
@@ -64,10 +73,27 @@ export default function FlightFilter() {
         };
     }, []);
 
+    const handleSortOptionChange = (option) => {
+        setSortOption(option === sortOption ? "" : option);
+    };
+
     return (
-        <div className="travel-search-container">
-            <div className="search-row">
-                <div className="search-column" ref={departureRef}>
+        <div className="ticket-search-container">
+            <div className="search-grid">
+                <div className="search-item">
+                    <label>Mã chuyến bay</label>
+                    <div className="input-with-icon">
+                        <input
+                            type="text"
+                            placeholder="VJ-123"
+                            value={flightCode}
+                            onChange={(e) => setFlightCode(e.target.value)}
+                        />
+                        <LuTicketsPlane className="input-icon" />
+                    </div>
+                </div>
+
+                <div className="search-item" ref={departureRef}>
                     <label>Nơi đi</label>
                     <div className="location-selector">
                         <div
@@ -131,7 +157,90 @@ export default function FlightFilter() {
                     </div>
                 </div>
 
-                <div className="search-column" ref={arrivalRef}>
+                <div className="search-item">
+                    <label>Giá tiền thấp nhất</label>
+                    <div className="input-with-icon">
+                        <input
+                            type="text"
+                            placeholder="0"
+                            value={minPrice}
+                            onChange={(e) => setMinPrice(e.target.value)}
+                        />
+                        <BiMoneyWithdraw className="input-icon" />
+                    </div>
+                </div>
+
+                <div className="search-item">
+                    <label>Ngày đi</label>
+                    <div className="input-with-icon">
+                        <input
+                            type="text"
+                            placeholder="dd/mm/yyyy"
+                            value={departureDate}
+                            onChange={(e) => setDepartureDate(e.target.value)}
+                        />
+                        <MdOutlineCalendarMonth className="input-icon" />
+                    </div>
+                </div>
+
+                <div className="search-item sorting-options">
+                    <div className="sort-option">
+                        <input
+                            type="checkbox"
+                            id="sortByPrice"
+                            checked={sortOption === "price"}
+                            onChange={() => handleSortOptionChange("price")}
+                        />
+                        <label htmlFor="sortByPrice">
+                            Sắp xếp theo giá tiền
+                        </label>
+                    </div>
+
+                    <div className="sort-option">
+                        <input
+                            type="checkbox"
+                            id="sortByName"
+                            checked={sortOption === "name"}
+                            onChange={() => handleSortOptionChange("name")}
+                        />
+                        <label htmlFor="sortByName">Sắp xếp theo họ tên</label>
+                    </div>
+
+                    <div className="sort-option">
+                        <input
+                            type="checkbox"
+                            id="sortByPhone"
+                            checked={sortOption === "phone"}
+                            onChange={() => handleSortOptionChange("phone")}
+                        />
+                        <label htmlFor="sortByPhone">Sắp xếp theo SĐT</label>
+                    </div>
+
+                    <div className="sort-option">
+                        <input
+                            type="checkbox"
+                            id="sortById"
+                            checked={sortOption === "id"}
+                            onChange={() => handleSortOptionChange("id")}
+                        />
+                        <label htmlFor="sortById">Sắp xếp theo CCCD</label>
+                    </div>
+                </div>
+
+                <div className="search-item">
+                    <label>Mã vé</label>
+                    <div className="input-with-icon">
+                        <input
+                            type="text"
+                            placeholder="ABC"
+                            value={ticketCode}
+                            onChange={(e) => setTicketCode(e.target.value)}
+                        />
+                        <LuTicketsPlane className="input-icon" />
+                    </div>
+                </div>
+
+                <div className="search-item" ref={arrivalRef}>
                     <label>Nơi đến</label>
                     <div className="location-selector">
                         <div
@@ -193,42 +302,29 @@ export default function FlightFilter() {
                     </div>
                 </div>
 
-                <div className="search-column">
-                    <label>Ngày đi</label>
-                    <div className="date-input">
-                        <input
-                            type="text"
-                            placeholder="dd/mm/yyyy"
-                            value={departureDate}
-                            onChange={(e) => setDepartureDate(e.target.value)}
-                        />
-                        <MdOutlineCalendarMonth className="calendar-icon" />
-                    </div>
-                </div>
-
-                <div className="search-column">
-                    <label>Giá thấp nhất</label>
-                    <div className="price-input">
-                        <input
-                            type="text"
-                            placeholder="0"
-                            value={minPrice}
-                            onChange={(e) => setMinPrice(e.target.value)}
-                        />
-                        <span className="currency">VND</span>
-                    </div>
-                </div>
-
-                <div className="search-column">
-                    <label>Giá cao nhất</label>
-                    <div className="price-input">
+                <div className="search-item">
+                    <label>Giá tiền cao nhất</label>
+                    <div className="input-with-icon">
                         <input
                             type="text"
                             placeholder="10,000,000"
                             value={maxPrice}
                             onChange={(e) => setMaxPrice(e.target.value)}
                         />
-                        <span className="currency">VND</span>
+                        <BiMoneyWithdraw className="input-icon" />
+                    </div>
+                </div>
+
+                <div className="search-item">
+                    <label>Ngày đến</label>
+                    <div className="input-with-icon">
+                        <input
+                            type="text"
+                            placeholder="dd/mm/yyyy"
+                            value={arrivalDate}
+                            onChange={(e) => setArrivalDate(e.target.value)}
+                        />
+                        <MdOutlineCalendarMonth className="input-icon" />
                     </div>
                 </div>
             </div>

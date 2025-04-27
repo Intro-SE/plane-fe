@@ -1,36 +1,23 @@
 import React, { useState, useRef, useEffect } from "react";
 import { FaTimes, FaSearch } from "react-icons/fa";
-import { GoPeople } from "react-icons/go";
 import { MdOutlineCalendarMonth } from "react-icons/md";
-import { LuTicketsPlane } from "react-icons/lu";
-import { TbBuildingAirport } from "react-icons/tb";
-import { BiMoneyWithdraw } from "react-icons/bi";
-import "./TicketFilter.css";
+import "./LookupFilter.css";
 
-export default function TicketFilter() {
-    // States cho tất cả các trường dữ liệu
-    const [flightCode, setFlightCode] = useState("");
+export default function LookupFilter() {
     const [departure, setDeparture] = useState("");
     const [arrival, setArrival] = useState("");
-    const [availableSeats, setAvailableSeats] = useState("");
-    const [bookedSeats, setBookedSeats] = useState("");
-    const [stopPoints, setStopPoints] = useState("");
+    const [departureDate, setDepartureDate] = useState("");
     const [minPrice, setMinPrice] = useState("");
     const [maxPrice, setMaxPrice] = useState("");
-    const [departureDate, setDepartureDate] = useState("");
-    const [arrivalDate, setArrivalDate] = useState("");
 
-    // States cho dropdown
     const [showDepartureDropdown, setShowDepartureDropdown] = useState(false);
     const [showArrivalDropdown, setShowArrivalDropdown] = useState(false);
     const [departureSearch, setDepartureSearch] = useState("");
     const [arrivalSearch, setArrivalSearch] = useState("");
 
-    // Refs cho các dropdown để xử lý click outside
     const departureRef = useRef(null);
     const arrivalRef = useRef(null);
 
-    // Danh sách các địa điểm mẫu
     const locations = [
         "Hà Nội",
         "TPHCM",
@@ -44,7 +31,6 @@ export default function TicketFilter() {
         "Quy Nhơn",
     ];
 
-    // Lọc địa điểm dựa trên từ khóa tìm kiếm
     const filteredDepartureLocations = locations.filter((location) =>
         location.toLowerCase().includes(departureSearch.toLowerCase()),
     );
@@ -53,7 +39,6 @@ export default function TicketFilter() {
         location.toLowerCase().includes(arrivalSearch.toLowerCase()),
     );
 
-    // Xử lý click bên ngoài để đóng dropdown
     useEffect(() => {
         const handleClickOutside = (event) => {
             if (
@@ -77,24 +62,9 @@ export default function TicketFilter() {
     }, []);
 
     return (
-        <div className="flight-search-container">
-            <div className="search-grid">
-                {/* Mã chuyến bay */}
-                <div className="search-item">
-                    <label>Mã chuyến bay</label>
-                    <div className="input-with-icon">
-                        <input
-                            type="text"
-                            placeholder="VJ-123"
-                            value={flightCode}
-                            onChange={(e) => setFlightCode(e.target.value)}
-                        />
-                        <LuTicketsPlane className="input-icon" />
-                    </div>
-                </div>
-
-                {/* Nơi đi */}
-                <div className="search-item" ref={departureRef}>
+        <div className="lookup-container">
+            <div className="lookup-row">
+                <div className="lookup-column" ref={departureRef}>
                     <label>Nơi đi</label>
                     <div className="location-selector">
                         <div
@@ -157,65 +127,7 @@ export default function TicketFilter() {
                         )}
                     </div>
                 </div>
-
-                {/* Số ghế trống */}
-                <div className="search-item">
-                    <label>Số ghế trống</label>
-                    <div className="input-with-icon">
-                        <input
-                            type="number"
-                            placeholder="0"
-                            value={availableSeats}
-                            onChange={(e) => setAvailableSeats(e.target.value)}
-                        />
-                        <GoPeople className="input-icon" />
-                    </div>
-                </div>
-
-                {/* Giá tiền thấp nhất */}
-                <div className="search-item">
-                    <label>Giá tiền thấp nhất</label>
-                    <div className="input-with-icon">
-                        <input
-                            type="text"
-                            placeholder="0"
-                            value={minPrice}
-                            onChange={(e) => setMinPrice(e.target.value)}
-                        />
-                        <BiMoneyWithdraw className="input-icon" />
-                    </div>
-                </div>
-
-                {/* Ngày đi */}
-                <div className="search-item">
-                    <label>Ngày đi</label>
-                    <div className="input-with-icon">
-                        <input
-                            type="text"
-                            placeholder="dd/mm/yyyy"
-                            value={departureDate}
-                            onChange={(e) => setDepartureDate(e.target.value)}
-                        />
-                        <MdOutlineCalendarMonth className="input-icon" />
-                    </div>
-                </div>
-
-                {/* Số điểm dừng trung gian */}
-                <div className="search-item">
-                    <label>Số điểm dừng trung gian</label>
-                    <div className="input-with-icon">
-                        <input
-                            type="number"
-                            placeholder="0"
-                            value={stopPoints}
-                            onChange={(e) => setStopPoints(e.target.value)}
-                        />
-                        <TbBuildingAirport className="input-icon" />
-                    </div>
-                </div>
-
-                {/* Nơi đến */}
-                <div className="search-item" ref={arrivalRef}>
+                <div className="lookup-column" ref={arrivalRef}>
                     <label>Nơi đến</label>
                     <div className="location-selector">
                         <div
@@ -276,46 +188,40 @@ export default function TicketFilter() {
                         )}
                     </div>
                 </div>
-
-                {/* Số ghế đặt */}
-                <div className="search-item">
-                    <label>Số ghế đặt</label>
-                    <div className="input-with-icon">
+                <div className="lookup-column">
+                    <label>Ngày đi</label>
+                    <div className="date-input">
                         <input
-                            type="number"
-                            placeholder="0"
-                            value={bookedSeats}
-                            onChange={(e) => setBookedSeats(e.target.value)}
+                            type="text"
+                            placeholder="dd/mm/yyyy"
+                            value={departureDate}
+                            onChange={(e) => setDepartureDate(e.target.value)}
                         />
-                        <GoPeople className="input-icon" />
+                        <MdOutlineCalendarMonth className="calendar-icon" />
                     </div>
                 </div>
-
-                {/* Giá tiền cao nhất */}
-                <div className="search-item">
-                    <label>Giá tiền cao nhất</label>
-                    <div className="input-with-icon">
+                <div className="lookup-column">
+                    <label>Giá thấp nhất</label>
+                    <div className="price-input">
+                        <input
+                            type="text"
+                            placeholder="0"
+                            value={minPrice}
+                            onChange={(e) => setMinPrice(e.target.value)}
+                        />
+                        <span className="currency">VND</span>
+                    </div>
+                </div>
+                <div className="lookup-column">
+                    <label>Giá cao nhất</label>
+                    <div className="price-input">
                         <input
                             type="text"
                             placeholder="10,000,000"
                             value={maxPrice}
                             onChange={(e) => setMaxPrice(e.target.value)}
                         />
-                        <BiMoneyWithdraw className="input-icon" />
-                    </div>
-                </div>
-
-                {/* Ngày đến */}
-                <div className="search-item">
-                    <label>Ngày đến</label>
-                    <div className="input-with-icon">
-                        <input
-                            type="text"
-                            placeholder="dd/mm/yyyy"
-                            value={arrivalDate}
-                            onChange={(e) => setArrivalDate(e.target.value)}
-                        />
-                        <MdOutlineCalendarMonth className="input-icon" />
+                        <span className="currency">VND</span>
                     </div>
                 </div>
             </div>
