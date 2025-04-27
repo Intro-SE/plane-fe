@@ -1,132 +1,103 @@
 import React, { useState } from "react";
 import "./Login.css";
-import { FaEye, FaEyeSlash } from "react-icons/fa";
-import { FcGoogle } from "react-icons/fc";
-import wallpaper from "../../Assets/plane-wallpaper.jpg";
-import logo from "../../Assets/logo.png";
+import { FaEye } from "react-icons/fa";
+import googleIcon from "../../Assets/logo.png";
+import airlineLogo from "../../Assets/logo.png";
+import airplaneImage from "../../Assets/plane-wallpaper.jpg";
 
 export default function Login() {
     const [showPassword, setShowPassword] = useState(false);
-    const [formData, setFormData] = useState({
-        email: "",
-        password: "",
-        rememberMe: false,
-    });
-
-    const handleChange = (e) => {
-        const { name, value, type, checked } = e.target;
-        setFormData({
-            ...formData,
-            [name]: type === "checkbox" ? checked : value,
-        });
-    };
-
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        console.log("Login data:", formData);
-        // Handle login logic here
-    };
-
-    const togglePasswordVisibility = () => {
-        setShowPassword(!showPassword);
-    };
+    const [rememberMe, setRememberMe] = useState(false);
 
     return (
         <div className="login-container">
-            <div className="login-background">
-                <img src={wallpaper} alt="Airplane in sky" />
+            <div className="left-panel">
+                <img
+                    src={airplaneImage}
+                    alt="Airplane in blue sky"
+                    className="background-image"
+                />
             </div>
 
-            <div className="login-form-container">
-                <div className="logo-section">
-                    <img src={logo} alt="Etihad Logo" className="logo" />
-                    <span className="airlines-text">7 Airlines</span>
+            <div className="right-panel">
+                <div className="logo-container">
+                    <img
+                        src={airlineLogo}
+                        alt="Etihad logo"
+                        className="airline-logo"
+                    />
+                    <div className="airline-name">7 Airlines</div>
                 </div>
 
-                <h1 className="welcome-text">Nice to see you again</h1>
+                <div className="login-form-container">
+                    <h2 className="welcome-text">Nice to see you again</h2>
 
-                <form onSubmit={handleSubmit} className="login-form">
-                    <div className="form-label">Login</div>
+                    <p className="login-label">Login</p>
 
-                    <div className="form-group">
+                    <div className="input-group">
                         <input
                             type="text"
-                            name="email"
                             placeholder="Email or phone number"
-                            value={formData.email}
-                            onChange={handleChange}
-                            required
                             className="form-input"
                         />
                     </div>
 
-                    <div className="form-group">
-                        <div className="password-label">Password</div>
+                    <div className="input-group">
+                        <p className="input-label">Password</p>
                         <div className="password-input-container">
                             <input
                                 type={showPassword ? "text" : "password"}
-                                name="password"
                                 placeholder="Enter password"
-                                value={formData.password}
-                                onChange={handleChange}
-                                required
                                 className="form-input"
                             />
-                            <span
-                                className="password-toggle"
-                                onClick={togglePasswordVisibility}
+                            <button
+                                className="toggle-password"
+                                onClick={() => setShowPassword(!showPassword)}
                             >
-                                {showPassword ? <FaEyeSlash /> : <FaEye />}
-                            </span>
+                                <FaEye />
+                            </button>
                         </div>
                     </div>
 
-                    <div className="form-options">
+                    <div className="remember-forgot-row">
                         <div className="remember-me">
                             <input
                                 type="checkbox"
-                                id="rememberMe"
-                                name="rememberMe"
-                                checked={formData.rememberMe}
-                                onChange={handleChange}
-                                className="remember-checkbox"
+                                id="remember"
+                                checked={rememberMe}
+                                onChange={() => setRememberMe(!rememberMe)}
                             />
-                            <label htmlFor="rememberMe">Remember me</label>
+                            <label htmlFor="remember">Remember me</label>
                         </div>
-                        <a href="#forgot-password" className="forgot-password">
+                        <a href="#" className="forgot-password">
                             Forgot password?
                         </a>
                     </div>
 
-                    <button type="submit" className="sign-in-button">
-                        Sign in
+                    <button className="sign-in-button">Sign in</button>
+
+                    <button className="google-sign-in">
+                        <img
+                            src={googleIcon}
+                            alt="Google"
+                            className="google-icon"
+                        />
+                        Or sign in with Google
                     </button>
 
-                    <div className="or-divider">
-                        <span className="or-text">or</span>
+                    <div className="signup-link">
+                        Don't have an account? <a href="#">Sign up now</a>
                     </div>
-
-                    <button type="button" className="google-button">
-                        <FcGoogle className="google-icon" />
-                        Sign in with Google
-                    </button>
-
-                    <div className="signup-prompt">
-                        Don't have an account?{" "}
-                        <a href="#signup" className="signup-link">
-                            Sign up now
-                        </a>
-                    </div>
-                </form>
+                </div>
 
                 <div className="footer">
                     <div className="footer-logo">
                         <img
-                            src={logo}
-                            alt="Etihad Mini Logo"
-                            className="mini-logo"
+                            src={airlineLogo}
+                            alt="7 Airlines"
+                            className="footer-logo-icon"
                         />
-                        <span className="mini-text">7Airlines</span>
+                        /7Airlines
                     </div>
                     <div className="copyright">© Perfect Login 2021</div>
                 </div>
