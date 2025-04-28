@@ -1,15 +1,15 @@
 import React from "react";
 import SideBar from "../../Components/SideBar/SideBar";
 import FixRule from "../../Components/Form/FixRule/FixRule";
-import "./RegulationSetting.css"; // Tạo file CSS riêng
+import styles from "./RegulationSetting.module.css"; // Chuyển sang module.css
 
 export default function RegulationSetting() {
     return (
-        <div className="regulation-container">
-            <div className="sidebar-section">
+        <div className={styles["regulation-container"]}>
+            <div className={styles["sidebar-section"]}>
                 <SideBar />
             </div>
-            <div className="content-section">
+            <div className={styles["content-section"]}>
                 <FixRule />
             </div>
         </div>

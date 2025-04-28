@@ -5,7 +5,7 @@ import { MdOutlineCalendarMonth } from "react-icons/md";
 import { LuTicketsPlane } from "react-icons/lu";
 import { TbBuildingAirport } from "react-icons/tb";
 import { BiMoneyWithdraw } from "react-icons/bi";
-import "./ManageFilter.css";
+import styles from "./ManageFilter.module.css";
 
 export default function ManageFilter() {
     const [ticketId, setTicketId] = useState("");
@@ -71,26 +71,26 @@ export default function ManageFilter() {
     }, []);
 
     return (
-        <div className="ticket-filter-container">
-            <div className="filter-grid">
-                <div className="filter-item">
+        <div className={styles["ticket-filter-container"]}>
+            <div className={styles["filter-grid"]}>
+                <div className={styles["filter-item"]}>
                     <label>Mã vé</label>
-                    <div className="input-with-icon">
+                    <div className={styles["input-with-icon"]}>
                         <input
                             type="text"
                             placeholder="VJ-123"
                             value={ticketId}
                             onChange={(e) => setTicketId(e.target.value)}
                         />
-                        <LuTicketsPlane className="input-icon" />
+                        <LuTicketsPlane className={styles["input-icon"]} />
                     </div>
                 </div>
 
-                <div className="filter-item" ref={departureRef}>
+                <div className={styles["filter-item"]} ref={departureRef}>
                     <label>Nơi đi</label>
-                    <div className="location-selector">
+                    <div className={styles["location-selector"]}>
                         <div
-                            className={`selected-location ${departure ? "active" : "placeholder"}`}
+                            className={`${styles["selected-location"]} ${departure ? styles["active"] : styles["placeholder"]}`}
                             onClick={() => {
                                 setShowDepartureDropdown(
                                     !showDepartureDropdown,
@@ -101,7 +101,7 @@ export default function ManageFilter() {
                             <span>{departure || "..."}</span>
                             {departure && (
                                 <button
-                                    className="remove-btn"
+                                    className={styles["remove-btn"]}
                                     onClick={(e) => {
                                         e.stopPropagation();
                                         setDeparture("");
@@ -113,8 +113,8 @@ export default function ManageFilter() {
                         </div>
 
                         {showDepartureDropdown && (
-                            <div className="location-dropdown">
-                                <div className="search-box">
+                            <div className={styles["location-dropdown"]}>
+                                <div className={styles["search-box"]}>
                                     <input
                                         type="text"
                                         placeholder="Tìm kiếm địa điểm..."
@@ -124,14 +124,18 @@ export default function ManageFilter() {
                                         }
                                         autoFocus
                                     />
-                                    <FaSearch className="search-icon" />
+                                    <FaSearch
+                                        className={styles["search-icon"]}
+                                    />
                                 </div>
-                                <div className="location-list">
+                                <div className={styles["location-list"]}>
                                     {filteredDepartureLocations.map(
                                         (location, index) => (
                                             <div
                                                 key={index}
-                                                className="location-item"
+                                                className={
+                                                    styles["location-item"]
+                                                }
                                                 onClick={() => {
                                                     setDeparture(location);
                                                     setShowDepartureDropdown(
@@ -150,63 +154,65 @@ export default function ManageFilter() {
                     </div>
                 </div>
 
-                <div className="filter-item">
+                <div className={styles["filter-item"]}>
                     <label>Số ghế trống</label>
-                    <div className="input-with-icon">
+                    <div className={styles["input-with-icon"]}>
                         <input
                             type="number"
                             placeholder="0"
                             value={availableSeats}
                             onChange={(e) => setAvailableSeats(e.target.value)}
                         />
-                        <GoPeople className="input-icon" />
+                        <GoPeople className={styles["input-icon"]} />
                     </div>
                 </div>
 
-                <div className="filter-item">
+                <div className={styles["filter-item"]}>
                     <label>Giá tiền thấp nhất</label>
-                    <div className="input-with-icon">
+                    <div className={styles["input-with-icon"]}>
                         <input
                             type="text"
                             placeholder="0"
                             value={minPrice}
                             onChange={(e) => setMinPrice(e.target.value)}
                         />
-                        <BiMoneyWithdraw className="input-icon" />
+                        <BiMoneyWithdraw className={styles["input-icon"]} />
                     </div>
                 </div>
 
-                <div className="filter-item">
+                <div className={styles["filter-item"]}>
                     <label>Ngày đi</label>
-                    <div className="input-with-icon">
+                    <div className={styles["input-with-icon"]}>
                         <input
                             type="text"
                             placeholder="dd/mm/yyyy"
                             value={departureDate}
                             onChange={(e) => setDepartureDate(e.target.value)}
                         />
-                        <MdOutlineCalendarMonth className="input-icon" />
+                        <MdOutlineCalendarMonth
+                            className={styles["input-icon"]}
+                        />
                     </div>
                 </div>
 
-                <div className="filter-item">
+                <div className={styles["filter-item"]}>
                     <label>Số điểm dừng trung gian</label>
-                    <div className="input-with-icon">
+                    <div className={styles["input-with-icon"]}>
                         <input
                             type="number"
                             placeholder="0"
                             value={stopPoints}
                             onChange={(e) => setStopPoints(e.target.value)}
                         />
-                        <TbBuildingAirport className="input-icon" />
+                        <TbBuildingAirport className={styles["input-icon"]} />
                     </div>
                 </div>
 
-                <div className="filter-item" ref={arrivalRef}>
+                <div className={styles["filter-item"]} ref={arrivalRef}>
                     <label>Nơi đến</label>
-                    <div className="location-selector">
+                    <div className={styles["location-selector"]}>
                         <div
-                            className={`selected-location arrival ${arrival ? "active" : "placeholder"}`}
+                            className={`${styles["selected-location"]} ${styles["arrival"]} ${arrival ? styles["active"] : styles["placeholder"]}`}
                             onClick={() => {
                                 setShowArrivalDropdown(!showArrivalDropdown);
                                 setShowDepartureDropdown(false);
@@ -215,7 +221,7 @@ export default function ManageFilter() {
                             <span>{arrival || "..."}</span>
                             {arrival && (
                                 <button
-                                    className="remove-btn"
+                                    className={styles["remove-btn"]}
                                     onClick={(e) => {
                                         e.stopPropagation();
                                         setArrival("");
@@ -227,8 +233,8 @@ export default function ManageFilter() {
                         </div>
 
                         {showArrivalDropdown && (
-                            <div className="location-dropdown">
-                                <div className="search-box">
+                            <div className={styles["location-dropdown"]}>
+                                <div className={styles["search-box"]}>
                                     <input
                                         type="text"
                                         placeholder="Tìm kiếm địa điểm..."
@@ -238,14 +244,18 @@ export default function ManageFilter() {
                                         }
                                         autoFocus
                                     />
-                                    <FaSearch className="search-icon" />
+                                    <FaSearch
+                                        className={styles["search-icon"]}
+                                    />
                                 </div>
-                                <div className="location-list">
+                                <div className={styles["location-list"]}>
                                     {filteredArrivalLocations.map(
                                         (location, index) => (
                                             <div
                                                 key={index}
-                                                className="location-item"
+                                                className={
+                                                    styles["location-item"]
+                                                }
                                                 onClick={() => {
                                                     setArrival(location);
                                                     setShowArrivalDropdown(
@@ -264,42 +274,44 @@ export default function ManageFilter() {
                     </div>
                 </div>
 
-                <div className="filter-item">
+                <div className={styles["filter-item"]}>
                     <label>Số ghế đặt</label>
-                    <div className="input-with-icon">
+                    <div className={styles["input-with-icon"]}>
                         <input
                             type="number"
                             placeholder="0"
                             value={bookedSeats}
                             onChange={(e) => setBookedSeats(e.target.value)}
                         />
-                        <GoPeople className="input-icon" />
+                        <GoPeople className={styles["input-icon"]} />
                     </div>
                 </div>
 
-                <div className="filter-item">
+                <div className={styles["filter-item"]}>
                     <label>Giá tiền cao nhất</label>
-                    <div className="input-with-icon">
+                    <div className={styles["input-with-icon"]}>
                         <input
                             type="text"
                             placeholder="10,000,000"
                             value={maxPrice}
                             onChange={(e) => setMaxPrice(e.target.value)}
                         />
-                        <BiMoneyWithdraw className="input-icon" />
+                        <BiMoneyWithdraw className={styles["input-icon"]} />
                     </div>
                 </div>
 
-                <div className="filter-item">
+                <div className={styles["filter-item"]}>
                     <label>Ngày đến</label>
-                    <div className="input-with-icon">
+                    <div className={styles["input-with-icon"]}>
                         <input
                             type="text"
                             placeholder="dd/mm/yyyy"
                             value={arrivalDate}
                             onChange={(e) => setArrivalDate(e.target.value)}
                         />
-                        <MdOutlineCalendarMonth className="input-icon" />
+                        <MdOutlineCalendarMonth
+                            className={styles["input-icon"]}
+                        />
                     </div>
                 </div>
             </div>

@@ -3,7 +3,7 @@ import { AiOutlineUserAdd } from "react-icons/ai";
 import { LuTicketsPlane, LuClock } from "react-icons/lu";
 import { MdOutlineCalendarMonth } from "react-icons/md";
 import { TbBuildingAirport } from "react-icons/tb";
-import "./FixFlightForm.css";
+import styles from "./FixFlightForm.module.css";
 
 export default function FixFlightForm() {
     const [flightData, setFlightData] = useState({
@@ -34,10 +34,12 @@ export default function FixFlightForm() {
     };
 
     return (
-        <div className="flight-fix-container">
+        <div className={styles["flight-fix-container"]}>
             <form onSubmit={handleSubmit}>
-                <div className="form-row">
-                    <div className="input-group full-width">
+                <div className={styles["form-row"]}>
+                    <div
+                        className={`${styles["input-group"]} ${styles["full-width"]}`}
+                    >
                         <input
                             type="text"
                             name="flightCode"
@@ -45,14 +47,14 @@ export default function FixFlightForm() {
                             value={flightData.flightCode}
                             onChange={handleChange}
                         />
-                        <span className="icon">
+                        <span className={styles.icon}>
                             <LuTicketsPlane />
                         </span>
                     </div>
                 </div>
 
-                <div className="form-row">
-                    <div className="input-group">
+                <div className={styles["form-row"]}>
+                    <div className={styles["input-group"]}>
                         <input
                             type="text"
                             name="departureAirport"
@@ -60,12 +62,12 @@ export default function FixFlightForm() {
                             value={flightData.departureAirport}
                             onChange={handleChange}
                         />
-                        <span className="icon">
+                        <span className={styles.icon}>
                             <TbBuildingAirport />
                         </span>
                     </div>
 
-                    <div className="input-group">
+                    <div className={styles["input-group"]}>
                         <input
                             type="text"
                             name="arrivalAirport"
@@ -73,14 +75,14 @@ export default function FixFlightForm() {
                             value={flightData.arrivalAirport}
                             onChange={handleChange}
                         />
-                        <span className="icon">
+                        <span className={styles.icon}>
                             <TbBuildingAirport />
                         </span>
                     </div>
                 </div>
 
-                <div className="form-row">
-                    <div className="input-group">
+                <div className={styles["form-row"]}>
+                    <div className={styles["input-group"]}>
                         <input
                             type="text"
                             name="dateTime"
@@ -88,12 +90,12 @@ export default function FixFlightForm() {
                             value={flightData.dateTime}
                             onChange={handleChange}
                         />
-                        <span className="icon">
+                        <span className={styles.icon}>
                             <MdOutlineCalendarMonth />
                         </span>
                     </div>
 
-                    <div className="input-group">
+                    <div className={styles["input-group"]}>
                         <input
                             type="text"
                             name="flightDuration"
@@ -101,14 +103,14 @@ export default function FixFlightForm() {
                             value={flightData.flightDuration}
                             onChange={handleChange}
                         />
-                        <span className="icon">
+                        <span className={styles.icon}>
                             <LuClock />
                         </span>
                     </div>
                 </div>
 
-                <div className="form-row last-row">
-                    <div className="input-group">
+                <div className={`${styles["form-row"]} ${styles["last-row"]}`}>
+                    <div className={styles["input-group"]}>
                         <input
                             type="text"
                             name="seatQuantityClass1"
@@ -116,22 +118,22 @@ export default function FixFlightForm() {
                             value={flightData.seatQuantityClass1}
                             onChange={handleChange}
                         />
-                        <span className="icon">
+                        <span className={styles.icon}>
                             <AiOutlineUserAdd />
                         </span>
                     </div>
 
                     <button
                         type="button"
-                        className="confirm-button"
+                        className={styles["confirm-button"]}
                         onClick={() => handleConfirm("seatQuantityClass1")}
                     >
                         Xác nhận
                     </button>
                 </div>
 
-                <div className="form-row last-row">
-                    <div className="input-group">
+                <div className={`${styles["form-row"]} ${styles["last-row"]}`}>
+                    <div className={styles["input-group"]}>
                         <input
                             type="text"
                             name="seatQuantityClass2"
@@ -139,21 +141,24 @@ export default function FixFlightForm() {
                             value={flightData.seatQuantityClass2}
                             onChange={handleChange}
                         />
-                        <span className="icon">
+                        <span className={styles.icon}>
                             <AiOutlineUserAdd />
                         </span>
                     </div>
 
                     <button
                         type="button"
-                        className="confirm-button"
+                        className={styles["confirm-button"]}
                         onClick={() => handleConfirm("seatQuantityClass2")}
                     >
                         Xác nhận
                     </button>
                 </div>
 
-                <button type="submit" className="submit-button fix-button">
+                <button
+                    type="submit"
+                    className={`${styles["submit-button"]} ${styles["fix-button"]}`}
+                >
                     Sửa chuyến bay
                 </button>
             </form>

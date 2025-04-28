@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { FaTimes, FaSearch } from "react-icons/fa";
 import { MdOutlineCalendarMonth } from "react-icons/md";
-import "./LookupFilter.css";
+import styles from "./LookupFilter.module.css";
 
 export default function LookupFilter() {
     const [departure, setDeparture] = useState("");
@@ -62,13 +62,13 @@ export default function LookupFilter() {
     }, []);
 
     return (
-        <div className="lookup-container">
-            <div className="lookup-row">
-                <div className="lookup-column" ref={departureRef}>
+        <div className={styles["lookup-container"]}>
+            <div className={styles["lookup-row"]}>
+                <div className={styles["lookup-column"]} ref={departureRef}>
                     <label>Nơi đi</label>
-                    <div className="location-selector">
+                    <div className={styles["location-selector"]}>
                         <div
-                            className={`selected-location ${departure ? "active" : "placeholder"}`}
+                            className={`${styles["selected-location"]} ${departure ? styles["active"] : styles["placeholder"]}`}
                             onClick={() => {
                                 setShowDepartureDropdown(
                                     !showDepartureDropdown,
@@ -79,7 +79,7 @@ export default function LookupFilter() {
                             <span>{departure || "..."}</span>
                             {departure && (
                                 <button
-                                    className="remove-btn"
+                                    className={styles["remove-btn"]}
                                     onClick={(e) => {
                                         e.stopPropagation();
                                         setDeparture("");
@@ -91,8 +91,8 @@ export default function LookupFilter() {
                         </div>
 
                         {showDepartureDropdown && (
-                            <div className="location-dropdown">
-                                <div className="search-box">
+                            <div className={styles["location-dropdown"]}>
+                                <div className={styles["search-box"]}>
                                     <input
                                         type="text"
                                         placeholder="Tìm kiếm địa điểm..."
@@ -102,14 +102,18 @@ export default function LookupFilter() {
                                         }
                                         autoFocus
                                     />
-                                    <FaSearch className="search-icon" />
+                                    <FaSearch
+                                        className={styles["search-icon"]}
+                                    />
                                 </div>
-                                <div className="location-list">
+                                <div className={styles["location-list"]}>
                                     {filteredDepartureLocations.map(
                                         (location, index) => (
                                             <div
                                                 key={index}
-                                                className="location-item"
+                                                className={
+                                                    styles["location-item"]
+                                                }
                                                 onClick={() => {
                                                     setDeparture(location);
                                                     setShowDepartureDropdown(
@@ -127,11 +131,11 @@ export default function LookupFilter() {
                         )}
                     </div>
                 </div>
-                <div className="lookup-column" ref={arrivalRef}>
+                <div className={styles["lookup-column"]} ref={arrivalRef}>
                     <label>Nơi đến</label>
-                    <div className="location-selector">
+                    <div className={styles["location-selector"]}>
                         <div
-                            className={`selected-location arrival ${arrival ? "active" : "placeholder"}`}
+                            className={`${styles["selected-location"]} ${styles["arrival"]} ${arrival ? styles["active"] : styles["placeholder"]}`}
                             onClick={() => {
                                 setShowArrivalDropdown(!showArrivalDropdown);
                                 setShowDepartureDropdown(false);
@@ -140,7 +144,7 @@ export default function LookupFilter() {
                             <span>{arrival || "..."}</span>
                             {arrival && (
                                 <button
-                                    className="remove-btn"
+                                    className={styles["remove-btn"]}
                                     onClick={(e) => {
                                         e.stopPropagation();
                                         setArrival("");
@@ -152,8 +156,8 @@ export default function LookupFilter() {
                         </div>
 
                         {showArrivalDropdown && (
-                            <div className="location-dropdown">
-                                <div className="search-box">
+                            <div className={styles["location-dropdown"]}>
+                                <div className={styles["search-box"]}>
                                     <input
                                         type="text"
                                         placeholder="Tìm kiếm địa điểm..."
@@ -163,14 +167,18 @@ export default function LookupFilter() {
                                         }
                                         autoFocus
                                     />
-                                    <FaSearch className="search-icon" />
+                                    <FaSearch
+                                        className={styles["search-icon"]}
+                                    />
                                 </div>
-                                <div className="location-list">
+                                <div className={styles["location-list"]}>
                                     {filteredArrivalLocations.map(
                                         (location, index) => (
                                             <div
                                                 key={index}
-                                                className="location-item"
+                                                className={
+                                                    styles["location-item"]
+                                                }
                                                 onClick={() => {
                                                     setArrival(location);
                                                     setShowArrivalDropdown(
@@ -188,40 +196,42 @@ export default function LookupFilter() {
                         )}
                     </div>
                 </div>
-                <div className="lookup-column">
+                <div className={styles["lookup-column"]}>
                     <label>Ngày đi</label>
-                    <div className="date-input">
+                    <div className={styles["date-input"]}>
                         <input
                             type="text"
                             placeholder="dd/mm/yyyy"
                             value={departureDate}
                             onChange={(e) => setDepartureDate(e.target.value)}
                         />
-                        <MdOutlineCalendarMonth className="calendar-icon" />
+                        <MdOutlineCalendarMonth
+                            className={styles["calendar-icon"]}
+                        />
                     </div>
                 </div>
-                <div className="lookup-column">
+                <div className={styles["lookup-column"]}>
                     <label>Giá thấp nhất</label>
-                    <div className="price-input">
+                    <div className={styles["price-input"]}>
                         <input
                             type="text"
                             placeholder="0"
                             value={minPrice}
                             onChange={(e) => setMinPrice(e.target.value)}
                         />
-                        <span className="currency">VND</span>
+                        <span className={styles["currency"]}>VND</span>
                     </div>
                 </div>
-                <div className="lookup-column">
+                <div className={styles["lookup-column"]}>
                     <label>Giá cao nhất</label>
-                    <div className="price-input">
+                    <div className={styles["price-input"]}>
                         <input
                             type="text"
                             placeholder="10,000,000"
                             value={maxPrice}
                             onChange={(e) => setMaxPrice(e.target.value)}
                         />
-                        <span className="currency">VND</span>
+                        <span className={styles["currency"]}>VND</span>
                     </div>
                 </div>
             </div>

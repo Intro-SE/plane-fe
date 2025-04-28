@@ -3,7 +3,7 @@ import { AiOutlineUserAdd } from "react-icons/ai";
 import { LuTicketsPlane, LuClock } from "react-icons/lu";
 import { MdOutlineCalendarMonth } from "react-icons/md";
 import { TbBuildingAirport } from "react-icons/tb";
-import "./AddFlightForm.css";
+import styles from "./AddFlightForm.module.css";
 
 export default function AddFlightForm() {
     const [flightData, setFlightData] = useState({
@@ -29,10 +29,12 @@ export default function AddFlightForm() {
     };
 
     return (
-        <div className="flight-form-container">
+        <div className={styles["flight-form-container"]}>
             <form onSubmit={handleSubmit}>
-                <div className="form-row">
-                    <div className="input-group full-width">
+                <div className={styles["form-row"]}>
+                    <div
+                        className={`${styles["input-group"]} ${styles["full-width"]}`}
+                    >
                         <input
                             type="text"
                             name="flightCode"
@@ -40,14 +42,14 @@ export default function AddFlightForm() {
                             value={flightData.flightCode}
                             onChange={handleChange}
                         />
-                        <span className="icon">
+                        <span className={styles.icon}>
                             <LuTicketsPlane />
                         </span>
                     </div>
                 </div>
 
-                <div className="form-row">
-                    <div className="input-group">
+                <div className={styles["form-row"]}>
+                    <div className={styles["input-group"]}>
                         <input
                             type="text"
                             name="departureAirport"
@@ -55,12 +57,12 @@ export default function AddFlightForm() {
                             value={flightData.departureAirport}
                             onChange={handleChange}
                         />
-                        <span className="icon">
+                        <span className={styles.icon}>
                             <TbBuildingAirport />
                         </span>
                     </div>
 
-                    <div className="input-group">
+                    <div className={styles["input-group"]}>
                         <input
                             type="text"
                             name="arrivalAirport"
@@ -68,14 +70,14 @@ export default function AddFlightForm() {
                             value={flightData.arrivalAirport}
                             onChange={handleChange}
                         />
-                        <span className="icon">
+                        <span className={styles.icon}>
                             <TbBuildingAirport />
                         </span>
                     </div>
                 </div>
 
-                <div className="form-row">
-                    <div className="input-group">
+                <div className={styles["form-row"]}>
+                    <div className={styles["input-group"]}>
                         <input
                             type="text"
                             name="dateTime"
@@ -83,12 +85,12 @@ export default function AddFlightForm() {
                             value={flightData.dateTime}
                             onChange={handleChange}
                         />
-                        <span className="icon">
+                        <span className={styles.icon}>
                             <MdOutlineCalendarMonth />
                         </span>
                     </div>
 
-                    <div className="input-group">
+                    <div className={styles["input-group"]}>
                         <input
                             type="text"
                             name="flightDuration"
@@ -96,14 +98,14 @@ export default function AddFlightForm() {
                             value={flightData.flightDuration}
                             onChange={handleChange}
                         />
-                        <span className="icon">
+                        <span className={styles.icon}>
                             <LuClock />
                         </span>
                     </div>
                 </div>
 
-                <div className="form-row last-row">
-                    <div className="input-group">
+                <div className={`${styles["form-row"]} ${styles["last-row"]}`}>
+                    <div className={styles["input-group"]}>
                         <input
                             type="text"
                             name="seatQuantity"
@@ -111,17 +113,17 @@ export default function AddFlightForm() {
                             value={flightData.seatQuantity}
                             onChange={handleChange}
                         />
-                        <span className="icon">
+                        <span className={styles.icon}>
                             <AiOutlineUserAdd />
                         </span>
                     </div>
 
-                    <button type="button" className="confirm-button">
+                    <button type="button" className={styles["confirm-button"]}>
                         Xác nhận
                     </button>
                 </div>
 
-                <button type="submit" className="submit-button">
+                <button type="submit" className={styles["submit-button"]}>
                     Thêm chuyến bay
                 </button>
             </form>

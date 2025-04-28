@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import { FiTrash2 } from "react-icons/fi";
 import { FaRegUser } from "react-icons/fa";
 import { BiMoneyWithdraw } from "react-icons/bi";
-import "./InfoFlightForm.css";
+import styles from "./InfoFlightForm.module.css";
 
 export default function InfoFlightForm() {
     const ticketPrices = {
@@ -73,39 +73,39 @@ export default function InfoFlightForm() {
     };
 
     return (
-        <div className="form-container">
-            <div className="form-header">
+        <div className={styles["form-container"]}>
+            <div className={styles["form-header"]}>
                 <h2>THÔNG TIN HÀNH KHÁCH</h2>
                 <button
                     type="button"
-                    className="clear-btn"
+                    className={styles["clear-btn"]}
                     onClick={handleClear}
                 >
-                    Xóa nhanh <FiTrash2 className="trash-icon" />
+                    Xóa nhanh <FiTrash2 className={styles["trash-icon"]} />
                 </button>
             </div>
 
             <form onSubmit={handleSubmit}>
-                <div className="form-row">
-                    <div className="form-group">
+                <div className={styles["form-row"]}>
+                    <div className={styles["form-group"]}>
                         <label htmlFor="lastName">Họ</label>
                         <input
                             type="text"
                             id="lastName"
                             name="lastName"
-                            className="form-control"
+                            className={styles["form-control"]}
                             placeholder="NGUYỄN"
                             value={formData.lastName}
                             onChange={handleChange}
                         />
                     </div>
-                    <div className="form-group">
+                    <div className={styles["form-group"]}>
                         <label htmlFor="firstName">Tên</label>
                         <input
                             type="text"
                             id="firstName"
                             name="firstName"
-                            className="form-control"
+                            className={styles["form-control"]}
                             placeholder="VĂN A"
                             value={formData.firstName}
                             onChange={handleChange}
@@ -113,33 +113,37 @@ export default function InfoFlightForm() {
                     </div>
                 </div>
 
-                <div className="form-row three-columns">
-                    <div className="form-group">
+                <div
+                    className={`${styles["form-row"]} ${styles["three-columns"]}`}
+                >
+                    <div className={styles["form-group"]}>
                         <label htmlFor="idNumber">CMND/CCCD</label>
                         <input
                             type="text"
                             id="idNumber"
                             name="idNumber"
-                            className="form-control"
+                            className={styles["form-control"]}
                             value={formData.idNumber}
                             onChange={handleChange}
                         />
                     </div>
-                    <div className="form-group">
+                    <div className={styles["form-group"]}>
                         <label htmlFor="phoneNumber">Số điện thoại</label>
                         <input
                             type="tel"
                             id="phoneNumber"
                             name="phoneNumber"
-                            className="form-control"
+                            className={styles["form-control"]}
                             value={formData.phoneNumber}
                             onChange={handleChange}
                         />
                     </div>
-                    <div className="form-group gender-container">
+                    <div
+                        className={`${styles["form-group"]} ${styles["gender-container"]}`}
+                    >
                         <label>Giới tính</label>
-                        <div className="gender-group">
-                            <div className="gender-option">
+                        <div className={styles["gender-group"]}>
+                            <div className={styles["gender-option"]}>
                                 <span>Nam</span>
                                 <input
                                     type="checkbox"
@@ -149,7 +153,7 @@ export default function InfoFlightForm() {
                                     onChange={handleChange}
                                 />
                             </div>
-                            <div className="gender-option">
+                            <div className={styles["gender-option"]}>
                                 <span>Nữ</span>
                                 <input
                                     type="checkbox"
@@ -159,19 +163,19 @@ export default function InfoFlightForm() {
                                     onChange={handleChange}
                                 />
                             </div>
-                            <FaRegUser className="person-icon" />
+                            <FaRegUser className={styles["person-icon"]} />
                         </div>
                     </div>
                 </div>
 
-                <div className="form-row">
-                    <div className="form-group">
+                <div className={styles["form-row"]}>
+                    <div className={styles["form-group"]}>
                         <label htmlFor="ticketClass">Mã hạng vé</label>
-                        <div className="select-wrapper">
+                        <div className={styles["select-wrapper"]}>
                             <select
                                 id="ticketClass"
                                 name="ticketClass"
-                                className="form-control"
+                                className={styles["form-control"]}
                                 value={formData.ticketClass}
                                 onChange={handleChange}
                             >
@@ -182,29 +186,33 @@ export default function InfoFlightForm() {
                             </select>
                         </div>
                     </div>
-                    <div className="form-group">
+                    <div className={styles["form-group"]}>
                         <label htmlFor="price">Giá tiền</label>
-                        <div className="currency-input">
+                        <div className={styles["currency-input"]}>
                             <input
                                 type="text"
                                 id="price"
                                 name="price"
-                                className="form-control"
+                                className={styles["form-control"]}
                                 value={formData.price}
                                 readOnly
                             />
-                            <span className="currency-symbol">
+                            <span className={styles["currency-symbol"]}>
                                 <BiMoneyWithdraw />
                             </span>
                         </div>
                     </div>
                 </div>
 
-                <div className="form-row bottom-row">
-                    <div className="form-group ticket-retrieval">
+                <div
+                    className={`${styles["form-row"]} ${styles["bottom-row"]}`}
+                >
+                    <div
+                        className={`${styles["form-group"]} ${styles["ticket-retrieval"]}`}
+                    >
                         <label>Lấy vé:</label>
-                        <div className="checkbox-group">
-                            <div className="ticket-option">
+                        <div className={styles["checkbox-group"]}>
+                            <div className={styles["ticket-option"]}>
                                 <span>Có</span>
                                 <input
                                     type="checkbox"
@@ -214,7 +222,7 @@ export default function InfoFlightForm() {
                                     onChange={handleChange}
                                 />
                             </div>
-                            <div className="ticket-option">
+                            <div className={styles["ticket-option"]}>
                                 <span>Không</span>
                                 <input
                                     type="checkbox"
@@ -226,13 +234,16 @@ export default function InfoFlightForm() {
                             </div>
                         </div>
                     </div>
-                    <div className="action-buttons">
-                        <button type="submit" className="btn btn-primary">
+                    <div className={styles["action-buttons"]}>
+                        <button
+                            type="submit"
+                            className={`${styles.btn} ${styles["btn-primary"]}`}
+                        >
                             Lưu
                         </button>
                         <button
                             type="button"
-                            className="btn btn-secondary"
+                            className={`${styles.btn} ${styles["btn-secondary"]}`}
                             onClick={handleClear}
                         >
                             Hủy

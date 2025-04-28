@@ -1,19 +1,19 @@
 import SideBar from "../../Components/SideBar/SideBar.js";
 import LookupFilter from "../../Components/Filter/Lookup/LookupFilter";
 import FlightCard from "../../Components/Info/FlightCard/FlightCard.js";
-import "./FlightLookup.css";
+import styles from "./FlightLookup.module.css";
 
 export default function FlightLookup() {
     return (
-        <div className="flight-lookup-container">
-            <div className="sidebar-container">
+        <div className={styles["flight-lookup-container"]}>
+            <div className={styles["sidebar-container"]}>
                 <SideBar />
             </div>
-            <div className="main-content">
-                <div className="filter-container">
+            <div className={styles["main-content"]}>
+                <div className={styles["filter-container"]}>
                     <LookupFilter />
                 </div>
-                <div className="card-container">
+                <div className={styles["card-container"]}>
                     <FlightCard />
                 </div>
             </div>

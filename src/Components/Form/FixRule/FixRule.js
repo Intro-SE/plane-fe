@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import "./FixRule.css";
+import styles from "./FixRule.module.css";
 
 export default function FixRule() {
     const [formData, setFormData] = useState({
@@ -22,8 +22,8 @@ export default function FixRule() {
     };
 
     return (
-        <div className="flight-form-container">
-            <div className="form-group">
+        <div className={styles["flight-form-container"]}>
+            <div className={styles["form-group"]}>
                 <label>Số lượng sân bay</label>
                 <input
                     type="text"
@@ -33,7 +33,7 @@ export default function FixRule() {
                 />
             </div>
 
-            <div className="form-group">
+            <div className={styles["form-group"]}>
                 <label>Thời gian bay tối thiểu</label>
                 <input
                     type="text"
@@ -43,7 +43,7 @@ export default function FixRule() {
                 />
             </div>
 
-            <div className="form-group">
+            <div className={styles["form-group"]}>
                 <label>Số sân bay trung gian</label>
                 <input
                     type="text"
@@ -53,7 +53,7 @@ export default function FixRule() {
                 />
             </div>
 
-            <div className="form-group">
+            <div className={styles["form-group"]}>
                 <label>Thời gian dừng tối thiểu</label>
                 <input
                     type="text"
@@ -63,7 +63,7 @@ export default function FixRule() {
                 />
             </div>
 
-            <div className="form-group">
+            <div className={styles["form-group"]}>
                 <label>Thời gian dừng tối đa</label>
                 <input
                     type="text"
@@ -73,9 +73,9 @@ export default function FixRule() {
                 />
             </div>
 
-            <div className="divider"></div>
+            <div className={styles.divider}></div>
 
-            <div className="form-group">
+            <div className={styles["form-group"]}>
                 <label>Thời gian chậm nhất khi đặt vé (giờ)</label>
                 <input
                     type="text"
@@ -85,7 +85,7 @@ export default function FixRule() {
                 />
             </div>
 
-            <div className="form-group">
+            <div className={styles["form-group"]}>
                 <label>Thời gian chậm nhất khi hủy vé (giờ)</label>
                 <input
                     type="text"
@@ -95,9 +95,9 @@ export default function FixRule() {
                 />
             </div>
 
-            <div className="divider"></div>
+            <div className={styles.divider}></div>
 
-            <div className="form-group">
+            <div className={styles["form-group"]}>
                 <label>Chọn tuyến bay</label>
                 <select
                     name="flightRoute"
