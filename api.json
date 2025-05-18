@@ -1,0 +1,557 @@
+// Authentication
+// POST /api/v1/auth/login
+{
+    "input": {
+        "username": "admin",
+        "password": "admin"
+    },
+    "output": {
+        "account_id": "123456789" // hoặc "#########" nếu không tồn tại
+    }
+}
+
+// POST /api/v1/auth/logout: Đăng xuất khỏi hệ thống
+
+
+// -------------------------------------------------
+
+// /quan-ly-chuyen-bay + /tra-cuu-chuyen-bay
+// GET /api/v1/flights: Lấy danh sách tất cả chuyến bay
+{
+    "output":[
+        {
+            "flight_id": "VJ-123",
+            "departure_date": "2023-05-20",
+            "passengers_number": 100,
+            "intermediate_stops_information":{
+                "stop_number": 2,
+                "stop_name": ["Gia Lai", "Đà Nẵng"],
+                "stop_duration": ["30", "45"], // đơn vị phút
+            },
+            "departure_time": "10:00",
+            "departure_airport": "NB",
+            "departure_city": "Hà Nội",
+
+            "arrival_time": "12:00",
+            "arrival_airport": "TSN",
+            "arrival_city": "Hồ Chí Minh",
+
+            "seat_information":{
+                "empty_seat_number": 170,
+                "occupied_seat_number": 180,
+            },
+        },
+    ]
+}
+
+// /quan-ly-chuyen-bay
+// POST /api/v1/flights: Tạo chuyến bay mới
+{
+    "input":{
+        "flight_id": "VJ-123",
+        "departure_date": "2023-05-20",
+        "passengers_number": 100,
+        "intermediate_stops_information":{
+            "stop_number": 2,
+            "stop_name": ["Gia Lai", "Đà Nẵng"],
+            "stop_duration": ["30", "45"], // đơn vị phút
+        },
+
+        "departure_time": "10:00",
+        "departure_airport": "NB",
+        "departure_city": "Hà Nội",
+
+        "arrival_time": "12:00",
+        "arrival_airport": "TSN",
+        "arrival_city": "Hồ Chí Minh",
+
+        "seat_information":{
+            "empty_seat_number": 170,
+            "occupied_seat_number": 180,
+        },
+    },
+    "output":{
+        "log": "Create Successfully", // "Create Failed"
+
+        "flight_id": "VJ-123",
+        "departure_date": "2023-05-20",
+        "passengers_number": 100,
+        "intermediate_stops_information":{
+            "stop_number": 2,
+            "stop_name": ["Gia Lai", "Đà Nẵng"],
+            "stop_duration": ["30", "45"], // đơn vị phút
+        },
+
+        "departure_time": "10:00",
+        "departure_airport": "NB",
+        "departure_city": "Hà Nội",
+
+        "arrival_time": "12:00",
+        "arrival_airport": "TSN",
+        "arrival_city": "Hồ Chí Minh",
+
+        "seat_information":{
+            "empty_seat_number": 170,
+            "occupied_seat_number": 180,
+        },
+    }
+}
+// GET /api/v1/flights/{id}: Lấy thông tin chi tiết của một chuyến bay
+// {
+//     "input":{
+//         "flight_id": "VJ-123",
+//     },
+//     "output":{
+//         "flight_id": "VJ-123",
+//         "departure_date": "2023-05-20",
+//         "passengers_number": 100,
+//         "intermediate_stops_information":{
+//             "stop_number": 2,
+//             "stop_name": ["Gia Lai", "Đà Nẵng"],
+//             "stop_duration": ["30", "45"], // đơn vị phút
+//         },
+
+//         "departure_time": "10:00",
+//         "departure_airport": "NB",
+//         "departure_city": "Hà Nội",
+
+//         "arrival_time": "12:00",
+//         "arrival_airport": "TSN",
+//         "arrival_city": "Hồ Chí Minh",
+
+//         "seat_information":{
+//             "empty_seat_number": 170,
+//             "occupied_seat_number": 180,
+//         },
+//     }
+// }
+
+// /quan-ly-chuyen-bay
+// PUT /api/v1/flights/{id}: Cập nhật thông tin chuyến bay
+{
+    "input":{
+        "flight_id": "VJ-123",
+        "departure_date": "2023-05-20",
+        "passengers_number": 100,
+        "intermediate_stops_information":{
+            "stop_number": 2,
+            "stop_name": ["Gia Lai", "Đà Nẵng"],
+            "stop_duration": ["30", "45"], // đơn vị phút
+        },
+
+        "departure_time": "10:00",
+        "departure_airport": "NB",
+        "departure_city": "Hà Nội",
+
+        "arrival_time": "12:00",
+        "arrival_airport": "TSN",
+        "arrival_city": "Hồ Chí Minh",
+
+        "seat_information":{
+            "empty_seat_number": 170,
+            "occupied_seat_number": 180,
+        },
+    },
+    "output":{
+        "log": "Update Successfully", // "Update Failed"
+
+        "flight_id": "VJ-123",
+        "departure_date": "2023-05-20",
+        "passengers_number": 100,
+        "intermediate_stops_information":{
+            "stop_number": 2,
+            "stop_name": ["Gia Lai", "Đà Nẵng"],
+            "stop_duration": ["30", "45"], // đơn vị phút
+        },
+
+        "departure_time": "10:00",
+        "departure_airport": "NB",
+        "departure_city": "Hà Nội",
+
+        "arrival_time": "12:00",
+        "arrival_airport": "TSN",
+        "arrival_city": "Hồ Chí Minh",
+
+        "seat_information":{
+            "empty_seat_number": 170,
+            "occupied_seat_number": 180,
+        },
+    }
+}
+
+// /quan-ly-chuyen-bay
+// DELETE /api/v1/flights/{id}: Xóa chuyến bay
+{
+    "input":{
+        "flight_id": "VJ-123",
+    },
+    "output":{
+        "log": "Delete Successfully" // "Delete Failed"
+    }
+}
+
+// /quan-ly-chuyen-bay + /tra-cuu-chuyen-bay
+// POST /api/v1/flights/search: Tìm kiếm chuyến bay theo các tiêu chí
+// Default "None", -1
+{
+    "input":{
+        "flight_id": "VJ-123", // ?
+        "departure_city": "Hà Nội", // ?
+        "departure_date": "2023-05-20", // ?
+        "arrival_city": "Hồ Chí Minh", // ?
+        "arrival_date": "2023-05-21", // ?
+        "seat_information":{
+            "empty_seat_number": 170, // ?
+            "occupied_seat_number": 180, // ?
+        },
+        "price_information":{
+            "min_price": 1000000, // ? 
+            "max_price": 2000000, // ?
+        }
+    },
+    "output":[
+        {
+            "flight_id": "VJ-123",
+
+            "departure_date": "2023-05-20",
+            "passengers_number": 100,
+            "intermediate_stops_information":{
+                "stop_number": 2,
+                "stop_name": ["Gia Lai", "Đà Nẵng"],
+                "stop_duration": ["30", "45"], // đơn vị phút
+            },
+
+            "departure_time": "10:00",
+            "departure_airport": "NB",
+            "departure_city": "Hà Nội",
+
+            "arrival_time": "12:00",
+            "arrival_airport": "TSN",
+            "arrival_city": "Hồ Chí Minh",
+
+            "seat_information":{
+                "empty_seat_number": 170,
+                "occupied_seat_number": 180,
+            },
+        },
+    ]
+}
+
+// Tickets
+// /quan-ly-ve-chuyen-bay + /quan-ly-phieu-dat-cho
+// GET /api/v1/tickets: Lấy danh sách tất cả vé
+{
+    "output":[
+        {
+            "ticket_id": "#ABC",
+
+            "flight_id": "VJ-123",
+
+            "class_ticket": "economy", // "business"
+
+            "departure_city": "TP HCM",
+            "departure_airport": "TSN",
+            "departure_date": "2023-05-20",
+            "departure_time": "10:00",
+
+            "arrival_city": "Hà Nội",
+            "arrival_airport": "NB",
+            "arrival_date": "2023-05-20",
+            "arrival_time": "12:00",
+
+            "passenger_information":{
+                "passenger_gender": "male", // "female"
+                "passenger_id": "0xxxx-xxxx-xxx",
+                "passenger_name": "Nguyễn Tấn Hưng",
+                "passenger_phone": "0123456789",
+            },
+
+            "ticket_price": 1000000,
+        },
+    ]
+}
+
+// /quan-ly-phieu-dat-cho
+// POST /api/v1/tickets: Xuat vé tu phieu dat cho
+{
+    "input":{
+        "ticket_id": "#ABC",
+
+        "flight_id": "VJ-123",
+
+        "class_ticket": "economy", // "business"
+
+        "departure_city": "TP HCM",
+        "departure_airport": "TSN",
+        "departure_date": "2023-05-20",
+        "departure_time": "10:00",
+
+        "arrival_city": "Hà Nội",
+        "arrival_airport": "NB",
+        "arrival_date": "2023-05-20",
+        "arrival_time": "12:00",
+
+        "passenger_information":{
+            "passenger_gender": "male", // "female"
+            "passenger_id": "0xxxx-xxxx-xxx",
+            "passenger_name": "Nguyễn Tấn Hưng",
+            "passenger_phone": "0123456789",
+        },
+
+        "ticket_price": 1000000,
+    }
+}
+
+// GET /api/v1/tickets/{id}: Lấy thông tin chi tiết của một vé
+// {
+//     "input":{
+//         "ticket_id": "#ABC",
+//     },
+//     "output":{
+//         "ticket_id": "#ABC",
+
+//         "flight_id": "VJ-123",
+
+//         "departure_city": "TP HCM",
+//         "departure_airport": "TSN",
+//         "departure_date": "2023-05-20",
+//         "departure_time": "10:00",
+
+//         "arrival_city": "Hà Nội",
+//         "arrival_airport": "NB",
+//         "arrival_date": "2023-05-20",
+//         "arrival_time": "12:00",
+
+//         "passenger_information":{
+//             "passenger_id": "0xxxx-xxxx-xxx",
+//             "passenger_name": "Nguyễn Tấn Hưng",
+//             "passenger_phone": "0123456789",
+//         },
+
+//         "ticket_price": 1000000,
+//     }
+// }
+
+// /quan-ly-phieu-dat-cho + /quan-ly-ve-chuyen-bay
+// PUT /api/v1/tickets/{id}: Cập nhật thông tin vé
+{
+    "input":{
+        "ticket_id": "#ABC",
+
+        "flight_id": "VJ-123",
+
+        "class_ticket": "economy", // "business"
+
+        "departure_city": "TP HCM",
+        "departure_airport": "TSN",
+        "departure_date": "2023-05-20",
+        "departure_time": "10:00",
+
+        "arrival_city": "Hà Nội",
+        "arrival_airport": "NB",
+        "arrival_date": "2023-05-20",
+        "arrival_time": "12:00",
+
+        "passenger_information":{
+            "passenger_gender": "male", // "female"
+            "passenger_id": "0xxxx-xxxx-xxx",
+            "passenger_name": "Nguyễn Tấn Hưng",
+            "passenger_phone": "0123456789",
+        },
+
+        "ticket_price": 1000000,
+    },
+    "output":{
+        "log": "Update Successfully", // "Update Failed"
+
+        "ticket_id": "#ABC",
+
+        "flight_id": "VJ-123",
+
+        "class_ticket": "economy", // "business"
+
+        "departure_city": "TP HCM",
+        "departure_airport": "TSN",
+        "departure_date": "2023-05-20",
+        "departure_time": "10:00",
+
+        "arrival_city": "Hà Nội",
+        "arrival_airport": "NB",
+        "arrival_date": "2023-05-20",
+        "arrival_time": "12:00",
+
+        "passenger_information":{
+            "passenger_gender": "male", // "female"
+            "passenger_id": "0xxxx-xxxx-xxx",
+            "passenger_name": "Nguyễn Tấn Hưng",
+            "passenger_phone": "0123456789",
+        },
+
+        "ticket_price": 1000000,
+    }
+}
+
+// /quan-ly-phieu-dat-cho + /quan-ly-ve-chuyen-bay
+// DELETE /api/v1/tickets/{id}: Xóa vé
+{
+    "input":{
+        "ticket_id": "#ABC",
+    },
+    "output":{
+        "log": "Delete Successfully" // "Delete Failed"
+    }
+}
+
+// /quan-ly-phieu-dat-cho + /quan-ly-ve-chuyen-bay
+// POST /api/v1/tickets/search: Tìm kiếm vé theo các tiêu chí
+// Default "None", -1
+{
+    "input":{
+        "flight_id": "VJ-123", // ?
+
+        "ticket_id": "#ABC", // ?
+
+        "class_ticket": "economy", // "business"
+
+        "departure_city": "TP HCM", // ?
+        "departure_date": "2023-05-20", // ?
+
+        "arrival_city": "Hà Nội", // ?
+        "arrival_date": "2023-05-20", // ?
+
+        "price_information":{
+            "min_price": 1000000, // ?
+            "max_price": 2000000, // ?
+        }
+    },
+    "output":[
+        {
+            "ticket_id": "#ABC",
+
+            "flight_id": "VJ-123",
+
+            "class_ticket": "economy", // "business"
+
+            "departure_city": "TP HCM",
+            "departure_airport": "TSN",
+            "departure_date": "2023-05-20",
+            "departure_time": "10:00",
+
+            "arrival_city": "Hà Nội",
+            "arrival_airport": "NB",
+            "arrival_date": "2023-05-20",
+            "arrival_time": "12:00",
+            
+            "passenger_information":{
+                "passenger_gender": "male", // "female"
+                "passenger_id": "0xxxx-xxxx-xxx",
+                "passenger_name": "Nguyễn Tấn Hưng",
+                "passenger_phone": "0123456789",
+            },
+
+            "ticket_price": 1000000,
+        },
+    ]
+}
+
+// GET /api/v1/tickets/{flight_id}/available-seats: Kiểm tra số ghế còn trống của chuyến bay
+// {
+//     "input":{
+//         "flight_id": "VJ-123",
+//     },
+//     "output":{
+//         "empty_seat_number": 170,
+//         "occupied_seat_number": 180,
+//     }
+// }
+
+// /quan-ly-chuyen-bay
+// POST /api/v1/tickets/{flight_id}/book: Tao phieu dat cho cho chuyến bay
+{
+    "input":{
+        "flight_id": "VJ-123",
+
+        "class_ticket": "economy", // "business"
+
+        "passenger_information":{
+            "passenger_gender": "male", // "female"
+            "passenger_id": "0xxxx-xxxx-xxx",
+            "passenger_name": "Nguyễn Tấn Hưng",
+            "passenger_phone": "0123456789",
+        },
+    },
+    "output":{
+        "log": "Book Successfully", // "Book Failed"
+
+        "ticket_id": "#ABC",
+
+        "flight_id": "VJ-123",
+
+        "class_ticket": "economy", // "business"
+
+        "departure_city": "TP HCM",
+        "departure_airport": "TSN",
+        "departure_date": "2023-05-20",
+        "departure_time": "10:00",
+
+        "arrival_city": "Hà Nội",
+        "arrival_airport": "NB",
+        "arrival_date": "2023-05-20",
+        "arrival_time": "12:00",
+        
+        "passenger_information":{
+            "passenger_gender": "male", // "female"
+            "passenger_id": "0xxxx-xxxx-xxx",
+            "passenger_name": "Nguyễn Tấn Hưng",
+            "passenger_phone": "0123456789",
+        },
+
+        "ticket_price": 1000000,
+    },                 
+}
+
+// POST /api/v1/tickets/{ticket_id}/cancel: Hủy vé đã đặt
+// {
+//     "input":{
+//         "ticket_id": "#ABC",
+//     },
+// }
+
+// /thay-doi-quy-dinh
+// Regulations
+// GET /api/v1/regulations: Lấy quy định hiện tại của hệ thống
+{
+    "output":{
+        "airport_number": 10,
+        "min_time_to_fly": 30,
+        "stop_number": 2,
+        "min_stop_duration": 10,
+        "max_stop_duration": 20,
+        "latest_time_to_book": 24, // hour
+        "latest_time_to_cancel": 24, // hour
+    }
+}
+
+// /thay-doi-quy-dinh
+// PUT /api/v1/regulations: Cập nhật quy định hệ thống
+{
+    "input":{
+        "airport_number": 10,
+        "min_time_to_fly": 30,
+        "stop_number": 2,
+        "min_stop_duration": 10,
+        "max_stop_duration": 20, 
+        "latest_time_to_book": 24, // hour
+        "latest_time_to_cancel": 24, // hour
+    },
+    "output":{
+        "log": "Update Successfully", // "Update Failed"
+        "airport_number": 10,
+        "min_time_to_fly": 30,
+        "stop_number": 2,
+        "min_stop_duration": 10,
+        "max_stop_duration": 20,      
+        "latest_time_to_book": 24, // hour
+        "latest_time_to_cancel": 24, // hour
+    }
+}
