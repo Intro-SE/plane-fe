@@ -1,164 +1,205 @@
 .lookup-container {
-    width: 100%;
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 20px;
-    background-color: #f8f9fa;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .lookup-row {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 20px;
-    position: relative;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+  position: relative;
 }
 
 .lookup-column {
-    position: relative;
-    width: 100%;
+  position: relative;
+  width: 100%;
 }
 
 label {
-    display: block;
-    margin-bottom: 8px;
-    font-weight: 500;
-    color: #333;
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+  color: #333;
 }
 
 .location-selector {
-    position: relative;
-    width: 100%;
+  position: relative;
+  width: 100%;
 }
 
 .selected-location {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 8px 12px;
-    background-color: #dc3545;
-    color: white;
-    border-radius: 4px;
-    cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  background-color: #dc3545;
+  color: white;
+  border-radius: 4px;
+  cursor: pointer;
 }
 
 .selected-location.arrival {
-    background-color: #dc3545;
+  background-color: #dc3545;
 }
 
 .selected-location.placeholder {
-    background-color: #f0f0f0;
-    color: #6c757d;
+  background-color: #f0f0f0;
+  color: #6c757d;
 }
 
 .selected-location.arrival.placeholder {
-    background-color: #f0f0f0;
+  background-color: #f0f0f0;
 }
 
 .remove-btn {
-    background: none;
-    border: none;
-    color: white;
-    cursor: pointer;
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
 }
 
 .location-dropdown {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    width: 100%;
-    max-height: 300px;
-    background-color: white;
-    border: 1px solid #ced4da;
-    border-radius: 4px;
-    z-index: 1000;
-    margin-top: 4px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-    overflow: hidden;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  max-height: 300px;
+  background-color: white;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  z-index: 1000;
+  margin-top: 4px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
 }
 
 .search-box {
-    position: relative;
-    padding: 10px;
-    border-bottom: 1px solid #ced4da;
+  position: relative;
+  padding: 10px;
+  border-bottom: 1px solid #ced4da;
 }
 
 .search-box input {
-    width: 100%;
-    padding: 8px 12px;
-    padding-right: 30px;
-    border: 1px solid #ced4da;
-    border-radius: 4px;
-    box-sizing: border-box;
+  width: 100%;
+  padding: 8px 12px;
+  padding-right: 30px;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  box-sizing: border-box;
 }
 
 .search-icon {
-    position: absolute;
-    right: 20px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: #6c757d;
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #6c757d;
 }
 
 .location-list {
-    max-height: 220px;
-    overflow-y: auto;
+  max-height: 220px;
+  overflow-y: auto;
 }
 
 .location-item {
-    padding: 10px 15px;
-    cursor: pointer;
-    transition: background-color 0.2s;
+  padding: 10px 15px;
+  cursor: pointer;
+  transition: background-color 0.2s;
 }
 
 .location-item:hover {
-    background-color: #f0f0f0;
+  background-color: #f0f0f0;
 }
 
 .date-input {
-    position: relative;
+  position: relative;
 }
 
 .date-input input {
-    width: 100%;
-    padding: 8px 12px;
-    padding-right: 30px;
-    border: 1px solid #ced4da;
-    border-radius: 4px;
-    box-sizing: border-box;
+  width: 100%;
+  padding: 8px 12px;
+  padding-right: 30px;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  box-sizing: border-box;
 }
 
 .calendar-icon {
-    position: absolute;
-    right: 10px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: #6c757d;
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #6c757d;
 }
 
 .price-input {
-    position: relative;
+  position: relative;
 }
 
 .price-input input {
-    width: 100%;
-    padding: 8px 12px;
-    padding-right: 45px;
-    border: 1px solid #ced4da;
-    border-radius: 4px;
-    box-sizing: border-box;
+  width: 100%;
+  padding: 8px 12px;
+  padding-right: 45px;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  box-sizing: border-box;
 }
 
 .currency {
-    position: absolute;
-    right: 10px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: #6c757d;
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #6c757d;
 }
 
 .lookup-column:nth-child(1) .location-dropdown,
 .lookup-column:nth-child(2) .location-dropdown {
-    z-index: 1001;
+  z-index: 1001;
+}
+
+.empty-seat-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 20px;
+  cursor: pointer;
+  /* border: 1px solid #ccc; ✅ Viền nhẹ */
+  padding: 8px 10px;
+  border-radius: 6px;
+}
+
+.empty-seat-checkbox input[type="checkbox"] {
+  width: 25px; /* ✅ Chiều rộng checkbox */
+  height: 25px; /* ✅ Chiều cao checkbox */
+  accent-color: #fdc886; /* ✅ Màu checkbox khi được chọn (hỗ trợ trình duyệt hiện đại) */
+  cursor: pointer;
+}
+
+.empty-seat-checkbox label {
+  cursor: pointer;
+}
+
+.filter-btn {
+  padding: 10px 50px;
+  font-size: 16px;
+  font-weight: 600;
+  background-color: #fdc886; /* Màu xanh dương nổi bật */
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.filter-btn:hover {
+  background-color: #fff9c4; /* Màu xanh đậm hơn khi hover */
+}
+
+.filter-btn:active {
+  transform: scale(0.96); /* Hiệu ứng nhấn */
 }

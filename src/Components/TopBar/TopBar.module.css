@@ -1,0 +1,30 @@
+.top-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  background-color: #ffffff;
+  /* border-bottom: 1px solid #ddd; */
+}
+
+.login-button {
+  display: flex;
+  align-items: center;
+  gap: 8px; /* khoảng cách giữa icon và chữ */
+  padding: 12px 14px;
+  font-size: 14px;
+  background-color: #fdc886;
+  color: black;
+  border: 2px solid #fdc886;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.login-button:hover {
+  background-color: #fff9c4;
+}
+
+.airline-logo {
+  height: 50px;
+}
