@@ -16,7 +16,7 @@ export default function TopBar() {
       {isLoggedIn ? (
         <button
           className={styles["login-button"]}
-          onClick={() => (window.location.href = "/dang-nhap")}
+          onClick={() => (window.location.href = "/")}
         >
           <FaSignInAlt style={{ marginRight: "8px" }} />
           Đăng xuất

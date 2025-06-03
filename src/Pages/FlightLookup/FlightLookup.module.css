@@ -31,7 +31,22 @@
 }
 
 .card-container {
-  flex: 1;
+  display: flex;
+  flex-direction: column; /* xếp theo chiều dọc */
+  overflow-y: auto; /* bật cuộn dọc */
+  max-height: 600px; /* giới hạn chiều cao, bạn có thể chỉnh tùy ý */
+  gap: 16px;
+  padding: 16px;
+  scroll-behavior: smooth;
+}
+
+.card-container::-webkit-scrollbar {
+  width: 8px;
+}
+
+.card-container::-webkit-scrollbar-thumb {
+  background-color: #ccc;
+  border-radius: 4px;
 }
 
 /* Responsive cho màn hình nhỏ */

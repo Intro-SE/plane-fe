@@ -3,12 +3,16 @@ import styles from "./Login.module.css";
 import { FaEye } from "react-icons/fa";
 import airlineLogo from "../../Assets/logo.png";
 import airplaneImage from "../../Assets/plane-wallpaper.jpg";
+import { useFlag } from "../../FlagContext";
+import { useNavigate } from "react-router-dom";
 
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   const [username, setUserName] = useState("");
   const [password, setPassword] = useState("");
+  const { setIsLoggedIn } = useFlag(); // your flag variable
+  const navigate = useNavigate();
 
   return (
     <div className={styles["login-container"]}>
@@ -82,33 +86,36 @@ export default function Login() {
           <button
             className={styles["sign-in-button"]}
             onClick={async () => {
-              const account_information = {
-                username: username,
-                password: password,
-              };
+              const formData = new URLSearchParams();
+              formData.append("username", username);
+              formData.append("password", password);
+
               try {
-                const response = await fetch("/api/v1/auth/login", {
-                  method: "POST",
-                  headers: {
-                    "Content-Type": "application/json",
-                  },
-                  body: JSON.stringify(account_information),
-                });
+                const response = await fetch(
+                  "http://localhost:8000/api/v1/auth/login",
+                  {
+                    method: "POST",
+                    headers: {
+                      "Content-Type": "application/x-www-form-urlencoded", // ✅ QUAN TRỌNG
+                    },
+                    body: formData.toString(),
+                  }
+                );
 
                 if (!response.ok) {
                   throw new Error(`HTTP error! Status: ${response.status}`);
-                } else if (response.status === 200) {
-                  const result = await response.json();
+                }
 
-                  const accountId = result.output?.account_id;
+                const result = await response.json();
+                const accountId = result.access_token;
 
-                  if (accountId && accountId !== "#########") {
-                    console.log("Login successfully!");
-
-                    window.location.href = "/tra-cuu-chuyen-bay";
-                  } else {
-                    console.warn("Login failed!");
-                  }
+                if (accountId && accountId !== "#########") {
+                  console.log("Login successfully!");
+                  setIsLoggedIn(true);
+                  // window.location.href = "/tra-cuu-chuyen-bay";
+                  navigate("/tra-cuu-chuyen-bay");
+                } else {
+                  console.warn("Login failed!");
                 }
               } catch (error) {
                 console.error("Error during login:", error);

@@ -8,7 +8,6 @@ export default function LookupFilter() {
   const [arrival, setArrival] = useState("");
   const [departureDate, setDepartureDate] = useState("");
   const [departureTime, setDepartureTime] = useState("");
-  const [maxPrice, setMaxPrice] = useState("");
 
   const [showDepartureDropdown, setShowDepartureDropdown] = useState(false);
   const [showArrivalDropdown, setShowArrivalDropdown] = useState(false);

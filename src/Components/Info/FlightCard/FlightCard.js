@@ -4,8 +4,26 @@ import { GrGroup } from "react-icons/gr";
 import styles from "./FlightCard.module.css";
 import { useState, useEffect } from "react";
 
-export default function FlightCard() {
+export default function FlightCard({ data }) {
   const [showModal, setShowModal] = useState(false);
+
+  const {
+    flight_id,
+    departure_date,
+    total_seats,
+
+    departure_time,
+    departure_airport,
+    departure_address,
+
+    arrival_time,
+    arrival_airport,
+    arrival_address,
+
+    intermediate_stops,
+
+    seat_information,
+  } = data;
 
   // Đóng modal khi click ra ngoài
   useEffect(() => {
@@ -21,17 +39,17 @@ export default function FlightCard() {
     <div className={styles["flight-booking"]}>
       {/* Flight Code & Info Section */}
       <div className={styles["flight-code-section"]}>
-        <div className={styles["flight-code"]}>VJ-123</div>
+        <div className={styles["flight-code"]}>{flight_id}</div>
         <div className={styles["flight-info-row"]}>
           <div className={styles["flight-date"]}>
             <MdOutlineCalendarMonth className={styles["icon-small"]} />
-            <span>01-01-2025</span>
+            <span>{departure_date}</span>
           </div>
           <div className={styles["seat-count"]}>
             <span className={styles["seat-icon"]}>
               <GrGroup className={styles["icon-small"]} />
             </span>
-            <span>170</span>
+            <span>{total_seats}</span>
           </div>
         </div>
       </div>
@@ -43,8 +61,8 @@ export default function FlightCard() {
       <div className={styles["route-section"]}>
         {/* Departure */}
         <div className={styles["time-location-section"]}>
-          <div className={styles["time"]}>10:00</div>
-          <div className={styles["location"]}>Sài Gòn</div>
+          <div className={styles["time"]}>{departure_time}</div>
+          <div className={styles["location"]}>{departure_address}</div>
         </div>
 
         {/* Flight Path Visualization */}
@@ -56,20 +74,20 @@ export default function FlightCard() {
             <span
               className={`${styles["airport-code"]} ${styles["left-code"]}`}
             >
-              TSN
+              {departure_airport}
             </span>
             <span
               className={`${styles["airport-code"]} ${styles["right-code"]}`}
             >
-              NB
+              {arrival_airport}
             </span>
           </div>
         </div>
 
         {/* Arrival */}
         <div className={styles["time-location-section"]}>
-          <div className={styles["time"]}>12:00</div>
-          <div className={styles["location"]}>Hà Nội</div>
+          <div className={styles["time"]}>{arrival_time}</div>
+          <div className={styles["location"]}>{arrival_address}</div>
         </div>
       </div>
 
@@ -78,8 +96,12 @@ export default function FlightCard() {
 
       {/* Seat Information */}
       <div className={styles["seat-info-section"]}>
-        <div className={styles["seat-info"]}>Số ghế trống: 170</div>
-        <div className={styles["seat-info"]}>Số ghế đặt: 100</div>
+        <div className={styles["seat-info"]}>
+          Số ghế trống: {seat_information.empty_seats}
+        </div>
+        <div className={styles["seat-info"]}>
+          Số ghế đặt: {seat_information.occupied_seats}
+        </div>
       </div>
 
       {/* Vertical divider */}
@@ -88,7 +110,7 @@ export default function FlightCard() {
       {/* Layover Information */}
       <div className={styles["layover-section"]}>
         <div className={styles["layover-label"]}>
-          Số điểm dừng trung gian: 1
+          Số điểm dừng trung gian: {intermediate_stops.length}
         </div>
         <div
           className={styles["layover-detail"]}
@@ -114,12 +136,14 @@ export default function FlightCard() {
                 </tr>
               </thead>
               <tbody>
-                <tr>
-                  <td>1</td>
-                  <td>Đà Nẵng</td>
-                  <td>1 giờ</td>
-                  <td>Đổi máy bay</td>
-                </tr>
+                {intermediate_stops.map((item, index) => (
+                  <tr key={index}>
+                    <td>{index + 1}</td>
+                    <td>{item.stop_name}</td>
+                    <td>{item.stop_time}</td>
+                    <td>{item.note}</td>
+                  </tr>
+                ))}
                 {/* Bạn có thể thêm dòng khác */}
               </tbody>
             </table>
@@ -136,18 +160,14 @@ export default function FlightCard() {
                 </tr>
               </thead>
               <tbody>
-                <tr>
-                  <td>1</td>
-                  <td>Phổ thông</td>
-                  <td>1,200,000</td>
-                  <td>50</td>
-                </tr>
-                <tr>
-                  <td>2</td>
-                  <td>Thương gia</td>
-                  <td>3,000,000</td>
-                  <td>20</td>
-                </tr>
+                {seat_information.seat_type.map((type, index) => (
+                  <tr key={index}>
+                    <td>{index + 1}</td>
+                    <td>{type}</td>
+                    <td>{seat_information.seat_price[index]}</td>
+                    <td>{seat_information.empty_type_seats[index]}</td>
+                  </tr>
+                ))}
                 {/* Thêm dòng khác nếu cần */}
               </tbody>
             </table>

@@ -20,6 +20,10 @@ export default function SideBar() {
 
   let items = [];
 
+  // TEST
+  // isLoggedIn = true;
+  // END TEST
+
   if (!isLoggedIn) {
     items = [
       {

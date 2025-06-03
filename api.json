@@ -22,23 +22,31 @@
         {
             "flight_id": "VJ-123",
             "departure_date": "2023-05-20",
-            "passengers_number": 100,
-            "intermediate_stops_information":{
-                "stop_number": 2,
-                "stop_name": ["Gia Lai", "Đà Nẵng"],
-                "stop_duration": ["30", "45"], // đơn vị phút
-            },
+            "total_seats": 100,
+
             "departure_time": "10:00",
             "departure_airport": "NB",
-            "departure_city": "Hà Nội",
+            "departure_address": "Hà Nội",
 
             "arrival_time": "12:00",
             "arrival_airport": "TSN",
-            "arrival_city": "Hồ Chí Minh",
+            "arrival_address": "Hồ Chí Minh",
 
+            "intermediate_stops":[
+                {
+                    "stop_number": 1,
+                    "stop_name": "Gia Lai",
+                    "stop_time": 30, // đơn vị phút
+                    "note": "Tiếp nhiên liệu",
+                }
+            ],
+            
             "seat_information":{
-                "empty_seat_number": 170,
-                "occupied_seat_number": 180,
+                "empty_seats": 170,
+                "occupied_seats": 180,
+                "seat_type" : ["Business Class", "Economy Class"],
+                "seat_price": [1000000, 500000], // đơn vị đồng
+                "empty_type_seats": [75, 25]
             },
         },
     ]
@@ -196,42 +204,42 @@
 {
     "input":{
         "flight_id": "VJ-123", // ?
-        "departure_city": "Hà Nội", // ?
+        "departure_address": "Hà Nội", // ?
         "departure_date": "2023-05-20", // ?
-        "arrival_city": "Hồ Chí Minh", // ?
+
+        "arrival_address": "Hồ Chí Minh", // ?
         "arrival_date": "2023-05-21", // ?
-        "seat_information":{
-            "empty_seat_number": 170, // ?
-            "occupied_seat_number": 180, // ?
-        },
-        "price_information":{
-            "min_price": 1000000, // ? 
-            "max_price": 2000000, // ?
-        }
+
+        "departure_time": "12:00 - 18:00", //?
+        "is_empty": 1 // 1: YES, 0: NO
     },
     "output":[
         {
             "flight_id": "VJ-123",
-
             "departure_date": "2023-05-20",
-            "passengers_number": 100,
-            "intermediate_stops_information":{
-                "stop_number": 2,
-                "stop_name": ["Gia Lai", "Đà Nẵng"],
-                "stop_duration": ["30", "45"], // đơn vị phút
-            },
+            "total_seats": 100,
 
             "departure_time": "10:00",
             "departure_airport": "NB",
-            "departure_city": "Hà Nội",
+            "departure_address": "Hà Nội",
 
             "arrival_time": "12:00",
             "arrival_airport": "TSN",
-            "arrival_city": "Hồ Chí Minh",
+            "arrival_address": "Hồ Chí Minh",
+
+            "intermediate_stops":{
+                "stop_number": 2,
+                "stop_name": ["Gia Lai", "Đà Nẵng"],
+                "stop_time": [30, 45], // đơn vị phút
+                "note": ["Tiếp nhiên liệu", "Kiểm tra động cơ"]
+            },
 
             "seat_information":{
                 "empty_seat_number": 170,
                 "occupied_seat_number": 180,
+                "seat_type" : ["Business Class", "Economy Class"],
+                "seat_price": [1000000, 500000], // đơn vị đồng
+                "empty_seat_number": [75, 25]
             },
         },
     ]
