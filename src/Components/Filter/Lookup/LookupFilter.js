@@ -1,250 +1,352 @@
 import React, { useState, useRef, useEffect } from "react";
 import { FaTimes, FaSearch } from "react-icons/fa";
 import { MdOutlineCalendarMonth } from "react-icons/md";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 import styles from "./LookupFilter.module.css";
+import axios from "axios";
 
-export default function LookupFilter() {
-  const [departure, setDeparture] = useState("");
-  const [arrival, setArrival] = useState("");
-  const [departureDate, setDepartureDate] = useState("");
-  const [departureTime, setDepartureTime] = useState("");
+export default function LookupFilter({ onSendData }) {
+    const [departure, setDeparture] = useState("");
+    const [arrival, setArrival] = useState("");
+    const [departureDate, setDepartureDate] = useState("");
+    const [departureTime, setDepartureTime] = useState("");
+    const [isEmpty, setIsEmpty] = useState(false);
+    const [locations, setLocations] = useState([]);
 
-  const [showDepartureDropdown, setShowDepartureDropdown] = useState(false);
-  const [showArrivalDropdown, setShowArrivalDropdown] = useState(false);
-  const [showDepartureTimeDropdown, setShowDepartureTimeDropdown] =
-    useState(false);
-  const [departureSearch, setDepartureSearch] = useState("");
-  const [arrivalSearch, setArrivalSearch] = useState("");
+    const [showDepartureDropdown, setShowDepartureDropdown] = useState(false);
+    const [showArrivalDropdown, setShowArrivalDropdown] = useState(false);
+    const [showDepartureTimeDropdown, setShowDepartureTimeDropdown] =
+        useState(false);
+    const [departureSearch, setDepartureSearch] = useState("");
+    const [arrivalSearch, setArrivalSearch] = useState("");
 
-  const departureRef = useRef(null);
-  const arrivalRef = useRef(null);
+    const departureRef = useRef(null);
+    const arrivalRef = useRef(null);
 
-  const locations = [
-    "Hà Nội",
-    "TPHCM",
-    "Đà Nẵng",
-    "Nha Trang",
-    "Huế",
-    "Phú Quốc",
-    "Đà Lạt",
-    "Hải Phòng",
-    "Cần Thơ",
-    "Quy Nhơn",
-  ];
+    useEffect(() => {
+        const getLocations = async () => {
+            try {
+                const response = await axios.get(
+                    `http://localhost:8000/api/v1/airports_crud`,
+                    {
+                        headers: {
+                            Accept: "application/json",
+                        },
+                    },
+                );
 
-  const departure_time = ["0h - 6h", "6h - 12h", "12h - 18h", "18h - 24h"];
+                const data = response.data;
+                setLocations(data.map((item) => item.airport_address));
+            } catch (error) {
+                console.error(
+                    "Lỗi khi lấy dữ liệu địa điểm:",
+                    error.response?.data || error.message,
+                );
+            }
+        };
 
-  const filteredDepartureLocations = locations.filter((location) =>
-    location.toLowerCase().includes(departureSearch.toLowerCase())
-  );
+        getLocations();
+    }, []);
 
-  const filteredArrivalLocations = locations.filter((location) =>
-    location.toLowerCase().includes(arrivalSearch.toLowerCase())
-  );
+    const departure_time = [
+        "00:00 - 06:00",
+        "06:00 - 12:00",
+        "12:00 - 18:00",
+        "18:00 - 24:00",
+    ];
 
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (
-        departureRef.current &&
-        !departureRef.current.contains(event.target)
-      ) {
-        setShowDepartureDropdown(false);
-      }
-      if (arrivalRef.current && !arrivalRef.current.contains(event.target)) {
-        setShowArrivalDropdown(false);
-      }
+    const filteredDepartureLocations = locations.filter((location) =>
+        location.toLowerCase().includes(departureSearch.toLowerCase()),
+    );
+
+    const filteredArrivalLocations = locations.filter((location) =>
+        location.toLowerCase().includes(arrivalSearch.toLowerCase()),
+    );
+
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (
+                departureRef.current &&
+                !departureRef.current.contains(event.target)
+            ) {
+                setShowDepartureDropdown(false);
+            }
+            if (
+                arrivalRef.current &&
+                !arrivalRef.current.contains(event.target)
+            ) {
+                setShowArrivalDropdown(false);
+            }
+        };
+
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, []);
+
+    const handleClick = () => {
+        let min_time = "";
+        let max_time = "";
+        if (departureTime) {
+            [min_time, max_time] = departureTime
+                .split(" - ")
+                .map((h) => h + ":00");
+        }
+        if (max_time === "24:00:00") {
+            max_time = "00:00:00";
+        }
+
+        function formatDate(date) {
+            if (date) {
+                const year = date.getFullYear();
+                const month = (date.getMonth() + 1).toString().padStart(2, "0"); // Tháng từ 0-11, nên +1
+                const day = date.getDate().toString().padStart(2, "0");
+                return `${year}-${month}-${day}`;
+            }
+        }
+
+        const data = {
+            departure_address: departure || null,
+            arrival_address: arrival || null,
+            departure_date: formatDate(departureDate) || null,
+            min_time: min_time || null,
+            max_time: max_time || null,
+            is_empty: isEmpty,
+        };
+
+        onSendData(data);
     };
 
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
+    return (
+        <div className={styles["lookup-container"]}>
+            <div className={styles["lookup-row"]}>
+                <div className={styles["lookup-column"]} ref={departureRef}>
+                    <label>Nơi đi</label>
+                    <div className={styles["location-selector"]}>
+                        <div
+                            className={`${styles["selected-location"]} ${
+                                departure
+                                    ? styles["active"]
+                                    : styles["placeholder"]
+                            }`}
+                            onClick={() => {
+                                setShowDepartureDropdown(
+                                    !showDepartureDropdown,
+                                );
+                                setShowArrivalDropdown(false);
+                            }}
+                        >
+                            <span>{departure || "..."}</span>
+                            {departure && (
+                                <button
+                                    className={styles["remove-btn"]}
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        setDeparture("");
+                                    }}
+                                >
+                                    <FaTimes />
+                                </button>
+                            )}
+                        </div>
 
-  return (
-    <div className={styles["lookup-container"]}>
-      <div className={styles["lookup-row"]}>
-        <div className={styles["lookup-column"]} ref={departureRef}>
-          <label>Nơi đi</label>
-          <div className={styles["location-selector"]}>
-            <div
-              className={`${styles["selected-location"]} ${
-                departure ? styles["active"] : styles["placeholder"]
-              }`}
-              onClick={() => {
-                setShowDepartureDropdown(!showDepartureDropdown);
-                setShowArrivalDropdown(false);
-              }}
-            >
-              <span>{departure || "..."}</span>
-              {departure && (
-                <button
-                  className={styles["remove-btn"]}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setDeparture("");
-                  }}
-                >
-                  <FaTimes />
-                </button>
-              )}
-            </div>
-
-            {showDepartureDropdown && (
-              <div className={styles["location-dropdown"]}>
-                <div className={styles["search-box"]}>
-                  <input
-                    type="text"
-                    placeholder="Tìm kiếm địa điểm..."
-                    value={departureSearch}
-                    onChange={(e) => setDepartureSearch(e.target.value)}
-                    autoFocus
-                  />
-                  <FaSearch className={styles["search-icon"]} />
-                </div>
-                <div className={styles["location-list"]}>
-                  {filteredDepartureLocations.map((location, index) => (
-                    <div
-                      key={index}
-                      className={styles["location-item"]}
-                      onClick={() => {
-                        setDeparture(location);
-                        setShowDepartureDropdown(false);
-                        setDepartureSearch("");
-                      }}
-                    >
-                      {location}
+                        {showDepartureDropdown && (
+                            <div className={styles["location-dropdown"]}>
+                                <div className={styles["search-box"]}>
+                                    <input
+                                        type="text"
+                                        placeholder="Tìm kiếm địa điểm..."
+                                        value={departureSearch}
+                                        onChange={(e) =>
+                                            setDepartureSearch(e.target.value)
+                                        }
+                                        autoFocus
+                                    />
+                                    <FaSearch
+                                        className={styles["search-icon"]}
+                                    />
+                                </div>
+                                <div className={styles["location-list"]}>
+                                    {filteredDepartureLocations.map(
+                                        (location, index) => (
+                                            <div
+                                                key={index}
+                                                className={
+                                                    styles["location-item"]
+                                                }
+                                                onClick={() => {
+                                                    setDeparture(location);
+                                                    setShowDepartureDropdown(
+                                                        false,
+                                                    );
+                                                    setDepartureSearch("");
+                                                }}
+                                            >
+                                                {location}
+                                            </div>
+                                        ),
+                                    )}
+                                </div>
+                            </div>
+                        )}
                     </div>
-                  ))}
                 </div>
-              </div>
-            )}
-          </div>
-        </div>
-        <div className={styles["lookup-column"]} ref={arrivalRef}>
-          <label>Nơi đến</label>
-          <div className={styles["location-selector"]}>
-            <div
-              className={`${styles["selected-location"]} ${styles["arrival"]} ${
-                arrival ? styles["active"] : styles["placeholder"]
-              }`}
-              onClick={() => {
-                setShowArrivalDropdown(!showArrivalDropdown);
-                setShowDepartureDropdown(false);
-              }}
-            >
-              <span>{arrival || "..."}</span>
-              {arrival && (
-                <button
-                  className={styles["remove-btn"]}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setArrival("");
-                  }}
-                >
-                  <FaTimes />
-                </button>
-              )}
-            </div>
+                <div className={styles["lookup-column"]} ref={arrivalRef}>
+                    <label>Nơi đến</label>
+                    <div className={styles["location-selector"]}>
+                        <div
+                            className={`${styles["selected-location"]} ${styles["arrival"]} ${
+                                arrival
+                                    ? styles["active"]
+                                    : styles["placeholder"]
+                            }`}
+                            onClick={() => {
+                                setShowArrivalDropdown(!showArrivalDropdown);
+                                setShowDepartureDropdown(false);
+                            }}
+                        >
+                            <span>{arrival || "..."}</span>
+                            {arrival && (
+                                <button
+                                    className={styles["remove-btn"]}
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        setArrival("");
+                                    }}
+                                >
+                                    <FaTimes />
+                                </button>
+                            )}
+                        </div>
 
-            {showArrivalDropdown && (
-              <div className={styles["location-dropdown"]}>
-                <div className={styles["search-box"]}>
-                  <input
-                    type="text"
-                    placeholder="Tìm kiếm địa điểm..."
-                    value={arrivalSearch}
-                    onChange={(e) => setArrivalSearch(e.target.value)}
-                    autoFocus
-                  />
-                  <FaSearch className={styles["search-icon"]} />
-                </div>
-                <div className={styles["location-list"]}>
-                  {filteredArrivalLocations.map((location, index) => (
-                    <div
-                      key={index}
-                      className={styles["location-item"]}
-                      onClick={() => {
-                        setArrival(location);
-                        setShowArrivalDropdown(false);
-                        setArrivalSearch("");
-                      }}
-                    >
-                      {location}
+                        {showArrivalDropdown && (
+                            <div className={styles["location-dropdown"]}>
+                                <div className={styles["search-box"]}>
+                                    <input
+                                        type="text"
+                                        placeholder="Tìm kiếm địa điểm..."
+                                        value={arrivalSearch}
+                                        onChange={(e) =>
+                                            setArrivalSearch(e.target.value)
+                                        }
+                                        autoFocus
+                                    />
+                                    <FaSearch
+                                        className={styles["search-icon"]}
+                                    />
+                                </div>
+                                <div className={styles["location-list"]}>
+                                    {filteredArrivalLocations.map(
+                                        (location, index) => (
+                                            <div
+                                                key={index}
+                                                className={
+                                                    styles["location-item"]
+                                                }
+                                                onClick={() => {
+                                                    setArrival(location);
+                                                    setShowArrivalDropdown(
+                                                        false,
+                                                    );
+                                                    setArrivalSearch("");
+                                                }}
+                                            >
+                                                {location}
+                                            </div>
+                                        ),
+                                    )}
+                                </div>
+                            </div>
+                        )}
                     </div>
-                  ))}
                 </div>
-              </div>
-            )}
-          </div>
-        </div>
-        <div className={styles["lookup-column"]}>
-          <label>Ngày đi</label>
-          <div className={styles["date-input"]}>
-            <input
-              type="text"
-              placeholder="dd/mm/yyyy"
-              value={departureDate}
-              onChange={(e) => setDepartureDate(e.target.value)}
-            />
-            <MdOutlineCalendarMonth className={styles["calendar-icon"]} />
-          </div>
-        </div>
-        <div className={styles["lookup-column"]}>
-          <label>Giờ đi</label>
-          <div className={styles["location-selector"]}>
-            <div
-              className={`${styles["selected-location"]} ${
-                departureTime ? styles["active"] : styles["placeholder"]
-              }`}
-              onClick={() => {
-                setShowDepartureTimeDropdown(!showDepartureTimeDropdown);
-                setShowArrivalDropdown(false);
-                setShowDepartureDropdown(false);
-              }}
-            >
-              <span>{departureTime || "..."}</span>
-              {departureTime && (
-                <button
-                  className={styles["remove-btn"]}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setDepartureTime("");
-                  }}
-                >
-                  <FaTimes />
-                </button>
-              )}
-            </div>
+                <div className={styles["lookup-column"]}>
+                    <label>Ngày đi</label>
+                    <div className={styles["date-input"]}>
+                        <DatePicker
+                            selected={departureDate}
+                            onChange={(date) => setDepartureDate(date)}
+                            dateFormat="dd/MM/yyyy"
+                            placeholderText="dd/mm/yyyy"
+                        />
+                        <MdOutlineCalendarMonth
+                            className={styles["calendar-icon"]}
+                        />
+                    </div>
+                </div>
+                <div className={styles["lookup-column"]}>
+                    <label>Giờ đi</label>
+                    <div className={styles["location-selector"]}>
+                        <div
+                            className={`${styles["selected-location"]} ${
+                                departureTime
+                                    ? styles["active"]
+                                    : styles["placeholder"]
+                            }`}
+                            onClick={() => {
+                                setShowDepartureTimeDropdown(
+                                    !showDepartureTimeDropdown,
+                                );
+                                setShowArrivalDropdown(false);
+                                setShowDepartureDropdown(false);
+                            }}
+                        >
+                            <span>{departureTime || "..."}</span>
+                            {departureTime && (
+                                <button
+                                    className={styles["remove-btn"]}
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        setDepartureTime("");
+                                    }}
+                                >
+                                    <FaTimes />
+                                </button>
+                            )}
+                        </div>
 
-            {showDepartureTimeDropdown && (
-              <div className={styles["location-dropdown"]}>
-                <div className={styles["location-list"]}>
-                  {departure_time.map((time, index) => (
-                    <div
-                      key={index}
-                      className={styles["location-item"]}
-                      onClick={() => {
-                        setDepartureTime(time);
-                        setShowDepartureTimeDropdown(false);
-                      }}
-                    >
-                      {time}
+                        {showDepartureTimeDropdown && (
+                            <div className={styles["location-dropdown"]}>
+                                <div className={styles["location-list"]}>
+                                    {departure_time.map((time, index) => (
+                                        <div
+                                            key={index}
+                                            className={styles["location-item"]}
+                                            onClick={() => {
+                                                setDepartureTime(time);
+                                                setShowDepartureTimeDropdown(
+                                                    false,
+                                                );
+                                            }}
+                                        >
+                                            {time}
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
                     </div>
-                  ))}
                 </div>
-              </div>
-            )}
-          </div>
+                <div className={styles["lookup-column"]}>
+                    <div className={styles["empty-seat-checkbox"]}>
+                        <input
+                            type="checkbox"
+                            id="empty-seat"
+                            checked={isEmpty}
+                            onChange={() => setIsEmpty((prev) => !prev)}
+                        />
+                        <label htmlFor="empty-seat">Còn trống</label>
+                    </div>
+                    <button
+                        className={styles["filter-btn"]}
+                        onClick={handleClick}
+                    >
+                        Lọc
+                    </button>
+                </div>
+            </div>
         </div>
-        <div className={styles["lookup-column"]}>
-          <div className={styles["empty-seat-checkbox"]}>
-            <input type="checkbox" id="empty-seat" />
-            <label htmlFor="empty-seat">Còn trống</label>
-          </div>
-          <button className={styles["filter-btn"]}>Lọc</button>
-        </div>
-      </div>
-    </div>
-  );
+    );
 }
