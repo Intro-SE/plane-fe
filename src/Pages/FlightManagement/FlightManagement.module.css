@@ -431,6 +431,14 @@
     background-color: #0f766e; /* bg-teal-700 */
 }
 
+.button.delete-active {
+    background-color: #dc2626; /* bg-red-600 */
+}
+
+.button.delete-active:hover {
+    background-color: #b91c1c; /* bg-red-700 */
+}
+
 .icon {
     margin-right: 0.5rem;
 }

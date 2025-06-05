@@ -1,22 +1,11 @@
 import SideBar from "../../Components/SideBar/SideBar.js";
 import ManageFilter from "../../Components/Filter/Manage/ManageFilter";
 import AddFlightForm from "../../Components/Form/AddFlight/AddFlightForm";
+import FixFlightForm from "../../Components/Form/FixFlight/FixFlightForm";
 import FlightCardEdit from "../../Components/Info/FlightCardEdit/FlightCardEdit";
 import styles from "./FlightManagement.module.css";
 import TopBar from "../../Components/TopBar/TopBar";
-import { FaPlus } from "react-icons/fa";
-import { FaEraser } from "react-icons/fa";
 import { useState, useEffect } from "react";
-import { IoTicketOutline } from "react-icons/io5";
-import { TbBuildingAirport } from "react-icons/tb";
-import { TbCalendarClock } from "react-icons/tb";
-import { FiClock } from "react-icons/fi";
-import { MdAirlineSeatReclineNormal } from "react-icons/md";
-import { MdOutlineEventSeat } from "react-icons/md";
-import { FaUserPlus } from "react-icons/fa6";
-import { RiListSettingsLine } from "react-icons/ri";
-import { FiTrash2 } from "react-icons/fi";
-import { FaPlusSquare } from "react-icons/fa";
 import { Plus, Trash2, X } from "lucide-react";
 import axios from "axios";
 import { BASE_URL } from "../api.js";
@@ -25,8 +14,11 @@ export default function FlightManagement() {
     const [flights, setFlights] = useState([]);
     const [loading, setLoading] = useState(true);
     const [isAddFlightFormOpen, setIsAddFlightFormOpen] = useState(false);
+    const [isUpdateFlightFormOpen, setIsUpdateFlightFormOpen] = useState(false);
     const [routeData, setRouteData] = useState([]);
     const [seatClassData, setSeatClassData] = useState([]);
+    const [formData, setFormData] = useState({});
+    const [selectedFlights, setSelectedFlights] = useState([]);
 
     useEffect(() => {
         const fetchFlights = async () => {
@@ -56,6 +48,11 @@ export default function FlightManagement() {
             const response = await axios.post(
                 `${BASE_URL}/api/v1/flight_management/search`,
                 data,
+                {
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                },
             );
             setFlights(response.data);
         } catch (error) {
@@ -69,9 +66,39 @@ export default function FlightManagement() {
     };
 
     const handleAddFlight = async (data) => {
-        // try {
-        //     const reponse = await axios.put()
-        // }
+        try {
+            const response = await axios.post(
+                `${BASE_URL}/api/v1/flight_management/create`,
+                data,
+            );
+            console.log("Thêm chuyến bay thành công", response.data);
+        } catch (error) {
+            console.error(
+                "Lỗi khi thêm chuyến bay",
+                error.response?.data || error.message,
+            );
+        }
+    };
+
+    const handleUpdateFlight = async (data) => {
+        console.log(data);
+        try {
+            const response = await axios.put(
+                `${BASE_URL}/api/v1/flight_management/update`,
+                data,
+            );
+            console.log("Cập nhật chuyến bay thành công", response.data);
+        } catch (error) {
+            console.error(
+                "Lỗi khi cập nhật chuyến bay",
+                error.response?.data || error.message,
+            );
+        }
+    };
+
+    const handleOpenUpdateFlightForm = async (data) => {
+        setFormData(data);
+        setIsUpdateFlightFormOpen(true);
     };
 
     const handleOpenAddFlightForm = async () => {
@@ -96,6 +123,51 @@ export default function FlightManagement() {
         }
         const seatClass = ["Phổ thông", "Thương gia", "Cao cấp", "Nhất"];
         setSeatClassData(seatClass);
+    };
+
+    const handleFlightSelect = (flightId, isSelected) => {
+        if (isSelected) {
+            setSelectedFlights((prev) => [...prev, flightId]);
+        } else {
+            setSelectedFlights((prev) => prev.filter((id) => id !== flightId));
+        }
+    };
+
+    const handleDeleteSelected = async () => {
+        if (selectedFlights.length === 0) {
+            alert("Vui lòng chọn ít nhất một chuyến bay để xóa");
+            return;
+        }
+
+        if (
+            window.confirm(
+                `Bạn có chắc chắn muốn xóa ${selectedFlights.length} chuyến bay đã chọn?`,
+            )
+        ) {
+            try {
+                await Promise.all(
+                    selectedFlights.map((flightId) =>
+                        axios.delete(
+                            `${BASE_URL}/api/v1/flight_management/delete/`,
+                        ),
+                    ),
+                );
+
+                // Cập nhật danh sách chuyến bay sau khi xóa
+                setFlights((prev) =>
+                    prev.filter(
+                        (flight) => !selectedFlights.includes(flight.flight_id),
+                    ),
+                );
+                setSelectedFlights([]);
+                console.log("Xóa chuyến bay thành công");
+            } catch (error) {
+                console.error(
+                    "Lỗi khi xóa chuyến bay:",
+                    error.response?.data || error.message,
+                );
+            }
+        }
     };
 
     return (
@@ -126,11 +198,12 @@ export default function FlightManagement() {
                                 </button>
 
                                 <button
-                                    // onClick={handleDeleteSelected}
-                                    className={styles.button}
+                                    onClick={handleDeleteSelected}
+                                    className={`${styles.button} ${selectedFlights.length > 0 ? styles["delete-active"] : ""}`}
                                 >
                                     <Trash2 size={16} className={styles.icon} />
-                                    Xóa Chuyến bay đã chọn
+                                    Xóa chuyến bay đã chọn (
+                                    {selectedFlights.length})
                                 </button>
                             </div>
                         </div>
@@ -151,11 +224,32 @@ export default function FlightManagement() {
                         </div>
                     )}
 
+                    {isUpdateFlightFormOpen && (
+                        <div className={styles.overlay}>
+                            <div className={styles.modal}>
+                                <FixFlightForm
+                                    onClose={() =>
+                                        setIsUpdateFlightFormOpen(false)
+                                    }
+                                    routeData={routeData}
+                                    seatClassData={seatClassData}
+                                    onSendData={handleUpdateFlight}
+                                    data={formData}
+                                />
+                            </div>
+                        </div>
+                    )}
+
                     <div className={styles["card-container"]}>
                         {flights.map((flight) => (
                             <FlightCardEdit
                                 key={flight.flight_id}
                                 data={flight}
+                                onSendData={handleOpenUpdateFlightForm}
+                                onFlightSelect={handleFlightSelect}
+                                isSelected={selectedFlights.includes(
+                                    flight.flight_id,
+                                )}
                             />
                         ))}
                     </div>

@@ -27,6 +27,7 @@ export default function AddFlightForm({
         date: "",
         time: "",
         totalSeats: "",
+        duration: "",
         seatClasses: [],
     });
 
@@ -103,16 +104,19 @@ export default function AddFlightForm({
 
     const handleSave = () => {
         const data = {
-            flightCode: formData.flightCode,
-            route: formData.airline,
-            departure: formData.departure,
-            arrival: formData.destination,
-            date: formData.date,
-            time: formData.time,
-            totalSeats: formData.totalSeats,
-            seatClasses: formData.seatClasses,
+            flight_id: formData.flightCode || null,
+            flight_route: formData.airline || null,
+            departure_airport: formData.departure || null,
+            arrival_airport: formData.destination || null,
+            departure_date: formData.date || null,
+            departure_time: formData.time || null,
+            flight_duration: parseInt(formData.duration, 10) || null,
+            total_seats: parseInt(formData.totalSeats, 10) || null,
+            seat_type: formData.seatClasses.map((item) => item.class),
+            empty_type_seats: formData.seatClasses.map((item) =>
+                parseInt(item.quantity, 10),
+            ),
         };
-        console.log(data);
         onSendData(data);
         onClose();
     };
@@ -144,6 +148,9 @@ export default function AddFlightForm({
                     <div
                         className={styles.dropdown}
                         ref={(el) => (dropdownRefs.current.airline = el)}
+                        style={{
+                            zIndex: dropdowns.airline ? 2500 : 1000
+                        }}
                     >
                         <button
                             className={`${styles.dropdownButton} ${formData.airline ? styles.airlineButton : ""}`}
@@ -210,6 +217,9 @@ export default function AddFlightForm({
                     <div
                         className={styles.dropdown}
                         ref={(el) => (dropdownRefs.current.departure = el)}
+                        style={{
+                            zIndex: dropdowns.departure ? 2500 : 1000
+                        }}
                     >
                         <button
                             className={`${styles.dropdownButton} ${formData.departure ? styles.airlineButton : ""}`}
@@ -253,6 +263,9 @@ export default function AddFlightForm({
                     <div
                         className={styles.dropdown}
                         ref={(el) => (dropdownRefs.current.destination = el)}
+                        style={{
+                            zIndex: dropdowns.destination ? 2500 : 1000
+                        }}
                     >
                         <button
                             className={`${styles.dropdownButton} ${formData.destination ? styles.airlineButton : ""}`}
@@ -295,7 +308,9 @@ export default function AddFlightForm({
 
                 {/* Row 3 */}
                 <div className={styles.row}>
-                    <div className={styles.inputGroup}>
+                    <div className={`${styles.inputGroup} ${styles.datePickerInputGroup}`} style={{
+                        zIndex: dropdowns.departure || dropdowns.destination || dropdowns.airline || dropdowns.seatClass ? 1 : 2000
+                    }}>
                         <DatePicker
                             selected={
                                 formData.date ? new Date(formData.date) : null
@@ -321,7 +336,25 @@ export default function AddFlightForm({
                             popperProps={{
                                 positionFixed: true,
                                 strategy: "fixed",
+                                modifiers: [
+                                    {
+                                        name: "offset",
+                                        options: {
+                                            offset: [0, 10],
+                                        },
+                                    },
+                                    {
+                                        name: "preventOverflow",
+                                        options: {
+                                            rootBoundary: "viewport",
+                                            tether: false,
+                                            altAxis: true,
+                                        },
+                                    },
+                                ],
                             }}
+                            popperClassName="date-picker-popper"
+                            wrapperClassName="date-picker-wrapper"
                         />
                         <Calendar className={styles.inputIcon} size={20} />
                     </div>
@@ -342,17 +375,33 @@ export default function AddFlightForm({
                 </div>
 
                 {/* Row 4 - Total Seats */}
-                <div className={styles.inputGroup}>
-                    <input
-                        type="text"
-                        value={formData.totalSeats}
-                        onChange={(e) =>
-                            handleInputChange("totalSeats", e.target.value)
-                        }
-                        className={styles.input}
-                        placeholder="Số lượng ghế"
-                    />
-                    <Users className={styles.inputIcon} size={20} />
+                <div className={styles.row}>
+                    {/* Total Seats */}
+                    <div className={styles.inputGroup}>
+                        <input
+                            type="text"
+                            value={formData.totalSeats}
+                            onChange={(e) =>
+                                handleInputChange("totalSeats", e.target.value)
+                            }
+                            className={styles.input}
+                            placeholder="Số lượng ghế"
+                        />
+                        <Users className={styles.inputIcon} size={20} />
+                    </div>
+                    {/* Flight Duration */}
+                    <div className={styles.inputGroup}>
+                        <input
+                            type="number"
+                            value={formData.duration}
+                            onChange={(e) =>
+                                handleInputChange("duration", e.target.value)
+                            }
+                            className={styles.input}
+                            placeholder="Thời gian bay"
+                        />
+                        <Plane className={styles.inputIcon} size={20} />
+                    </div>
                 </div>
 
                 {/* Seat Classes Table */}
@@ -401,6 +450,9 @@ export default function AddFlightForm({
                                 ref={(el) =>
                                     (dropdownRefs.current.seatClass = el)
                                 }
+                                style={{
+                                    zIndex: dropdowns.seatClass ? 2500 : 1000
+                                }}
                             >
                                 <button
                                     className={`${styles.ticketClass} ${newSeatClass.class ? styles.airlineButton : ""}`}
