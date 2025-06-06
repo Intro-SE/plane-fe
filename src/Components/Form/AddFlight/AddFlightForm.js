@@ -109,7 +109,7 @@ export default function AddFlightForm({
             departure_airport: formData.departure || null,
             arrival_airport: formData.destination || null,
             departure_date: formData.date || null,
-            departure_time: formData.time || null,
+            departure_time: formData.time + ":00" || null,
             flight_duration: parseInt(formData.duration, 10) || null,
             total_seats: parseInt(formData.totalSeats, 10) || null,
             seat_type: formData.seatClasses.map((item) => item.class),
@@ -149,7 +149,7 @@ export default function AddFlightForm({
                         className={styles.dropdown}
                         ref={(el) => (dropdownRefs.current.airline = el)}
                         style={{
-                            zIndex: dropdowns.airline ? 2500 : 1000
+                            zIndex: dropdowns.airline ? 2500 : 1000,
                         }}
                     >
                         <button
@@ -172,14 +172,6 @@ export default function AddFlightForm({
                         {dropdowns.airline && (
                             <div className={styles.dropdownMenu}>
                                 {routeData.map((route, index) => {
-                                    const departure =
-                                        route.departure_airport?.airport_id ||
-                                        "Unknown Departure";
-                                    const arrival =
-                                        route.arrival_airport?.airport_id ||
-                                        "Unknown Arrival";
-                                    const routeName = `${departure} - ${arrival}`;
-
                                     return (
                                         <div
                                             key={index}
@@ -198,11 +190,11 @@ export default function AddFlightForm({
                                                 });
                                                 selectOption(
                                                     "airline",
-                                                    routeName,
+                                                    route.flight_route,
                                                 );
                                             }}
                                         >
-                                            {routeName}
+                                            {route.flight_route}
                                         </div>
                                     );
                                 })}
@@ -218,7 +210,7 @@ export default function AddFlightForm({
                         className={styles.dropdown}
                         ref={(el) => (dropdownRefs.current.departure = el)}
                         style={{
-                            zIndex: dropdowns.departure ? 2500 : 1000
+                            zIndex: dropdowns.departure ? 2500 : 1000,
                         }}
                     >
                         <button
@@ -264,7 +256,7 @@ export default function AddFlightForm({
                         className={styles.dropdown}
                         ref={(el) => (dropdownRefs.current.destination = el)}
                         style={{
-                            zIndex: dropdowns.destination ? 2500 : 1000
+                            zIndex: dropdowns.destination ? 2500 : 1000,
                         }}
                     >
                         <button
@@ -308,9 +300,18 @@ export default function AddFlightForm({
 
                 {/* Row 3 */}
                 <div className={styles.row}>
-                    <div className={`${styles.inputGroup} ${styles.datePickerInputGroup}`} style={{
-                        zIndex: dropdowns.departure || dropdowns.destination || dropdowns.airline || dropdowns.seatClass ? 1 : 2000
-                    }}>
+                    <div
+                        className={`${styles.inputGroup} ${styles.datePickerInputGroup}`}
+                        style={{
+                            zIndex:
+                                dropdowns.departure ||
+                                dropdowns.destination ||
+                                dropdowns.airline ||
+                                dropdowns.seatClass
+                                    ? 1
+                                    : 2000,
+                        }}
+                    >
                         <DatePicker
                             selected={
                                 formData.date ? new Date(formData.date) : null
@@ -451,7 +452,7 @@ export default function AddFlightForm({
                                     (dropdownRefs.current.seatClass = el)
                                 }
                                 style={{
-                                    zIndex: dropdowns.seatClass ? 2500 : 1000
+                                    zIndex: dropdowns.seatClass ? 2500 : 1000,
                                 }}
                             >
                                 <button

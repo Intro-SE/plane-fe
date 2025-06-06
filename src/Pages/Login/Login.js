@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import styles from "./Login.module.css";
 import { FaEye } from "react-icons/fa";
 import airlineLogo from "../../Assets/logo.png";
 import airplaneImage from "../../Assets/plane-wallpaper.jpg";
 import { useFlag } from "../../FlagContext";
 import { useNavigate } from "react-router-dom";
+import MessageDialog from "../../Components/Dialog/Message/MessageDialog";
 
 import axios from "axios";
 import { BASE_URL } from "../api";
@@ -14,8 +15,61 @@ export default function Login() {
     const [rememberMe, setRememberMe] = useState(false);
     const [username, setUserName] = useState("");
     const [password, setPassword] = useState("");
+    const [toast, setToast] = useState({
+        show: false,
+        type: "",
+        message: "",
+    });
     const { setIsLoggedIn } = useFlag(); // your flag variable
     const navigate = useNavigate();
+
+    const handleLogin = async (e) => {
+        e.preventDefault();
+
+        const formData = new URLSearchParams();
+        formData.append("username", username);
+        formData.append("password", password);
+
+        try {
+            const response = await axios.post(
+                `${BASE_URL}/api/v1/auth/login`,
+                formData.toString(),
+                {
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded",
+                    },
+                },
+            );
+
+            const result = response.data;
+            const accountId = result.access_token;
+
+            if (accountId && accountId !== "#########") {
+                console.log("Login successfully!");
+                setIsLoggedIn(true);
+                navigate("/tra-cuu-chuyen-bay");
+            } else {
+                console.warn("Login failed!");
+            }
+        } catch (error) {
+            console.error(
+                "Error during login:",
+                error.response?.data || error.message,
+            );
+            setPassword("");
+            setToast({
+                show: true,
+                type: "error",
+                message: "Sai tài khoản hoặc mật khẩu!",
+            });
+        }
+    };
+
+    const handleKeyPress = (e) => {
+        if (e.key === "Enter") {
+            handleLogin(e);
+        }
+    };
 
     return (
         <div className={styles["login-container"]}>
@@ -51,6 +105,7 @@ export default function Login() {
                             className={styles["form-input"]}
                             value={username}
                             onChange={(e) => setUserName(e.target.value)}
+                            onKeyPress={handleKeyPress}
                         />
                     </div>
 
@@ -63,6 +118,7 @@ export default function Login() {
                                 className={styles["form-input"]}
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
+                                onKeyPress={handleKeyPress}
                             />
                             <button
                                 className={styles["toggle-password"]}
@@ -73,64 +129,20 @@ export default function Login() {
                         </div>
                     </div>
 
-                    <div className={styles["remember-forgot-row"]}>
-                        <div className={styles["remember-me"]}>
-                            <input
-                                type="checkbox"
-                                id="remember"
-                                checked={rememberMe}
-                                onChange={() => setRememberMe(!rememberMe)}
-                            />
-                            <label htmlFor="remember">Remember me</label>
-                        </div>
-                        <a href="#" className={styles["forgot-password"]}>
-                            Forgot password?
-                        </a>
-                    </div>
-
                     <button
                         className={styles["sign-in-button"]}
-                        onClick={async (e) => {
-                            e.preventDefault();
-
-                            const formData = new URLSearchParams();
-                            formData.append("username", username);
-                            formData.append("password", password);
-
-                            try {
-                                const response = await axios.post(
-                                    `${BASE_URL}/api/v1/auth/login`,
-                                    formData.toString(),
-                                    {
-                                        headers: {
-                                            "Content-Type":
-                                                "application/x-www-form-urlencoded",
-                                        },
-                                    },
-                                );
-
-                                const result = response.data;
-                                const accountId = result.access_token;
-
-                                if (accountId && accountId !== "#########") {
-                                    console.log("Login successfully!");
-                                    setIsLoggedIn(true);
-                                    // window.location.href = "/tra-cuu-chuyen-bay";
-                                    navigate("/tra-cuu-chuyen-bay");
-                                } else {
-                                    console.warn("Login failed!");
-                                }
-                            } catch (error) {
-                                console.error(
-                                    "Error during login:",
-                                    error.response?.data || error.message,
-                                );
-                            }
-                        }}
+                        onClick={handleLogin}
                     >
                         Sign in
                     </button>
                 </div>
+
+                <MessageDialog
+                    show={toast.show}
+                    type={toast.type}
+                    message={toast.message}
+                    onClose={() => setToast({ ...toast, show: false })}
+                />
 
                 <div className={styles["footer"]}>
                     <div className={styles["footer-logo"]}>

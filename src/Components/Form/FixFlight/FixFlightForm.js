@@ -22,13 +22,20 @@ export default function FixFlightForm({
 }) {
     const [formData, setFormData] = useState({
         flightCode: data.flight_id,
-        airline: data.airline,
+        airline: "",
         departure: data.departure_airport,
         destination: data.arrival_airport,
         date: data.departure_date,
         time: data.departure_time,
         totalSeats: data.total_seats,
-        duration: 120,
+        duration:
+            (new Date(
+                `${data.departure_date.split("T")[0]}T${data.arrival_time}`,
+            ).getTime() -
+                new Date(
+                    `${data.departure_date.split("T")[0]}T${data.departure_time}`,
+                ).getTime()) /
+            (1000 * 60),
         seatClasses: data.seat_information.seat_type.map((type, index) => ({
             class: type,
             quantity: data.seat_information.empty_type_seats[index],
@@ -116,12 +123,12 @@ export default function FixFlightForm({
             departure_time: formData.time || null,
             flight_duration: parseInt(formData.duration, 10) || null,
             total_seats: parseInt(formData.totalSeats, 10) || null,
-            // seat_type: formData.seatClasses.map((item) => item.class),
-            // empty_type_seats: formData.seatClasses.map((item) =>
-            //     parseInt(item.quantity, 10),
-            // ),
-            intermediate_stops: data.intermediate_stops || null,
-            seat_information: data.seat_information || null,
+            seat_type: formData.seatClasses.map((item) => item.class),
+            empty_type_seats: formData.seatClasses.map((item) =>
+                parseInt(item.quantity, 10),
+            ),
+            // intermediate_stops: data.intermediate_stops || null,
+            // seat_information: data.seat_information || null,
         };
         onSendData(dataRequired);
         onClose();
@@ -178,14 +185,6 @@ export default function FixFlightForm({
                         {dropdowns.airline && (
                             <div className={styles.dropdownMenu}>
                                 {routeData.map((route, index) => {
-                                    const departure =
-                                        route.departure_airport?.airport_id ||
-                                        "Unknown Departure";
-                                    const arrival =
-                                        route.arrival_airport?.airport_id ||
-                                        "Unknown Arrival";
-                                    const routeName = `${departure} - ${arrival}`;
-
                                     return (
                                         <div
                                             key={index}
@@ -204,11 +203,11 @@ export default function FixFlightForm({
                                                 });
                                                 selectOption(
                                                     "airline",
-                                                    routeName,
+                                                    route.flight_route,
                                                 );
                                             }}
                                         >
-                                            {routeName}
+                                            {route.flight_route}
                                         </div>
                                     );
                                 })}

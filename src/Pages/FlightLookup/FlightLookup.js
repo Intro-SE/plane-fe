@@ -63,10 +63,29 @@ export default function FlightLookup() {
                     <div className={styles["filter-container"]}>
                         <LookupFilter onSendData={handleFilter} />
                     </div>
-                    <div className={styles["card-container"]}>
+                    {/* <div className={styles["card-container"]}>
                         {flights.map((flight) => (
                             <FlightCard key={flight.flight_id} data={flight} />
                         ))}
+                    </div> */}
+                    <div className={styles["card-container"]}>
+                        {flights
+                            .slice()
+                            .sort((a, b) => {
+                                const numA = parseInt(
+                                    a.flight_id.replace(/\D/g, ""),
+                                );
+                                const numB = parseInt(
+                                    b.flight_id.replace(/\D/g, ""),
+                                );
+                                return numA - numB;
+                            })
+                            .map((flight) => (
+                                <FlightCard
+                                    key={flight.flight_id}
+                                    data={flight}
+                                />
+                            ))}
                     </div>
                 </div>
             </div>

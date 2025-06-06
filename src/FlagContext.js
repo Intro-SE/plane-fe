@@ -9,9 +9,13 @@ export const useFlag = () => useContext(FlagContext);
 // Provider component
 export const FlagProvider = ({ children }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false); // your flag variable
+  const [userInfo, setUserInfo] = useState({
+    name: "",
+    email: ""
+  }); // thông tin người dùng
 
   return (
-    <FlagContext.Provider value={{ isLoggedIn, setIsLoggedIn }}>
+    <FlagContext.Provider value={{ isLoggedIn, setIsLoggedIn, userInfo, setUserInfo }}>
       {children}
     </FlagContext.Provider>
   );
