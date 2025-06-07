@@ -109,7 +109,10 @@ export default function AddFlightForm({
             departure_airport: formData.departure || null,
             arrival_airport: formData.destination || null,
             departure_date: formData.date || null,
-            departure_time: formData.time + ":00" || null,
+            departure_time:
+                formData.time?.length === 5
+                    ? formData.time + ":00"
+                    : formData.time || null,
             flight_duration: parseInt(formData.duration, 10) || null,
             total_seats: parseInt(formData.totalSeats, 10) || null,
             seat_type: formData.seatClasses.map((item) => item.class),

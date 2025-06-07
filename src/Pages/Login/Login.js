@@ -3,7 +3,7 @@ import styles from "./Login.module.css";
 import { FaEye } from "react-icons/fa";
 import airlineLogo from "../../Assets/logo.png";
 import airplaneImage from "../../Assets/plane-wallpaper.jpg";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import MessageDialog from "../../Components/Dialog/Message/MessageDialog";
 import { AuthContext } from "../../AuthContext";
 
@@ -20,7 +20,9 @@ export default function Login() {
         message: "",
     });
     const navigate = useNavigate();
+    const location = useLocation();
     const { login } = useContext(AuthContext);
+    const from = location.state?.from?.pathname || "/";
 
     const handleLogin = async (e) => {
         e.preventDefault();
@@ -56,7 +58,7 @@ export default function Login() {
                     gender: result.gender,
                     created_date: result.created_date,
                 });
-                navigate("/tra-cuu-chuyen-bay");
+                navigate(from, { replace: true });
             } else {
                 console.warn("Login failed!");
                 setToast({

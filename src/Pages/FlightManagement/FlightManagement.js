@@ -13,6 +13,7 @@ import axios from "axios";
 import { BASE_URL } from "../api.js";
 
 export default function FlightManagement() {
+    console.log(666);
     const [flights, setFlights] = useState([]);
     const [loading, setLoading] = useState(true);
     const [isAddFlightFormOpen, setIsAddFlightFormOpen] = useState(false);
@@ -30,6 +31,7 @@ export default function FlightManagement() {
         type: "",
         message: "",
     });
+    const [reloadFlag, setReloadFlag] = useState(0);
 
     useEffect(() => {
         const fetchFlights = async () => {
@@ -52,7 +54,7 @@ export default function FlightManagement() {
         };
 
         fetchFlights();
-    }, []);
+    }, [reloadFlag]);
 
     useEffect(() => {
         const fetchFlightRoutes = async () => {
@@ -70,7 +72,7 @@ export default function FlightManagement() {
 
                 setRouteData(airportData);
             } catch (error) {
-                console.log(
+                console.error(
                     "Lỗi khi lấy tuyến bay",
                     error.message?.data || error.message,
                 );
@@ -94,7 +96,7 @@ export default function FlightManagement() {
             );
             setFlights(response.data);
         } catch (error) {
-            console.log(
+            console.error(
                 "Lỗi khi tìm kiếm chuyến bay",
                 error.response?.data || error.message,
             );
@@ -111,14 +113,15 @@ export default function FlightManagement() {
                     data,
                 );
                 console.log("Thêm chuyến bay thành công", response.data);
-                setFlights((prevFlights) => [...prevFlights, response.data]);
+                // setFlights((prevFlights) => [...prevFlights, response.data]);
+                setReloadFlag((f) => f + 1);
                 setToast({
                     show: true,
                     type: "success",
                     message: "Thêm chuyến bay thành công!",
                 });
             } catch (error) {
-                console.log(
+                console.error(
                     "Lỗi khi thêm chuyến bay",
                     error.response?.data || error.message,
                 );
@@ -141,27 +144,27 @@ export default function FlightManagement() {
     };
 
     const handleUpdateFlight = async (data) => {
-        console.log(data);
         try {
             const response = await axios.put(
                 `${BASE_URL}/api/v1/flight_management/update`,
                 data,
             );
             console.log("Cập nhật chuyến bay thành công", response.data);
-            setFlights((prevFlights) =>
-                prevFlights.map((flight) =>
-                    flight.flight_id === response.data.flight_id
-                        ? response.data
-                        : flight,
-                ),
-            );
+            // setFlights((prevFlights) =>
+            //     prevFlights.map((flight) =>
+            //         flight.flight_id === response.data.flight_id
+            //             ? response.data
+            //             : flight,
+            //     ),
+            // );
+            setReloadFlag((f) => f + 1);
             setToast({
                 show: true,
                 type: "success",
                 message: "Cập nhật chuyến bay thành công!",
             });
         } catch (error) {
-            console.log(
+            console.error(
                 "Lỗi khi cập nhật chuyến bay",
                 error.response?.data || error.message,
             );
@@ -170,6 +173,8 @@ export default function FlightManagement() {
                 type: "error",
                 message: "Cập nhật chuyến bay không thành công!",
             });
+        } finally {
+            setIsUpdateFlightFormOpen(false);
         }
     };
 
@@ -209,11 +214,12 @@ export default function FlightManagement() {
                 console.log(response);
 
                 // Cập nhật danh sách chuyến bay sau khi xóa
-                setFlights((prev) =>
-                    prev.filter(
-                        (flight) => !selectedFlights.includes(flight.flight_id),
-                    ),
-                );
+                // setFlights((prev) =>
+                //     prev.filter(
+                //         (flight) => !selectedFlights.includes(flight.flight_id),
+                //     ),
+                // );
+                setReloadFlag((f) => f + 1);
                 console.log("Xóa chuyến bay thành công");
                 setToast({
                     show: true,
@@ -262,6 +268,9 @@ export default function FlightManagement() {
                         <div className={styles.header}>
                             <h1 className={styles.title}>
                                 Danh sách các chuyến bay dựa theo bộ lọc
+                                <span className={styles["flight-count"]}>
+                                    {flights.length}
+                                </span>
                             </h1>
 
                             <div className={styles.actions}>

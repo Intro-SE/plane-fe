@@ -4,6 +4,7 @@
     overflow: hidden;
     width: 100%;
     height: 100vh;
+    background-color: #f7f9fc;
 }
 
 .flight-management-container {
@@ -15,19 +16,28 @@
 .sidebar-container {
     flex: 0 0 250px; /* Fixed width for sidebar */
     height: 100%;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+    z-index: 10;
+    background-color: #fff;
 }
 
 .content-container {
     flex: 1;
     display: flex;
     flex-direction: column;
-    padding: 0; /* Remove any padding */
-    margin: 0; /* Remove any margin */
+    padding: 20px 30px; /* Add padding for better spacing */
+    margin: 0;
+    background-color: #f7f9fc;
+    overflow-y: auto;
 }
 
 .filter-container {
-    margin-bottom: 20px;
+    margin-bottom: 25px;
     width: 100%;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
 .action-section {
@@ -82,21 +92,34 @@
     display: flex;
     flex-direction: column; /* xếp theo chiều dọc */
     overflow-y: auto; /* bật cuộn dọc */
-    max-height: 600px; /* giới hạn chiều cao, bạn có thể chỉnh tùy ý */
-    gap: 16px;
-    padding: 16px;
+    max-height: calc(100vh - 350px); /* Tính chiều cao động để tối ưu không gian */
+    gap: 20px;
+    padding: 20px;
     padding-bottom: 40px; /* thêm khoảng trống phía dưới */
     margin-bottom: 20px; /* thêm khoảng cách với phần tử bên dưới */
     scroll-behavior: smooth;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
 .card-container::-webkit-scrollbar {
     width: 8px;
 }
 
+.card-container::-webkit-scrollbar-track {
+    background-color: #f1f1f1;
+    border-radius: 10px;
+}
+
 .card-container::-webkit-scrollbar-thumb {
-    background-color: #ccc;
-    border-radius: 4px;
+    background-color: #0d9488;
+    border-radius: 10px;
+    border: 2px solid #f1f1f1;
+}
+
+.card-container::-webkit-scrollbar-thumb:hover {
+    background-color: #0f766e;
 }
 
 .modal-overlay {
@@ -116,10 +139,11 @@
     align-items: center;
     justify-content: center;
     background-color: white;
-    padding: 20px 30px;
-    border-radius: 8px;
-    box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.3);
+    padding: 25px 35px;
+    border-radius: 12px;
+    box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.15);
     z-index: 1001;
+    border-top: 4px solid #0d9488;
 }
 
 .modal-content h3 {
@@ -129,26 +153,48 @@
 
 .modal-table {
     width: 100%;
-    border-collapse: collapse;
-    margin-top: 16px;
-    margin-bottom: 16px;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
 }
 
 .modal-table th,
 .modal-table td {
-    border: 1px solid #ccc;
-    padding: 8px;
+    border: 1px solid #e5e7eb;
+    padding: 12px;
     text-align: center;
 }
 
 .modal-table th {
-    background-color: #f0f0f0;
+    background-color: #0d9488;
+    color: white;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 13px;
+    letter-spacing: 0.5px;
+}
+
+.modal-table tr:nth-child(even) {
+    background-color: #f9fafb;
+}
+
+.modal-table tr:hover {
+    background-color: #f3f4f6;
 }
 
 .input-area {
     display: grid;
     grid-template-columns: 1fr 1fr; /* 2 cột bằng nhau */
-    gap: 20px 20px; /* khoảng cách giữa các hàng và cột */
+    gap: 24px 30px; /* khoảng cách giữa các hàng và cột */
+    margin-bottom: 20px;
+    padding: 24px;
+    background-color: #f9fafb;
+    border-radius: 10px;
+    border: 1px solid #e5e7eb;
 }
 
 .flight-id-icon {
@@ -165,11 +211,19 @@
 
 .flight-id-input input {
     width: 100%;
-    padding: 8px 12px;
+    padding: 10px 14px;
     padding-right: 30px;
-    border: 1px solid #ced4da;
+    border: 1px solid #d1d5db;
     border-radius: 8px;
     box-sizing: border-box;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    transition: all 0.2s ease-in-out;
+}
+
+.flight-id-input input:focus {
+    border-color: #0d9488;
+    box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.15);
+    outline: none;
 }
 
 .route-id-input {
@@ -178,12 +232,24 @@
 
 .route-id-input select {
     width: 100%;
-    padding: 8px 12px;
-    padding-left: 10px; /* để chừa chỗ cho icon */
-    border: 1px solid #ccc;
+    padding: 10px 14px;
+    padding-left: 10px;
+    border: 1px solid #d1d5db;
     border-radius: 8px;
-    font-size: 13px;
+    font-size: 14px;
     color: #333;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%230d9488' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    transition: all 0.2s ease-in-out;
+}
+
+.route-id-input select:focus {
+    border-color: #0d9488;
+    box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.15);
+    outline: none;
 }
 
 .departure-icon {
@@ -354,50 +420,86 @@
 .modal-footer {
     display: flex;
     justify-content: flex-end;
-    gap: 12px;
-    padding-top: 16px;
-    border-top: 1px solid #ddd;
-    margin-top: 20px;
+    gap: 15px;
+    padding-top: 20px;
+    border-top: 1px solid #e5e7eb;
+    margin-top: 25px;
 }
 
 .modal-cancel-button {
-    background-color: #e0e0e0;
-    color: #333;
-    padding: 8px 16px;
+    background-color: #f3f4f6;
+    color: #4b5563;
+    padding: 10px 20px;
     border: none;
-    border-radius: 6px;
+    border-radius: 8px;
     font-size: 14px;
+    font-weight: 500;
     cursor: pointer;
-    transition: background-color 0.2s ease;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .modal-cancel-button:hover {
-    background-color: #d5d5d5;
+    background-color: #e5e7eb;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .modal-save-button {
-    background-color: #28a745;
+    background-color: #0d9488;
     color: white;
-    padding: 8px 18px;
+    padding: 10px 22px;
     border: none;
-    border-radius: 6px;
+    border-radius: 8px;
     font-size: 14px;
+    font-weight: 500;
     cursor: pointer;
-    transition: background-color 0.2s ease;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 4px rgba(13, 148, 136, 0.3);
 }
 
 .modal-save-button:hover {
-    background-color: #28a745;
-    transform: scale(1.03); /* hơi phóng to nhẹ */
+    background-color: #0f766e;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(13, 148, 136, 0.4);
 }
 
 .container {
     background-color: white;
-    border-radius: 0.5rem;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
     border: 1px solid #e5e7eb; /* border-gray-200 */
-    padding: 1rem;
+    padding: 0.75rem 1.25rem;
     margin-bottom: 1.5rem;
+}
+
+.flight-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #0d9488;
+    color: white;
+    font-size: 0.75rem;
+    font-weight: 600;
+    height: 1.25rem;
+    min-width: 1.25rem;
+    padding: 0 0.5rem;
+    border-radius: 9999px;
+    margin-left: 0.5rem;
+    box-shadow: 0 2px 4px rgba(13, 148, 136, 0.2);
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(13, 148, 136, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 6px rgba(13, 148, 136, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(13, 148, 136, 0);
+    }
 }
 
 .header {
@@ -408,13 +510,30 @@
 
 .title {
     font-size: 1.125rem;
-    font-weight: 500;
+    font-weight: 600;
     color: #1f2937; /* text-gray-800 */
+    position: relative;
+    padding-left: 12px;
+    display: flex;
+    align-items: center;
+    margin: 0;
+}
+
+.title::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 4px;
+    height: 24px;
+    background-color: #0d9488; /* teal-600 */
+    border-radius: 2px;
 }
 
 .actions {
     display: flex;
-    gap: 0.75rem; /* like space-x-3 */
+    gap: 0.5rem;
 }
 
 .button {
@@ -426,23 +545,31 @@
     border-radius: 0.375rem;
     border: none;
     cursor: pointer;
-    transition: background-color 0.2s ease-in-out;
+    transition: all 0.2s ease-in-out;
+    font-weight: 500;
+    box-shadow: 0 2px 5px rgba(13, 148, 136, 0.3);
+    font-size: 0.875rem;
 }
 
 .button:hover {
     background-color: #0f766e; /* bg-teal-700 */
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(13, 148, 136, 0.4);
 }
 
 .button.delete-active {
     background-color: #dc2626; /* bg-red-600 */
+    box-shadow: 0 2px 5px rgba(220, 38, 38, 0.3);
 }
 
 .button.delete-active:hover {
     background-color: #b91c1c; /* bg-red-700 */
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(220, 38, 38, 0.4);
 }
 
 .icon {
-    margin-right: 0.5rem;
+    margin-right: 0.25rem;
 }
 
 /* Làm mờ nền và căn giữa modal */
@@ -452,20 +579,39 @@
     left: 0;
     width: 100vw;
     height: 100vh;
-    background-color: rgba(0, 0, 0, 0.4); /* lớp mờ */
-    backdrop-filter: blur(3px); /* hiệu ứng làm mờ */
+    background-color: rgba(0, 0, 0, 0.5); /* lớp mờ đậm hơn */
+    backdrop-filter: blur(5px); /* tăng hiệu ứng làm mờ */
     display: flex;
     justify-content: center;
     align-items: center;
     z-index: 1000;
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
 }
 
 /* Khối form nổi lên */
 .modal {
     background: white;
     padding: 2rem;
-    border-radius: 0.5rem;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
     z-index: 1001;
     max-width: 90%;
+    animation: slideUp 0.3s ease-out;
+    border-top: 5px solid #0d9488;
+}
+
+@keyframes slideUp {
+    from { 
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to { 
+        opacity: 1;
+        transform: translateY(0);
+    }
 }

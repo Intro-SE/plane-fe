@@ -43,27 +43,27 @@ export default function FlightCardEdit({
                 setShowModalChangeFlight(false);
             }
         };
-        
+
         const handleEscKey = (e) => {
-            if (e.key === 'Escape') {
+            if (e.key === "Escape") {
                 setShowModal(false);
                 setShowModalChangeFlight(false);
             }
         };
-        
+
         // Add slight delay to prevent immediate closing
         const timeoutId = setTimeout(() => {
             document.addEventListener("click", handleClickOutside);
             document.addEventListener("keydown", handleEscKey);
         }, 100);
-        
-        document.body.style.overflow = 'hidden';
-        
+
+        document.body.style.overflow = "hidden";
+
         return () => {
             clearTimeout(timeoutId);
             document.removeEventListener("click", handleClickOutside);
             document.removeEventListener("keydown", handleEscKey);
-            document.body.style.overflow = 'unset';
+            document.body.style.overflow = "unset";
         };
     }, [showModal, showModalChangeFlight]);
 
@@ -85,7 +85,11 @@ export default function FlightCardEdit({
                         <MdOutlineCalendarMonth
                             className={styles["icon-small"]}
                         />
-                        <span>{departure_date}</span>
+                        <span>
+                            {new Date(departure_date).toLocaleDateString(
+                                "vi-VN",
+                            )}
+                        </span>
                     </div>
                     <div className={styles["seat-count"]}>
                         <span className={styles["seat-icon"]}>
@@ -100,7 +104,9 @@ export default function FlightCardEdit({
 
             <div className={styles["route-section"]}>
                 <div className={styles["time-location-section"]}>
-                    <div className={styles["time"]}>{departure_time}</div>
+                    <div className={styles["time"]}>
+                        {departure_time.slice(0, 5)}
+                    </div>
                     <div className={styles["location"]}>
                         {departure_address}
                     </div>
@@ -125,7 +131,9 @@ export default function FlightCardEdit({
                 </div>
 
                 <div className={styles["time-location-section"]}>
-                    <div className={styles["time"]}>{arrival_time}</div>
+                    <div className={styles["time"]}>
+                        {arrival_time.slice(0, 5)}
+                    </div>
                     <div className={styles["location"]}>{arrival_address}</div>
                 </div>
             </div>
@@ -158,90 +166,94 @@ export default function FlightCardEdit({
                     Xem chi tiết
                 </div>
             </div>
-            {showModal && createPortal(
-                <div className={styles["modal-overlay"]}>
-                    <div 
-                        className={styles["modal-content"]}
-                        onClick={(e) => e.stopPropagation()}
-                    >
-                        <div className={styles["modal-header"]}>
-                            <h3>Thông tin chi tiết chuyến bay {flight_id}</h3>
-                            <button 
-                                className={styles["close-button"]} 
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    setShowModal(false);
-                                }}
-                                aria-label="Đóng modal"
-                            >
-                                <MdClose />
-                            </button>
-                        </div>
+            {showModal &&
+                createPortal(
+                    <div className={styles["modal-overlay"]}>
+                        <div
+                            className={styles["modal-content"]}
+                            onClick={(e) => e.stopPropagation()}
+                        >
+                            <div className={styles["modal-header"]}>
+                                <h3>
+                                    Thông tin chi tiết chuyến bay {flight_id}
+                                </h3>
+                                <button
+                                    className={styles["close-button"]}
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        setShowModal(false);
+                                    }}
+                                    aria-label="Đóng modal"
+                                >
+                                    <MdClose />
+                                </button>
+                            </div>
 
-                        {/* Bảng các sân bay trung gian */}
-                        <h4>Các sân bay trung gian</h4>
-                        <table className={styles["modal-table"]}>
-                            <thead>
-                                <tr>
-                                    <th>STT</th>
-                                    <th>Sân bay trung gian</th>
-                                    <th>Thời gian dừng</th>
-                                    <th>Ghi chú</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {intermediate_stops.map((item, index) => (
-                                    <tr key={index}>
-                                        <td>{index + 1}</td>
-                                        <td>{item.stop_name}</td>
-                                        <td>{item.stop_time}</td>
-                                        <td>{item.note}</td>
+                            {/* Bảng các sân bay trung gian */}
+                            <h4>Các sân bay trung gian</h4>
+                            <table className={styles["modal-table"]}>
+                                <thead>
+                                    <tr>
+                                        <th>STT</th>
+                                        <th>Sân bay trung gian</th>
+                                        <th>Thời gian dừng</th>
+                                        <th>Ghi chú</th>
                                     </tr>
-                                ))}
-                                {/* Bạn có thể thêm dòng khác */}
-                            </tbody>
-                        </table>
-
-                        {/* Bảng các hạng vé */}
-                        <h4>Các hạng vé của máy bay</h4>
-                        <table className={styles["modal-table"]}>
-                            <thead>
-                                <tr>
-                                    <th>STT</th>
-                                    <th>Hạng vé</th>
-                                    <th>Giá tiền (VNĐ)</th>
-                                    <th>Số ghế còn trống</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {seat_information.seat_type.map(
-                                    (type, index) => (
+                                </thead>
+                                <tbody>
+                                    {intermediate_stops.map((item, index) => (
                                         <tr key={index}>
                                             <td>{index + 1}</td>
-                                            <td>{type}</td>
-                                            <td>
-                                                {
-                                                    seat_information.seat_price[
-                                                        index
-                                                    ]
-                                                }
-                                            </td>
-                                            <td>
-                                                {
-                                                    seat_information
-                                                        .empty_type_seats[index]
-                                                }
-                                            </td>
+                                            <td>{item.stop_name}</td>
+                                            <td>{item.stop_time}</td>
+                                            <td>{item.note}</td>
                                         </tr>
-                                    ),
-                                )}
-                                {/* Thêm dòng khác nếu cần */}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>,
-                document.body
-            )}
+                                    ))}
+                                    {/* Bạn có thể thêm dòng khác */}
+                                </tbody>
+                            </table>
+
+                            {/* Bảng các hạng vé */}
+                            <h4>Các hạng vé của máy bay</h4>
+                            <table className={styles["modal-table"]}>
+                                <thead>
+                                    <tr>
+                                        <th>STT</th>
+                                        <th>Hạng vé</th>
+                                        <th>Giá tiền (VNĐ)</th>
+                                        <th>Số ghế còn trống</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {seat_information.seat_type.map(
+                                        (type, index) => (
+                                            <tr key={index}>
+                                                <td>{index + 1}</td>
+                                                <td>{type}</td>
+                                                <td>
+                                                    {
+                                                        seat_information
+                                                            .seat_price[index]
+                                                    }
+                                                </td>
+                                                <td>
+                                                    {
+                                                        seat_information
+                                                            .empty_type_seats[
+                                                            index
+                                                        ]
+                                                    }
+                                                </td>
+                                            </tr>
+                                        ),
+                                    )}
+                                    {/* Thêm dòng khác nếu cần */}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>,
+                    document.body,
+                )}
             <div className={styles["divider"]}></div>
 
             <div className={styles["action-section"]}>

@@ -214,9 +214,14 @@ export default function ManageFilter({ onSendData }) {
                             onChange={(date) => setDepartureDate(date)}
                             dateFormat="dd/MM/yyyy"
                             placeholderText="dd/mm/yyyy"
+                            className="date-input"
                         />
                         <MdOutlineCalendarMonth
                             className={styles["input-icon"]}
+                            size={16}
+                            onClick={() => {
+                                document.querySelector('.date-input').focus();
+                            }}
                         />
                     </div>
                 </div>
@@ -232,7 +237,7 @@ export default function ManageFilter({ onSendData }) {
                                 setMinAvailableSeats(e.target.value);
                             }}
                         />
-                        <GoPeople className={styles["input-icon"]} />
+                        <GoPeople className={styles["input-icon"]} size={16} />
                     </div>
                 </div>
 
@@ -245,7 +250,7 @@ export default function ManageFilter({ onSendData }) {
                             value={flightId}
                             onChange={(e) => setFlightId(e.target.value)}
                         />
-                        <LuTicketsPlane className={styles["input-icon"]} />
+                        <LuTicketsPlane className={styles["input-icon"]} size={16} />
                     </div>
                 </div>
 
@@ -384,7 +389,7 @@ export default function ManageFilter({ onSendData }) {
                                 setMinSumSeats(e.target.value);
                             }}
                         />
-                        <GoPeople className={styles["input-icon"]} />
+                        <GoPeople className={styles["input-icon"]} size={16} />
                     </div>
                 </div>
 

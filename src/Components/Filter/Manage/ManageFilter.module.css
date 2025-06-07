@@ -66,10 +66,13 @@ label {
     width: 80%;
 }
 
-.input-with-icon input {
+.input-with-icon input,
+.input-with-icon .react-datepicker-wrapper,
+.input-with-icon .react-datepicker__input-container input,
+.input-with-icon .date-input {
     width: 100%;
-    padding: 8px 6px;
-    padding-right: 22px;
+    padding: 8px 10px;
+    padding-right: 30px;
     border: 2px solid #e2e8f0;
     border-radius: 8px;
     box-sizing: border-box;
@@ -80,7 +83,20 @@ label {
     height: 32px;
 }
 
-.input-with-icon input:focus {
+.input-with-icon .react-datepicker-wrapper,
+.input-with-icon .react-datepicker__input-container {
+    display: block;
+    width: 100%;
+    position: relative;
+}
+
+/* Make sure DatePicker takes full width within its container */
+.input-with-icon .react-datepicker-wrapper {
+    width: 100%;
+}
+
+.input-with-icon input:focus,
+.input-with-icon .react-datepicker__input-container input:focus {
     outline: none;
     border-color: #3b82f6;
     box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
@@ -89,20 +105,47 @@ label {
 
 .input-icon {
     position: absolute;
-    right: 8px;
+    right: 10px;
     top: 50%;
     transform: translateY(-50%);
     color: #64748b;
-    font-size: 12px;
+    font-size: 16px;
     transition: all 0.2s ease;
-    pointer-events: auto;
-    z-index: 5;
+    pointer-events: none;
+    z-index: 2;
     cursor: pointer;
 }
 
 .input-with-icon:hover .input-icon {
     color: #3b82f6;
     transform: translateY(-50%) scale(1.1);
+}
+
+/* Date input specific styling */
+:global(.date-input) {
+    cursor: pointer;
+    width: 100%;
+}
+
+/* DatePicker specific styles */
+:global(.react-datepicker__input-container) {
+    position: relative;
+    width: 100%;
+}
+
+:global(.react-datepicker-popper) {
+    z-index: 9999 !important;
+}
+
+:global(.react-datepicker__triangle) {
+    display: none;
+}
+
+:global(.react-datepicker) {
+    font-size: 11px;
+    border-radius: 8px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    border: 1px solid #e2e8f0;
 }
 
 .selected-location {

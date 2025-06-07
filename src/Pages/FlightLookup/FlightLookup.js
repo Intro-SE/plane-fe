@@ -4,7 +4,7 @@ import FlightCard from "../../Components/Info/FlightCard/FlightCard.js";
 import styles from "./FlightLookup.module.css";
 import TopBar from "../../Components/TopBar/TopBar.js";
 import { useEffect, useState } from "react";
-
+import { Search } from "lucide-react";
 import axios from "axios";
 import { BASE_URL } from "../api.js";
 
@@ -59,15 +59,11 @@ export default function FlightLookup() {
                 <div className={styles["sidebar-container"]}>
                     <SideBar />
                 </div>
-                <div className={styles["main-content"]}>
+                <div className={styles["content-container"]}>
                     <div className={styles["filter-container"]}>
                         <LookupFilter onSendData={handleFilter} />
                     </div>
-                    {/* <div className={styles["card-container"]}>
-                        {flights.map((flight) => (
-                            <FlightCard key={flight.flight_id} data={flight} />
-                        ))}
-                    </div> */}
+
                     <div className={styles["card-container"]}>
                         {flights
                             .slice()

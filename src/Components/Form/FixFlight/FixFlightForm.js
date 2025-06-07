@@ -26,16 +26,24 @@ export default function FixFlightForm({
         departure: data.departure_airport,
         destination: data.arrival_airport,
         date: data.departure_date,
-        time: data.departure_time,
+        time: data.departure_time?.slice(0, 5) || null,
         totalSeats: data.total_seats,
         duration:
             (new Date(
                 `${data.departure_date.split("T")[0]}T${data.arrival_time}`,
-            ).getTime() -
+            ).getTime() +
+                (new Date(
+                    `${data.departure_date.split("T")[0]}T${data.arrival_time}`,
+                ) <
+                new Date(
+                    `${data.departure_date.split("T")[0]}T${data.departure_time}`,
+                )
+                    ? 86400000
+                    : 0) -
                 new Date(
                     `${data.departure_date.split("T")[0]}T${data.departure_time}`,
                 ).getTime()) /
-            (1000 * 60),
+            60000,
         seatClasses: data.seat_information.seat_type.map((type, index) => ({
             class: type,
             quantity: data.seat_information.empty_type_seats[index],
@@ -127,8 +135,6 @@ export default function FixFlightForm({
             empty_type_seats: formData.seatClasses.map((item) =>
                 parseInt(item.quantity, 10),
             ),
-            // intermediate_stops: data.intermediate_stops || null,
-            // seat_information: data.seat_information || null,
         };
         onSendData(dataRequired);
         onClose();
@@ -137,7 +143,7 @@ export default function FixFlightForm({
     return (
         <div className={styles.container}>
             <div className={styles.header}>
-                <h2>Biểu mẫu thêm một chuyến bay mới</h2>
+                <h2>Biểu mẫu sửa một chuyến bay mới</h2>
             </div>
 
             <div className={styles.form}>
@@ -428,7 +434,7 @@ export default function FixFlightForm({
                         <div className={styles.tableHeaderCell}>Thao tác</div>
                     </div>
 
-                    {formData.seatClasses.map((seatClass, index) => (
+                    {formData.seatClasses?.map((seatClass, index) => (
                         <div key={index} className={styles.tableRow}>
                             <div className={styles.tableCell}>
                                 {seatClass.class}

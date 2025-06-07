@@ -4,49 +4,110 @@
   overflow: hidden;
   width: 100%;
   height: 100vh;
+  background-color: #f7f9fc;
 }
 
 .flight-lookup-container {
   display: flex;
   width: 100%;
-  min-height: 100vh;
+  height: 100%;
 }
 
 .sidebar-container {
-  width: 250px; /* Điều chỉnh chiều rộng sidebar theo ý muốn */
-  height: 100vh;
-  position: sticky;
-  top: 0;
+  flex: 0 0 250px; /* Fixed width for sidebar */
+  height: 100%;
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+  z-index: 10;
+  background-color: #fff;
 }
 
-.main-content {
+.content-container {
   flex: 1;
   display: flex;
   flex-direction: column;
-  padding: 20px;
+  padding: 20px 30px;
+  margin: 0;
+  background-color: #f7f9fc;
+  overflow-y: auto;
 }
 
 .filter-container {
-  margin-bottom: 20px; /* Khoảng cách giữa filter và card */
+  margin-bottom: 25px;
+  width: 100%;
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
 .card-container {
   display: flex;
   flex-direction: column; /* xếp theo chiều dọc */
   overflow-y: auto; /* bật cuộn dọc */
-  max-height: 600px; /* giới hạn chiều cao, bạn có thể chỉnh tùy ý */
-  gap: 16px;
-  padding: 16px;
+  max-height: calc(100vh - 350px); /* Tính chiều cao động để tối ưu không gian */
+  gap: 20px;
+  padding: 20px;
+  padding-bottom: 40px; /* thêm khoảng trống phía dưới */
+  margin-bottom: 20px; /* thêm khoảng cách với phần tử bên dưới */
   scroll-behavior: smooth;
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
 .card-container::-webkit-scrollbar {
   width: 8px;
 }
 
+.card-container::-webkit-scrollbar-track {
+  background-color: #f1f1f1;
+  border-radius: 10px;
+}
+
 .card-container::-webkit-scrollbar-thumb {
-  background-color: #ccc;
-  border-radius: 4px;
+  background-color: #0d9488;
+  border-radius: 10px;
+  border: 2px solid #f1f1f1;
+}
+
+.card-container::-webkit-scrollbar-thumb:hover {
+  background-color: #0f766e;
+}
+
+/* Adding a container style for better consistency with FlightManagement */
+.container {
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e5e7eb;
+  padding: 1.25rem;
+  margin-bottom: 1.5rem;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1f2937;
+  position: relative;
+  padding-left: 12px;
+}
+
+.title::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 4px;
+  height: 24px;
+  background-color: #0d9488;
+  border-radius: 2px;
 }
 
 /* Responsive cho màn hình nhỏ */
@@ -58,10 +119,9 @@
   .sidebar-container {
     width: 100%;
     height: auto;
-    position: static;
   }
 
-  .main-content {
+  .content-container {
     padding: 10px;
   }
 }
