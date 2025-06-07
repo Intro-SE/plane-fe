@@ -1,18 +1,17 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import styles from "./Login.module.css";
 import { FaEye } from "react-icons/fa";
 import airlineLogo from "../../Assets/logo.png";
 import airplaneImage from "../../Assets/plane-wallpaper.jpg";
-import { useFlag } from "../../FlagContext";
 import { useNavigate } from "react-router-dom";
 import MessageDialog from "../../Components/Dialog/Message/MessageDialog";
+import { AuthContext } from "../../AuthContext";
 
 import axios from "axios";
 import { BASE_URL } from "../api";
 
 export default function Login() {
     const [showPassword, setShowPassword] = useState(false);
-    const [rememberMe, setRememberMe] = useState(false);
     const [username, setUserName] = useState("");
     const [password, setPassword] = useState("");
     const [toast, setToast] = useState({
@@ -20,8 +19,8 @@ export default function Login() {
         type: "",
         message: "",
     });
-    const { setIsLoggedIn } = useFlag(); // your flag variable
     const navigate = useNavigate();
+    const { login } = useContext(AuthContext);
 
     const handleLogin = async (e) => {
         e.preventDefault();
@@ -41,15 +40,30 @@ export default function Login() {
                 },
             );
 
-            const result = response.data;
-            const accountId = result.access_token;
-
-            if (accountId && accountId !== "#########") {
+            if (
+                response.data.access_token &&
+                response.data.access_token !== "#########"
+            ) {
+                const result = response.data.employee;
                 console.log("Login successfully!");
-                setIsLoggedIn(true);
+                login({
+                    employee_id: result.employee_id,
+                    employee_username: result.employee_username,
+                    employee_password: result.employee_password,
+                    employee_name: result.employee_name,
+                    national_id: result.national_id,
+                    phone_number: result.phone_number,
+                    gender: result.gender,
+                    created_date: result.created_date,
+                });
                 navigate("/tra-cuu-chuyen-bay");
             } else {
                 console.warn("Login failed!");
+                setToast({
+                    show: true,
+                    type: "error",
+                    message: "Sai tài khoản hoặc mật khẩu!",
+                });
             }
         } catch (error) {
             console.error(
@@ -153,9 +167,9 @@ export default function Login() {
                         />
                         /7Airlines
                     </div>
-                    <div className={styles["copyright"]}>
+                    {/* <div className={styles["copyright"]}>
                         © Perfect Login 2021
-                    </div>
+                    </div> */}
                 </div>
             </div>
         </div>

@@ -1,12 +1,19 @@
-import { MdOutlineCalendarMonth } from "react-icons/md";
+import { MdOutlineCalendarMonth, MdClose } from "react-icons/md";
 import { GrGroup } from "react-icons/gr";
 import { FaEdit } from "react-icons/fa";
 import styles from "./FlightCardEdit.module.css";
 import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 
-export default function FlightCardEdit({ data, onSendData, onFlightSelect, isSelected }) {
+export default function FlightCardEdit({
+    data,
+    onSendData,
+    onFlightSelect,
+    isSelected,
+}) {
     const {
         flight_id,
+        flight_route_id,
         departure_date,
         total_seats,
 
@@ -26,17 +33,39 @@ export default function FlightCardEdit({ data, onSendData, onFlightSelect, isSel
     const [showModal, setShowModal] = useState(false);
     const [showModalChangeFlight, setShowModalChangeFlight] = useState(false);
 
-    // Đóng modal khi click ra ngoài
+    // Đóng modal khi click ra ngoài hoặc nhấn ESC
     useEffect(() => {
+        if (!showModal && !showModalChangeFlight) return;
+
         const handleClickOutside = (e) => {
             if (e.target.classList.contains(styles["modal-overlay"])) {
                 setShowModal(false);
                 setShowModalChangeFlight(false);
             }
         };
-        window.addEventListener("click", handleClickOutside);
-        return () => window.removeEventListener("click", handleClickOutside);
-    }, []);
+        
+        const handleEscKey = (e) => {
+            if (e.key === 'Escape') {
+                setShowModal(false);
+                setShowModalChangeFlight(false);
+            }
+        };
+        
+        // Add slight delay to prevent immediate closing
+        const timeoutId = setTimeout(() => {
+            document.addEventListener("click", handleClickOutside);
+            document.addEventListener("keydown", handleEscKey);
+        }, 100);
+        
+        document.body.style.overflow = 'hidden';
+        
+        return () => {
+            clearTimeout(timeoutId);
+            document.removeEventListener("click", handleClickOutside);
+            document.removeEventListener("keydown", handleEscKey);
+            document.body.style.overflow = 'unset';
+        };
+    }, [showModal, showModalChangeFlight]);
 
     const handleUpdate = () => {
         onSendData(data);
@@ -120,15 +149,34 @@ export default function FlightCardEdit({ data, onSendData, onFlightSelect, isSel
                 </div>
                 <div
                     className={styles["layover-detail"]}
-                    onClick={() => setShowModal(true)}
+                    onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        setShowModal(true);
+                    }}
                 >
                     Xem chi tiết
                 </div>
             </div>
-            {showModal && (
+            {showModal && createPortal(
                 <div className={styles["modal-overlay"]}>
-                    <div className={styles["modal-content"]}>
-                        <h3>Thông tin chi tiết</h3>
+                    <div 
+                        className={styles["modal-content"]}
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <div className={styles["modal-header"]}>
+                            <h3>Thông tin chi tiết chuyến bay {flight_id}</h3>
+                            <button 
+                                className={styles["close-button"]} 
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    setShowModal(false);
+                                }}
+                                aria-label="Đóng modal"
+                            >
+                                <MdClose />
+                            </button>
+                        </div>
 
                         {/* Bảng các sân bay trung gian */}
                         <h4>Các sân bay trung gian</h4>
@@ -191,7 +239,8 @@ export default function FlightCardEdit({ data, onSendData, onFlightSelect, isSel
                             </tbody>
                         </table>
                     </div>
-                </div>
+                </div>,
+                document.body
             )}
             <div className={styles["divider"]}></div>
 
@@ -205,8 +254,8 @@ export default function FlightCardEdit({ data, onSendData, onFlightSelect, isSel
                 </button>
                 <div className={styles["action-row"]}>
                     Xoá
-                    <input 
-                        type="checkbox" 
+                    <input
+                        type="checkbox"
                         id={`delete-checkbox-${flight_id}`}
                         checked={isSelected}
                         onChange={handleCheckboxChange}

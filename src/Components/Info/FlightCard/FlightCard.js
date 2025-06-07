@@ -1,8 +1,9 @@
 import React from "react";
-import { MdOutlineCalendarMonth } from "react-icons/md";
+import { MdOutlineCalendarMonth, MdClose } from "react-icons/md";
 import { GrGroup } from "react-icons/gr";
 import styles from "./FlightCard.module.css";
 import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 
 export default function FlightCard({ data }) {
   const [showModal, setShowModal] = useState(false);
@@ -25,16 +26,37 @@ export default function FlightCard({ data }) {
     seat_information,
   } = data;
 
-  // Đóng modal khi click ra ngoài
+  // Đóng modal khi click ra ngoài hoặc nhấn ESC
   useEffect(() => {
+    if (!showModal) return;
+
     const handleClickOutside = (e) => {
       if (e.target.classList.contains(styles["modal-overlay"])) {
         setShowModal(false);
       }
     };
-    window.addEventListener("click", handleClickOutside);
-    return () => window.removeEventListener("click", handleClickOutside);
-  }, []);
+    
+    const handleEscKey = (e) => {
+      if (e.key === 'Escape') {
+        setShowModal(false);
+      }
+    };
+    
+    // Add slight delay to prevent immediate closing
+    const timeoutId = setTimeout(() => {
+      document.addEventListener("click", handleClickOutside);
+      document.addEventListener("keydown", handleEscKey);
+    }, 100);
+    
+    document.body.style.overflow = 'hidden';
+    
+    return () => {
+      clearTimeout(timeoutId);
+      document.removeEventListener("click", handleClickOutside);
+      document.removeEventListener("keydown", handleEscKey);
+      document.body.style.overflow = 'unset';
+    };
+  }, [showModal]);
   return (
     <div className={styles["flight-booking"]}>
       {/* Flight Code & Info Section */}
@@ -114,15 +136,34 @@ export default function FlightCard({ data }) {
         </div>
         <div
           className={styles["layover-detail"]}
-          onClick={() => setShowModal(true)}
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            setShowModal(true);
+          }}
         >
           Xem chi tiết
         </div>
       </div>
-      {showModal && (
+      {showModal && createPortal(
         <div className={styles["modal-overlay"]}>
-          <div className={styles["modal-content"]}>
-            <h3>Thông tin chi tiết</h3>
+          <div 
+            className={styles["modal-content"]}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className={styles["modal-header"]}>
+              <h3>Thông tin chi tiết chuyến bay {flight_id}</h3>
+              <button 
+                className={styles["close-button"]} 
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowModal(false);
+                }}
+                aria-label="Đóng modal"
+              >
+                <MdClose />
+              </button>
+            </div>
 
             {/* Bảng các sân bay trung gian */}
             <h4>Các sân bay trung gian</h4>
@@ -172,7 +213,8 @@ export default function FlightCard({ data }) {
               </tbody>
             </table>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );

@@ -85,6 +85,8 @@
     max-height: 600px; /* giới hạn chiều cao, bạn có thể chỉnh tùy ý */
     gap: 16px;
     padding: 16px;
+    padding-bottom: 40px; /* thêm khoảng trống phía dưới */
+    margin-bottom: 20px; /* thêm khoảng cách với phần tử bên dưới */
     scroll-behavior: smooth;
 }
 

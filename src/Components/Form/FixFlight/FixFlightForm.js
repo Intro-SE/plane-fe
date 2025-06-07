@@ -22,7 +22,7 @@ export default function FixFlightForm({
 }) {
     const [formData, setFormData] = useState({
         flightCode: data.flight_id,
-        airline: "",
+        airline: data.flight_route_id,
         departure: data.departure_airport,
         destination: data.arrival_airport,
         date: data.departure_date,
@@ -116,7 +116,7 @@ export default function FixFlightForm({
     const handleUpdate = () => {
         const dataRequired = {
             flight_id: formData.flightCode || null,
-            // flight_route: formData.airline || null,
+            flight_route: formData.airline || null,
             departure_airport: formData.departure || null,
             arrival_airport: formData.destination || null,
             departure_date: formData.date || null,

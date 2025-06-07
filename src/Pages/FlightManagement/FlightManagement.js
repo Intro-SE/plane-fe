@@ -42,7 +42,7 @@ export default function FlightManagement() {
 
                 setFlights(response.data);
             } catch (error) {
-                console.error(
+                console.log(
                     "Lỗi khi lấy dữ liệu chuyến bay:",
                     error.response?.data || error.message,
                 );
@@ -70,7 +70,7 @@ export default function FlightManagement() {
 
                 setRouteData(airportData);
             } catch (error) {
-                console.error(
+                console.log(
                     "Lỗi khi lấy tuyến bay",
                     error.message?.data || error.message,
                 );
@@ -94,7 +94,7 @@ export default function FlightManagement() {
             );
             setFlights(response.data);
         } catch (error) {
-            console.error(
+            console.log(
                 "Lỗi khi tìm kiếm chuyến bay",
                 error.response?.data || error.message,
             );
@@ -118,7 +118,7 @@ export default function FlightManagement() {
                     message: "Thêm chuyến bay thành công!",
                 });
             } catch (error) {
-                console.error(
+                console.log(
                     "Lỗi khi thêm chuyến bay",
                     error.response?.data || error.message,
                 );
@@ -148,14 +148,20 @@ export default function FlightManagement() {
                 data,
             );
             console.log("Cập nhật chuyến bay thành công", response.data);
-            setFlights((prevFlights) => [...prevFlights, response.data]);
+            setFlights((prevFlights) =>
+                prevFlights.map((flight) =>
+                    flight.flight_id === response.data.flight_id
+                        ? response.data
+                        : flight,
+                ),
+            );
             setToast({
                 show: true,
                 type: "success",
                 message: "Cập nhật chuyến bay thành công!",
             });
         } catch (error) {
-            console.error(
+            console.log(
                 "Lỗi khi cập nhật chuyến bay",
                 error.response?.data || error.message,
             );
@@ -215,7 +221,7 @@ export default function FlightManagement() {
                     message: "Xóa chuyến bay thành công!",
                 });
             } catch (error) {
-                console.error(
+                console.log(
                     "Lỗi khi xóa chuyến bay:",
                     error.response?.data || error.message,
                 );

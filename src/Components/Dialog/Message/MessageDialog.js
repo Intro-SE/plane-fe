@@ -9,7 +9,7 @@ export default function MessageDialog({
     if (!show) return null;
 
     const isSuccess = type === "success";
-    // const icon = isSuccess ? "✅" : "❌";
+    const icon = isSuccess ? "✅" : "❌";
     const toastStyle = isSuccess ? styles.toastSuccess : styles.toastError;
 
     // Auto close after 3s
@@ -19,8 +19,15 @@ export default function MessageDialog({
 
     return (
         <div className={`${styles.toast} ${toastStyle}`}>
-            {/* <span className={styles.icon}>{icon}</span> */}
+            <span className={styles.icon}>{icon}</span>
             <span>{message}</span>
+            <button 
+                className={styles.closeButton}
+                onClick={onClose}
+                title="Đóng"
+            >
+                ×
+            </button>
         </div>
     );
 }
