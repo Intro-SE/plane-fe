@@ -1,390 +1,471 @@
 .overral-page-container {
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  width: 100%;
-  height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    width: 100%;
+    height: 100vh;
 }
 
 .flight-management-container {
-  display: flex;
-  width: 100%;
-  height: 100%;
+    display: flex;
+    width: 100%;
+    height: 100%;
 }
 
 .sidebar-container {
-  flex: 0 0 250px; /* Fixed width for sidebar */
-  height: 100%;
+    flex: 0 0 250px; /* Fixed width for sidebar */
+    height: 100%;
 }
 
 .content-container {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  padding: 0; /* Remove any padding */
-  margin: 0; /* Remove any margin */
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 0; /* Remove any padding */
+    margin: 0; /* Remove any margin */
 }
 
 .filter-container {
-  margin-bottom: 20px;
-  width: 100%;
+    margin-bottom: 20px;
+    width: 100%;
 }
 
 .action-section {
-  width: 100%;
-  margin-bottom: 20px;
-  margin-left: 30px;
-  display: flex; /* Cho phép các phần tử con xếp hàng ngang */
-  gap: 350px; /* (Tùy chọn) khoảng cách giữa các phần tử */
-  align-items: center; /* (Tùy chọn) căn giữa theo chiều dọc */
+    width: 100%;
+    margin-bottom: 20px;
+    margin-left: 30px;
+    display: flex; /* Cho phép các phần tử con xếp hàng ngang */
+    gap: 350px; /* (Tùy chọn) khoảng cách giữa các phần tử */
+    align-items: center; /* (Tùy chọn) căn giữa theo chiều dọc */
 }
 
 .section-title {
-  font-size: 18px;
-  font-weight: bold;
-  margin-bottom: 15px;
-  color: #333;
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 15px;
+    color: #333;
 
-  /* border: 1px solid #ccc; /* Viền mỏng màu xám */
-  /* padding: 10px; /* Khoảng cách giữa nội dung và viền */
-  /* border-radius: 6px; /* Bo góc nhẹ */
-  /* background-color: #f9f9f9; /* (Tuỳ chọn) màu nền nhẹ để làm nổi bật */
-  /* font-weight: bold; /* (Tuỳ chọn) chữ đậm */
+    /* border: 1px solid #ccc; /* Viền mỏng màu xám */
+    /* padding: 10px; /* Khoảng cách giữa nội dung và viền */
+    /* border-radius: 6px; /* Bo góc nhẹ */
+    /* background-color: #f9f9f9; /* (Tuỳ chọn) màu nền nhẹ để làm nổi bật */
+    /* font-weight: bold; /* (Tuỳ chọn) chữ đậm */
 }
 
 .action-buttons {
-  display: flex;
-  gap: 30px;
-  margin-bottom: 15px;
+    display: flex;
+    gap: 30px;
+    margin-bottom: 15px;
 }
 
 .action-button {
-  padding: 8px 8px;
-  border: none;
-  border-radius: 5px;
-  color: white;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background-color 0.3s;
+    padding: 8px 8px;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.3s;
 }
 
 .add-button,
 .delete-button,
 .edit-button {
-  background-color: #26a69a;
+    background-color: #26a69a;
 }
 
 .action-button:hover {
-  background-color: #2bbbad;
+    background-color: #2bbbad;
 }
 
 .card-container {
-  display: flex;
-  flex-direction: column; /* xếp theo chiều dọc */
-  overflow-y: auto; /* bật cuộn dọc */
-  max-height: 600px; /* giới hạn chiều cao, bạn có thể chỉnh tùy ý */
-  gap: 16px;
-  padding: 16px;
-  scroll-behavior: smooth;
+    display: flex;
+    flex-direction: column; /* xếp theo chiều dọc */
+    overflow-y: auto; /* bật cuộn dọc */
+    max-height: 600px; /* giới hạn chiều cao, bạn có thể chỉnh tùy ý */
+    gap: 16px;
+    padding: 16px;
+    padding-bottom: 40px; /* thêm khoảng trống phía dưới */
+    margin-bottom: 20px; /* thêm khoảng cách với phần tử bên dưới */
+    scroll-behavior: smooth;
 }
 
 .card-container::-webkit-scrollbar {
-  width: 8px;
+    width: 8px;
 }
 
 .card-container::-webkit-scrollbar-thumb {
-  background-color: #ccc;
-  border-radius: 4px;
+    background-color: #ccc;
+    border-radius: 4px;
 }
 
 .modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background-color: rgba(0, 0, 0, 0.4);
-  z-index: 1000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.4);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .modal-content {
-  align-items: center;
-  justify-content: center;
-  background-color: white;
-  padding: 20px 30px;
-  border-radius: 8px;
-  box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.3);
-  z-index: 1001;
+    align-items: center;
+    justify-content: center;
+    background-color: white;
+    padding: 20px 30px;
+    border-radius: 8px;
+    box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.3);
+    z-index: 1001;
 }
 
 .modal-content h3 {
-  text-align: center;
-  width: 100%;
+    text-align: center;
+    width: 100%;
 }
 
 .modal-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 16px;
-  margin-bottom: 16px;
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 16px;
+    margin-bottom: 16px;
 }
 
 .modal-table th,
 .modal-table td {
-  border: 1px solid #ccc;
-  padding: 8px;
-  text-align: center;
+    border: 1px solid #ccc;
+    padding: 8px;
+    text-align: center;
 }
 
 .modal-table th {
-  background-color: #f0f0f0;
+    background-color: #f0f0f0;
 }
 
 .input-area {
-  display: grid;
-  grid-template-columns: 1fr 1fr; /* 2 cột bằng nhau */
-  gap: 20px 20px; /* khoảng cách giữa các hàng và cột */
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* 2 cột bằng nhau */
+    gap: 20px 20px; /* khoảng cách giữa các hàng và cột */
 }
 
 .flight-id-icon {
-  position: absolute;
-  right: 10px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: black;
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: black;
 }
 
 .flight-id-input {
-  position: relative;
+    position: relative;
 }
 
 .flight-id-input input {
-  width: 100%;
-  padding: 8px 12px;
-  padding-right: 30px;
-  border: 1px solid #ced4da;
-  border-radius: 8px;
-  box-sizing: border-box;
+    width: 100%;
+    padding: 8px 12px;
+    padding-right: 30px;
+    border: 1px solid #ced4da;
+    border-radius: 8px;
+    box-sizing: border-box;
 }
 
 .route-id-input {
-  position: relative;
+    position: relative;
 }
 
 .route-id-input select {
-  width: 100%;
-  padding: 8px 12px;
-  padding-left: 10px; /* để chừa chỗ cho icon */
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  font-size: 13px;
-  color: #333;
+    width: 100%;
+    padding: 8px 12px;
+    padding-left: 10px; /* để chừa chỗ cho icon */
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 13px;
+    color: #333;
 }
 
 .departure-icon {
-  position: absolute;
-  right: 10px;
-  top: 50%;
-  transform: translateY(-50%);
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
 }
 
 .departure-input {
-  position: relative;
+    position: relative;
 }
 
 .departure-input input {
-  width: 100%;
-  padding: 8px 12px;
-  padding-right: 30px;
-  border: 1px solid #ced4da;
-  border-radius: 8px;
-  box-sizing: border-box;
+    width: 100%;
+    padding: 8px 12px;
+    padding-right: 30px;
+    border: 1px solid #ced4da;
+    border-radius: 8px;
+    box-sizing: border-box;
 }
 
 .arrival-icon {
-  position: absolute;
-  right: 10px;
-  top: 50%;
-  transform: translateY(-50%);
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
 }
 
 .arrival-input {
-  position: relative;
+    position: relative;
 }
 
 .arrival-input input {
-  width: 100%;
-  padding: 8px 12px;
-  padding-right: 30px;
-  border: 1px solid #ced4da;
-  border-radius: 8px;
-  box-sizing: border-box;
+    width: 100%;
+    padding: 8px 12px;
+    padding-right: 30px;
+    border: 1px solid #ced4da;
+    border-radius: 8px;
+    box-sizing: border-box;
 }
 
 .departure-date-icon {
-  position: absolute;
-  right: 10px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: black;
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: black;
 }
 
 .departure-date-input {
-  position: relative;
+    position: relative;
 }
 
 .departure-date-input input {
-  width: 100%;
-  padding: 8px 12px;
-  padding-right: 30px;
-  border: 1px solid #ced4da;
-  border-radius: 8px;
-  box-sizing: border-box;
+    width: 100%;
+    padding: 8px 12px;
+    padding-right: 30px;
+    border: 1px solid #ced4da;
+    border-radius: 8px;
+    box-sizing: border-box;
 }
 
 .flight-time-icon {
-  position: absolute;
-  right: 10px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: black;
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: black;
 }
 
 .flight-time-input {
-  position: relative;
+    position: relative;
 }
 
 .flight-time-input input {
-  width: 100%;
-  padding: 8px 12px;
-  padding-right: 30px;
-  border: 1px solid #ced4da;
-  border-radius: 8px;
-  box-sizing: border-box;
+    width: 100%;
+    padding: 8px 12px;
+    padding-right: 30px;
+    border: 1px solid #ced4da;
+    border-radius: 8px;
+    box-sizing: border-box;
 }
 
 .seat-icon {
-  position: absolute;
-  right: 10px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: black;
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: black;
 }
 
 .seat-input {
-  position: relative;
+    position: relative;
 }
 
 .seat-input input {
-  width: 100%;
-  padding: 8px 12px;
-  padding-right: 30px;
-  border: 1px solid #ced4da;
-  border-radius: 8px;
-  box-sizing: border-box;
+    width: 100%;
+    padding: 8px 12px;
+    padding-right: 30px;
+    border: 1px solid #ced4da;
+    border-radius: 8px;
+    box-sizing: border-box;
 }
 
 .ticket-type-input {
-  position: relative;
+    position: relative;
 }
 
 .ticket-type-input select {
-  width: 100%;
-  padding: 8px 12px;
-  padding-left: 10px; /* để chừa chỗ cho icon */
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  font-size: 13px;
-  color: #333;
+    width: 100%;
+    padding: 8px 12px;
+    padding-left: 10px; /* để chừa chỗ cho icon */
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 13px;
+    color: #333;
 }
 
 .ticket-quantity-input {
-  position: relative;
+    position: relative;
 }
 
 .ticket-quantity-input input {
-  /* width: 100%; */
-  padding: 8px 12px;
-  border: 1px solid #ced4da;
-  border-radius: 8px;
-  box-sizing: border-box;
+    /* width: 100%; */
+    padding: 8px 12px;
+    border: 1px solid #ced4da;
+    border-radius: 8px;
+    box-sizing: border-box;
 }
 
 .ticket-action-button {
-  display: flex;
-  align-items: center;
-  padding: 6px 12px;
-  gap: 8px;
-  border: none;
-  background-color: #14ae5c;
-  color: white;
-  border-radius: 4px;
-  cursor: pointer;
+    display: flex;
+    align-items: center;
+    padding: 6px 12px;
+    gap: 8px;
+    border: none;
+    background-color: #14ae5c;
+    color: white;
+    border-radius: 4px;
+    cursor: pointer;
 }
 
 .ticket-action-button:hover {
-  background-color: #30d87f;
-  transform: scale(1.03); /* hơi phóng to nhẹ */
+    background-color: #30d87f;
+    transform: scale(1.03); /* hơi phóng to nhẹ */
 }
 
 .addRowButton {
-  background-color: #faa85c; /* xanh lá */
-  color: black;
-  padding: 8px 16px;
-  font-size: 14px;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
+    background-color: #faa85c; /* xanh lá */
+    color: black;
+    padding: 8px 16px;
+    font-size: 14px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
 }
 
 .addRowButton:hover {
-  background-color: #fff9c4;
+    background-color: #fff9c4;
 }
 
 .addRowButton:active {
-  background-color: #fff9c4;
+    background-color: #fff9c4;
 }
 
 .modal-footer {
-  display: flex;
-  justify-content: flex-end;
-  gap: 12px;
-  padding-top: 16px;
-  border-top: 1px solid #ddd;
-  margin-top: 20px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    padding-top: 16px;
+    border-top: 1px solid #ddd;
+    margin-top: 20px;
 }
 
 .modal-cancel-button {
-  background-color: #e0e0e0;
-  color: #333;
-  padding: 8px 16px;
-  border: none;
-  border-radius: 6px;
-  font-size: 14px;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
+    background-color: #e0e0e0;
+    color: #333;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
 }
 
 .modal-cancel-button:hover {
-  background-color: #d5d5d5;
+    background-color: #d5d5d5;
 }
 
 .modal-save-button {
-  background-color: #28a745;
-  color: white;
-  padding: 8px 18px;
-  border: none;
-  border-radius: 6px;
-  font-size: 14px;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
+    background-color: #28a745;
+    color: white;
+    padding: 8px 18px;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
 }
 
 .modal-save-button:hover {
-  background-color: #28a745;
-  transform: scale(1.03); /* hơi phóng to nhẹ */
+    background-color: #28a745;
+    transform: scale(1.03); /* hơi phóng to nhẹ */
+}
+
+.container {
+    background-color: white;
+    border-radius: 0.5rem;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    border: 1px solid #e5e7eb; /* border-gray-200 */
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.title {
+    font-size: 1.125rem;
+    font-weight: 500;
+    color: #1f2937; /* text-gray-800 */
+}
+
+.actions {
+    display: flex;
+    gap: 0.75rem; /* like space-x-3 */
+}
+
+.button {
+    display: flex;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    background-color: #0d9488; /* bg-teal-600 */
+    color: white;
+    border-radius: 0.375rem;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out;
+}
+
+.button:hover {
+    background-color: #0f766e; /* bg-teal-700 */
+}
+
+.button.delete-active {
+    background-color: #dc2626; /* bg-red-600 */
+}
+
+.button.delete-active:hover {
+    background-color: #b91c1c; /* bg-red-700 */
+}
+
+.icon {
+    margin-right: 0.5rem;
+}
+
+/* Làm mờ nền và căn giữa modal */
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.4); /* lớp mờ */
+    backdrop-filter: blur(3px); /* hiệu ứng làm mờ */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+/* Khối form nổi lên */
+.modal {
+    background: white;
+    padding: 2rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    z-index: 1001;
+    max-width: 90%;
 }
