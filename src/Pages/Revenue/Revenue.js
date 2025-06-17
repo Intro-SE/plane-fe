@@ -1,9 +1,9 @@
 import SideBar from "../../Components/SideBar/SideBar";
 import TopBar from "../../Components/TopBar/TopBar";
-import RegulationForm from "../../Components/Form/Regulation/RegulationForm";
-import styles from "./RegulationSetting.module.css";
+import RevenueReport from "../../Components/Form/RevenueReport/RevenueReport";
+import styles from "./Revenue.module.css";
 
-export default function RegulationSetting() {
+export default function Revenue() {
     return (
         <div className={styles["overral-page-container"]}>
             <TopBar />
@@ -12,7 +12,7 @@ export default function RegulationSetting() {
                     <SideBar />
                 </div>
                 <div className={styles["content-section"]}>
-                    <RegulationForm />
+                    <RevenueReport />
                 </div>
             </div>
         </div>
