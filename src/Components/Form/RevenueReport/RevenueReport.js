@@ -1,56 +1,39 @@
 import React, { useState, useRef, useEffect } from "react";
 import styles from "./RevenueReport.module.css";
 import { X, ChevronDown } from "react-feather";
+import axios from "axios";
+import MessageDialog from "../../Dialog/Message/MessageDialog";
 
-export default function RevenueReport() {
+export default function RevenueReport({ state, responseData }) {
+    const now = new Date();
+
     const [activeTab, setActiveTab] = useState("monthly");
-    const [selectedMonth, setSelectedMonth] = useState("");
-    const [selectedYear, setSelectedYear] = useState("");
-    const [monthlyYear, setMonthlyYear] = useState("");
+
+    // Monthly report variables
+    const [monthlyReportMonth, setMonthlyReportMonth] = useState(null);
+    const [monthlyReportYear, setMonthlyReportYear] = useState(null);
+    const [monthlyReportData, setMonthlyReportData] = useState([]);
+
+    // Yearly report variables
+    const [yearlyReportYear, setYearlyReportYear] = useState(null);
+    const [yearlyReportData, setYearlyReportData] = useState([]);
+
+    const [loading, setLoading] = useState(false);
     const [dropdowns, setDropdowns] = useState({
-        month: false,
-        year: false,
+        monthlyMonth: false,
         monthlyYear: false,
+        yearlyYear: false,
+    });
+
+    const [toast, setToast] = useState({
+        show: false,
+        type: "",
+        message: "",
     });
 
     const dropdownRefs = useRef({});
 
-    // Sample data
-    const monthlyData = [
-        {
-            stt: 1,
-            chuyenBay: "VJ-123",
-            soVe: 150,
-            tyLe: "75%",
-            doanhThu: "15,000,000",
-        },
-        {
-            stt: 2,
-            chuyenBay: "VJ-456",
-            soVe: 200,
-            tyLe: "80%",
-            doanhThu: "20,000,000",
-        },
-    ];
-
-    const yearlyData = [
-        {
-            stt: 1,
-            chuyenBay: "VJ-789",
-            soVe: 1800,
-            tyLe: "85%",
-            doanhThu: "180,000,000",
-        },
-        {
-            stt: 2,
-            chuyenBay: "VJ-012",
-            soVe: 2200,
-            tyLe: "90%",
-            doanhThu: "220,000,000",
-        },
-    ];
-
-    const months = Array.from({ length: 12 }, (_, i) => `Tháng ${i + 1}`);
+    const months = Array.from({ length: 12 }, (_, i) => i + 1);
 
     const years = Array.from({ length: 2025 - 1970 + 1 }, (_, i) =>
         (2025 - i).toString(),
@@ -58,13 +41,15 @@ export default function RevenueReport() {
 
     const handleTabClick = (tab) => {
         setActiveTab(tab);
-        setSelectedMonth("");
-        setSelectedYear("");
-        setMonthlyYear("");
+        setMonthlyReportMonth("");
+        setMonthlyReportYear("");
+        setYearlyReportYear("");
+        setMonthlyReportData([]);
+        setYearlyReportData([]);
         setDropdowns({
-            month: false,
-            year: false,
+            monthlyMonth: false,
             monthlyYear: false,
+            yearlyYear: false,
         });
     };
 
@@ -77,33 +62,33 @@ export default function RevenueReport() {
 
     const clearSelection = (field, event) => {
         event.stopPropagation();
-        if (field === "month") {
-            setSelectedMonth("");
-        } else if (field === "year") {
-            setSelectedYear("");
+        if (field === "monthlyMonth") {
+            setMonthlyReportMonth("");
+        } else if (field === "yearlyYear") {
+            setYearlyReportYear("");
         } else if (field === "monthlyYear") {
-            setMonthlyYear("");
+            setMonthlyReportYear("");
         }
     };
 
-    const handleMonthSelect = (month) => {
-        setSelectedMonth(month);
+    const handleMonthlyMonthSelect = (month) => {
+        setMonthlyReportMonth(month);
         setDropdowns((prev) => ({
             ...prev,
-            month: false,
+            monthlyMonth: false,
         }));
     };
 
-    const handleYearSelect = (year) => {
-        setSelectedYear(year);
+    const handleYearlyYearSelect = (year) => {
+        setYearlyReportYear(year);
         setDropdowns((prev) => ({
             ...prev,
-            year: false,
+            yearlyYear: false,
         }));
     };
 
     const handleMonthlyYearSelect = (year) => {
-        setMonthlyYear(year);
+        setMonthlyReportYear(year);
         setDropdowns((prev) => ({
             ...prev,
             monthlyYear: false,
@@ -133,21 +118,83 @@ export default function RevenueReport() {
         };
     }, [dropdowns]);
 
+    const fetchMonthlyReport = async (month, year) => {
+        setLoading(true);
+        try {
+            const response = await axios.post(
+                `http://localhost:8000/api/v1/revenue_report/report_month`,
+                {
+                    report_month: month,
+                    report_year: year,
+                },
+            );
+            setMonthlyReportData(response.data);
+        } catch (error) {
+            console.error(
+                "Lỗi khi tải báo cáo tháng",
+                error.response?.data || error.message,
+            );
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const fetchYearlyReport = async (year) => {
+        setLoading(true);
+        try {
+            const response = await axios.post(
+                `http://localhost:8000/api/v1/revenue_report/report_year`,
+                {
+                    report_year: year,
+                },
+            );
+            setYearlyReportData(response.data);
+        } catch (error) {
+            console.error(
+                "Lỗi khi tải báo cáo năm",
+                error.response?.data || error.message,
+            );
+        } finally {
+            setLoading(false);
+        }
+    };
+
     const handleViewReport = () => {
-        if (activeTab === "monthly" && selectedMonth && monthlyYear) {
-            alert(`Xem báo cáo doanh thu ${selectedMonth} năm ${monthlyYear}`);
-        } else if (activeTab === "yearly" && selectedYear) {
-            alert(`Xem báo cáo doanh thu năm ${selectedYear}`);
+        if (
+            activeTab === "monthly" &&
+            monthlyReportMonth &&
+            monthlyReportYear
+        ) {
+            fetchMonthlyReport(monthlyReportMonth, monthlyReportYear);
+        } else if (activeTab === "yearly" && yearlyReportYear) {
+            fetchYearlyReport(yearlyReportYear);
         } else {
             if (activeTab === "monthly") {
-                alert("Vui lòng chọn tháng và năm trước khi xem báo cáo");
+                setToast({
+                    show: true,
+                    type: "error",
+                    message:
+                        "Vui lòng chọn tháng và năm trước khi xem báo cáo!",
+                });
             } else {
-                alert("Vui lòng chọn năm trước khi xem báo cáo");
+                setToast({
+                    show: true,
+                    type: "error",
+                    message: "Vui lòng chọn năm trước khi xem báo cáo!",
+                });
             }
         }
     };
 
-    const currentData = activeTab === "monthly" ? monthlyData : yearlyData;
+    // Determine which data set to display
+    const currentData =
+        activeTab === "monthly"
+            ? monthlyReportData.length > 0
+                ? monthlyReportData
+                : []
+            : yearlyReportData.length > 0
+              ? yearlyReportData
+              : [];
 
     return (
         <div className={styles.container}>
@@ -173,21 +220,28 @@ export default function RevenueReport() {
                             <label className={styles.label}>Tháng</label>
                             <div
                                 className={styles.dropdown}
-                                ref={(el) => (dropdownRefs.current.month = el)}
+                                ref={(el) =>
+                                    (dropdownRefs.current.monthlyMonth = el)
+                                }
                                 style={{
-                                    zIndex: dropdowns.month ? 1000 : 500,
+                                    zIndex: dropdowns.monthlyMonth ? 1000 : 500,
                                 }}
                             >
                                 <button
-                                    className={`${styles.dropdownButton} ${selectedMonth ? styles.activeButton : ""}`}
-                                    onClick={() => toggleDropdown("month")}
+                                    className={`${styles.dropdownButton} ${monthlyReportMonth ? styles.activeButton : ""}`}
+                                    onClick={() =>
+                                        toggleDropdown("monthlyMonth")
+                                    }
                                 >
-                                    {selectedMonth || "Chọn tháng"}
-                                    {selectedMonth ? (
+                                    {monthlyReportMonth || "Chọn tháng"}
+                                    {monthlyReportMonth ? (
                                         <X
                                             size={20}
                                             onClick={(e) =>
-                                                clearSelection("month", e)
+                                                clearSelection(
+                                                    "monthlyMonth",
+                                                    e,
+                                                )
                                             }
                                             className={styles.clearIcon}
                                         />
@@ -198,14 +252,16 @@ export default function RevenueReport() {
                                         />
                                     )}
                                 </button>
-                                {dropdowns.month && (
+                                {dropdowns.monthlyMonth && (
                                     <div className={styles.dropdownMenu}>
                                         {months.map((month, index) => (
                                             <div
                                                 key={index}
                                                 className={styles.dropdownItem}
                                                 onClick={() =>
-                                                    handleMonthSelect(month)
+                                                    handleMonthlyMonthSelect(
+                                                        month,
+                                                    )
                                                 }
                                             >
                                                 {month}
@@ -228,13 +284,13 @@ export default function RevenueReport() {
                                 }}
                             >
                                 <button
-                                    className={`${styles.dropdownButton} ${monthlyYear ? styles.activeButton : ""}`}
+                                    className={`${styles.dropdownButton} ${monthlyReportYear ? styles.activeButton : ""}`}
                                     onClick={() =>
                                         toggleDropdown("monthlyYear")
                                     }
                                 >
-                                    {monthlyYear || "Chọn năm"}
-                                    {monthlyYear ? (
+                                    {monthlyReportYear || "Chọn năm"}
+                                    {monthlyReportYear ? (
                                         <X
                                             size={20}
                                             onClick={(e) =>
@@ -274,21 +330,21 @@ export default function RevenueReport() {
                         <label className={styles.label}>Năm</label>
                         <div
                             className={styles.dropdown}
-                            ref={(el) => (dropdownRefs.current.year = el)}
+                            ref={(el) => (dropdownRefs.current.yearlyYear = el)}
                             style={{
-                                zIndex: dropdowns.year ? 1000 : 500,
+                                zIndex: dropdowns.yearlyYear ? 1000 : 500,
                             }}
                         >
                             <button
-                                className={`${styles.dropdownButton} ${selectedYear ? styles.activeButton : ""}`}
-                                onClick={() => toggleDropdown("year")}
+                                className={`${styles.dropdownButton} ${yearlyReportYear ? styles.activeButton : ""}`}
+                                onClick={() => toggleDropdown("yearlyYear")}
                             >
-                                {selectedYear || "Chọn năm"}
-                                {selectedYear ? (
+                                {yearlyReportYear || "Chọn năm"}
+                                {yearlyReportYear ? (
                                     <X
                                         size={20}
                                         onClick={(e) =>
-                                            clearSelection("year", e)
+                                            clearSelection("yearlyYear", e)
                                         }
                                         className={styles.clearIcon}
                                     />
@@ -299,14 +355,14 @@ export default function RevenueReport() {
                                     />
                                 )}
                             </button>
-                            {dropdowns.year && (
+                            {dropdowns.yearlyYear && (
                                 <div className={styles.dropdownMenu}>
                                     {years.map((year, index) => (
                                         <div
                                             key={index}
                                             className={styles.dropdownItem}
                                             onClick={() =>
-                                                handleYearSelect(year)
+                                                handleYearlyYearSelect(year)
                                             }
                                         >
                                             {year}
@@ -328,29 +384,83 @@ export default function RevenueReport() {
                 </button>
             </div>
 
+            <MessageDialog
+                show={toast.show}
+                type={toast.type}
+                message={toast.message}
+                onClose={() => setToast({ ...toast, show: false })}
+            />
+
             <div className={styles.tableContainer}>
-                <table className={styles.table}>
-                    <thead>
-                        <tr>
-                            <th>STT</th>
-                            <th>Chuyến bay</th>
-                            <th>Số vé</th>
-                            <th>Tỷ lệ</th>
-                            <th>Doanh thu (VNĐ)</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {currentData.map((row) => (
-                            <tr key={row.stt}>
-                                <td>{row.stt}</td>
-                                <td>{row.chuyenBay}</td>
-                                <td>{row.soVe}</td>
-                                <td>{row.tyLe}</td>
-                                <td>{row.doanhThu}</td>
+                {loading ? (
+                    <div className={styles.loadingContainer}>
+                        <div className={styles.spinner}>
+                            <span></span>
+                        </div>
+                        <div className={styles.pulse}>
+                            Đang tải dữ liệu báo cáo
+                        </div>
+                        <div className={styles.loadingText}>
+                            Vui lòng chờ trong giây lát, chúng tôi đang chuẩn bị
+                            báo cáo của bạn...
+                        </div>
+                    </div>
+                ) : (
+                    <table className={styles.table}>
+                        <thead>
+                            <tr>
+                                <th>STT</th>
+                                {activeTab === "monthly" ? (
+                                    <>
+                                        <th>Chuyến bay</th>
+                                        <th>Số vé</th>
+                                    </>
+                                ) : (
+                                    <>
+                                        <th>Tháng</th>
+                                        <th>Số chuyến bay</th>
+                                    </>
+                                )}
+                                <th>Tỷ lệ</th>
+                                <th>Doanh thu (VNĐ)</th>
                             </tr>
-                        ))}
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            {currentData.length > 0 ? (
+                                currentData.map((row, index) => (
+                                    <tr key={index}>
+                                        <td>{index + 1}</td>
+                                        {activeTab === "monthly" ? (
+                                            <>
+                                                <td>{row.flight_id}</td>
+                                                <td>
+                                                    {row.last_occupied_seats}
+                                                </td>
+                                                <td>{row.percertain}</td>
+                                                <td>{row.revenue}</td>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <td>{row.month}</td>
+                                                <td>{row.total_flight}</td>
+                                                <td>{row.percertain}</td>
+                                                <td>{row.revenue}</td>
+                                            </>
+                                        )}
+                                    </tr>
+                                ))
+                            ) : (
+                                <tr>
+                                    <td colSpan={5} className={styles.noData}>
+                                        {activeTab === "monthly"
+                                            ? "Chọn tháng và năm, sau đó nhấn 'Xem báo cáo' để hiển thị dữ liệu"
+                                            : "Chọn năm, sau đó nhấn 'Xem báo cáo' để hiển thị dữ liệu"}
+                                    </td>
+                                </tr>
+                            )}
+                        </tbody>
+                    </table>
+                )}
             </div>
         </div>
     );

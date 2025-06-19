@@ -2,7 +2,7 @@ import { useState } from "react";
 import styles from "./FlightRouteDetail.module.css";
 import { Plus, Trash2 } from "lucide-react";
 
-export default function FlightRouteDetail() {
+export default function FlightRouteDetail({ onClose }) {
     // State for flight routes
     const [flightRoutes, setFlightRoutes] = useState([
         { code: "SG-HN", departureAirport: "TSN", arrivalAirport: "HAN" },
@@ -110,12 +110,12 @@ export default function FlightRouteDetail() {
 
     // Handle cancel button
     const handleCancel = () => {
-        console.log("Hủy được nhấn");
+        onClose();
     };
 
     // Handle save button
     const handleSave = () => {
-        console.log("Lưu được nhấn");
+        onClose();
     };
 
     return (
@@ -216,7 +216,7 @@ export default function FlightRouteDetail() {
                 </div>
 
                 {/* Intermediate Airports Table */}
-                <h3 className={styles.sectionHeader}>Sân bay trung gian</h3>
+                <h2 className={styles.sectionHeader}>Sân bay trung gian</h2>
                 <div className={styles.tableContainer}>
                     <div className={styles.tableHeaderFive}>
                         <div className={styles.tableHeaderCell}>
@@ -226,7 +226,7 @@ export default function FlightRouteDetail() {
                             <span>Sân bay trung gian</span>
                         </div>
                         <div className={styles.tableHeaderCell}>
-                            <span>Thời gian dừng</span>
+                            <span>Thời gian dừng (phút)</span>
                         </div>
                         <div className={styles.tableHeaderCell}>
                             <span>Ghi chú</span>

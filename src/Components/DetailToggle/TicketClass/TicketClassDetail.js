@@ -2,7 +2,7 @@ import { useState } from "react";
 import styles from "./TicketClassDetail.module.css";
 import { Plus, Trash2 } from "lucide-react";
 
-export default function TicketClassDetail() {
+export default function TicketClassDetail({ onClose }) {
     const [ticketClasses, setTicketClasses] = useState([
         { code: "ECO", name: "Phổ thông" },
         { code: "BUS", name: "Thương gia" },
@@ -35,11 +35,11 @@ export default function TicketClassDetail() {
     };
 
     const handleCancel = () => {
-        console.log("Hủy được nhấn");
+        onClose();
     };
 
     const handleSave = () => {
-        console.log("Lưu được nhấn");
+        onClose();
     };
 
     return (

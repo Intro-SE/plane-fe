@@ -14,6 +14,32 @@
     background-color: #ffffff; /* Màu nền cho phần nội dung */
 }
 
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(5px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+.modal {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+    z-index: 1001;
+    max-width: 90%;
+    animation: slideUp 0.3s ease-out;
+    border-top: 5px solid #0d9488;
+}
+
 /* Responsive cho màn hình nhỏ */
 @media (max-width: 768px) {
     .regulation-container {

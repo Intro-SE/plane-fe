@@ -242,6 +242,238 @@
     border-bottom: none;
 }
 
+.loadingContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 240px;
+    width: 100%;
+    background-color: white;
+    border-radius: 12px;
+    font-size: 18px;
+    color: #666;
+    flex-direction: column;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+}
+
+.loadingContainer::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(
+        circle at center,
+        rgba(32, 178, 170, 0.03) 0%,
+        transparent 70%
+    );
+    animation: pulseBackground 2.5s ease-in-out infinite alternate;
+    z-index: 1;
+}
+
+.loadingContainer::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        #20b2aa,
+        #40e0d0,
+        transparent
+    );
+    animation: progressBar 2.2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+    box-shadow: 0 1px 8px rgba(32, 178, 170, 0.6);
+    z-index: 10;
+}
+
+@keyframes pulseBackground {
+    0% {
+        opacity: 0.4;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+@keyframes progressBar {
+    0% {
+        transform: translateX(-100%);
+    }
+    50% {
+        transform: translateX(30%);
+    }
+    100% {
+        transform: translateX(100%);
+    }
+}
+
+.spinner {
+    position: relative;
+    width: 90px;
+    height: 90px;
+    margin-bottom: 25px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 5;
+}
+
+.spinner::before,
+.spinner::after,
+.spinner span {
+    content: "";
+    position: absolute;
+    border-radius: 50%;
+}
+
+.spinner::before {
+    width: 100%;
+    height: 100%;
+    border: 4px solid rgba(32, 178, 170, 0.1);
+    border-top-color: #20b2aa;
+    animation: spin 1.2s cubic-bezier(0.6, 0.2, 0.4, 0.8) infinite;
+    box-sizing: border-box;
+    box-shadow: 0 0 10px rgba(64, 224, 208, 0.1);
+}
+
+.spinner::after {
+    width: 66%;
+    height: 66%;
+    background: linear-gradient(135deg, #20b2aa, #40e0d0, #5dfff3);
+    border-radius: 50%;
+    animation: pulse 1.8s ease-in-out infinite alternate;
+    box-shadow: 0 0 20px rgba(32, 178, 170, 0.5);
+    filter: blur(1px);
+}
+
+.spinner span {
+    width: 30%;
+    height: 30%;
+    background: white;
+    border-radius: 50%;
+    z-index: 2;
+    animation: centerPulse 1.5s ease-in-out infinite alternate;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes centerPulse {
+    0% {
+        transform: scale(0.8);
+        box-shadow: 0 0 0 rgba(255, 255, 255, 0.5);
+    }
+    100% {
+        transform: scale(1.1);
+        box-shadow: 0 0 20px rgba(255, 255, 255, 0.9);
+    }
+}
+
+.pulse {
+    display: inline-block;
+    position: relative;
+    color: #20b2aa;
+    font-weight: 600;
+    font-size: 22px;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+    padding: 12px 30px;
+    border-radius: 30px;
+    background: rgba(32, 178, 170, 0.08);
+    box-shadow: 0 5px 20px rgba(32, 178, 170, 0.15);
+    animation: messageGlow 2.5s ease-in-out infinite alternate;
+    z-index: 5;
+    letter-spacing: 0.5px;
+}
+
+.pulse::after {
+    content: "";
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    background-color: #20b2aa;
+    border-radius: 50%;
+    margin-left: 12px;
+    vertical-align: middle;
+    animation: dotPulse 1.5s infinite;
+    box-shadow: 0 0 8px rgba(32, 178, 170, 0.6);
+}
+
+@keyframes messageGlow {
+    0% {
+        background: rgba(32, 178, 170, 0.05);
+        transform: scale(0.98);
+    }
+    100% {
+        background: rgba(32, 178, 170, 0.12);
+        transform: scale(1.02);
+    }
+}
+
+@keyframes dotPulse {
+    0%,
+    100% {
+        transform: scale(0.5);
+        opacity: 0.5;
+    }
+    50% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(0.95);
+        opacity: 0.7;
+        filter: blur(2px);
+    }
+    100% {
+        transform: scale(1.05);
+        opacity: 1;
+        filter: blur(1px);
+    }
+}
+
+.loadingText {
+    margin-top: 5px;
+    font-size: 16px;
+    color: #888;
+    animation: fadeInOut 2s ease-in-out infinite;
+    letter-spacing: 0.5px;
+}
+
+@keyframes fadeInOut {
+    0%,
+    100% {
+        opacity: 0.5;
+    }
+    50% {
+        opacity: 1;
+    }
+}
+
+.noData {
+    text-align: center !important;
+    padding: 40px 20px !important;
+    color: #666;
+    font-style: italic;
+    font-size: 16px;
+}
+
 .table th:first-child,
 .table td:first-child {
     text-align: center;

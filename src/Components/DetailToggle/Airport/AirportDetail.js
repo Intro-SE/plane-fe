@@ -2,7 +2,7 @@ import { useState } from "react";
 import styles from "./AirportDetail.module.css";
 import { Plus, Trash2 } from "lucide-react";
 
-export default function AirportDetail() {
+export default function AirportDetail({ onClose }) {
     const [airports, setAirports] = useState([
         { code: "TSN", name: "Tân Sơn Nhất", city: "TP HCM" },
         { code: "HAN", name: "Nội Bài", city: "Hà Nội" },
@@ -34,11 +34,11 @@ export default function AirportDetail() {
     };
 
     const handleCancel = () => {
-        console.log("Hủy được nhấn");
+        onClose();
     };
 
     const handleSave = () => {
-        console.log("Lưu được nhấn");
+        onClose();
     };
 
     return (

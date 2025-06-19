@@ -1,14 +1,26 @@
 import { useState, useRef, useEffect } from "react";
-import { ChevronDown, X, Plus, Trash2 } from "lucide-react";
+import { ChevronDown, X, Plus, Trash2, RotateCcw } from "lucide-react";
 import styles from "./RegulationForm.module.css";
 import AirportDetail from "../../DetailToggle/Airport/AirportDetail";
 import TicketClassDetail from "../../DetailToggle/TicketClass/TicketClassDetail";
 import FlightRouteDetail from "../../DetailToggle/FlightRoute/FlightRouteDetail";
 
-export default function RegulationForm() {
+export default function RegulationForm({ setOpenForm }) {
     const [flightRulesOpen, setFlightRulesOpen] = useState(false);
     const [timeRulesOpen, setTimeRulesOpen] = useState(false);
     const [ticketRulesOpen, setTicketRulesOpen] = useState(false);
+
+    // Original values to compare against
+    const [originalFlightData] = useState({
+        passengers: 10,
+        maxFlightTime: 30,
+        avgFlightTime: 2,
+        maxStopTime: 10,
+        maxTotalTime: 20,
+        earliestBooking: 24,
+        latestCancellation: 24,
+        airlines: 2,
+    });
 
     const [flightData, setFlightData] = useState({
         passengers: 10,
@@ -20,6 +32,9 @@ export default function RegulationForm() {
         latestCancellation: 24,
         airlines: 2,
     });
+
+    // Track which fields have been modified
+    const [modifiedFields, setModifiedFields] = useState({});
 
     const [ticketClasses, setTicketClasses] = useState([
         {
@@ -50,11 +65,6 @@ export default function RegulationForm() {
         flightCode: false,
     });
 
-    const [menuPositions, setMenuPositions] = useState({
-        ticketClass: { top: 0, left: 0, width: 0 },
-        flightCode: { top: 0, left: 0, width: 0 },
-    });
-
     const dropdownRefs = useRef({});
 
     const handleInputChange = (field, value) => {
@@ -62,6 +72,36 @@ export default function RegulationForm() {
             ...prev,
             [field]: value,
         }));
+
+        // Mark field as modified if value is different from original
+        if (value !== originalFlightData[field]) {
+            setModifiedFields((prev) => ({
+                ...prev,
+                [field]: true,
+            }));
+        } else {
+            // If value matches original, remove from modified fields
+            setModifiedFields((prev) => {
+                const updated = { ...prev };
+                delete updated[field];
+                return updated;
+            });
+        }
+    };
+
+    // Reset a field to its original value
+    const resetField = (field) => {
+        setFlightData((prev) => ({
+            ...prev,
+            [field]: originalFlightData[field],
+        }));
+
+        // Remove from modified fields
+        setModifiedFields((prev) => {
+            const updated = { ...prev };
+            delete updated[field];
+            return updated;
+        });
     };
 
     const toggleDropdown = (dropdown) => {
@@ -145,101 +185,232 @@ export default function RegulationForm() {
 
     return (
         <div className={styles.container}>
-            <FlightRouteDetail />
             {/* Flight Rules Section */}
             <div className={styles.section}>
                 <div
                     className={styles.sectionHeader}
                     onClick={() => setFlightRulesOpen(!flightRulesOpen)}
                 >
-                    <span>Thay đổi quy định chuyến bay</span>
+                    <span>THAY ĐỔI QUY ĐỊNH CHUYẾN BAY</span>
                     <span
                         className={`${styles.arrow} ${flightRulesOpen ? styles.open : ""}`}
                     >
-                        ▼
+                        <ChevronDown size={16} />
                     </span>
                 </div>
 
                 {flightRulesOpen && (
                     <div className={styles.sectionContent}>
                         <div className={styles.formRow}>
-                            <label>SỐ LƯỢNG SÂN BAY</label>
+                            <label>Số lượng sân bay</label>
                             <div className={styles.inputGroup}>
-                                <span className={styles.detailLink}>
+                                <span
+                                    className={styles.detailLink}
+                                    onClick={() => setOpenForm("airport")}
+                                >
                                     Xem chi tiết sân bay
                                 </span>
-                                <input
-                                    type="number"
-                                    value={flightData.passengers}
-                                    onChange={(e) =>
-                                        handleInputChange(
-                                            "passengers",
-                                            e.target.value,
-                                        )
-                                    }
-                                />
+                                <div className={styles.inputWithReset}>
+                                    <input
+                                        type="number"
+                                        value={flightData.passengers}
+                                        onChange={(e) =>
+                                            handleInputChange(
+                                                "passengers",
+                                                e.target.value,
+                                            )
+                                        }
+                                        className={
+                                            modifiedFields.passengers
+                                                ? styles.modifiedInput
+                                                : ""
+                                        }
+                                    />
+                                    {modifiedFields.passengers && (
+                                        <div
+                                            className={styles.modifiedIndicator}
+                                        >
+                                            <span className={styles.oldValue}>
+                                                Giá trị cũ:{" "}
+                                                {originalFlightData.passengers}
+                                            </span>
+                                            <button
+                                                className={styles.resetButton}
+                                                onClick={() =>
+                                                    resetField("passengers")
+                                                }
+                                                title="Hoàn tác thay đổi"
+                                            >
+                                                <RotateCcw size={14} />
+                                            </button>
+                                        </div>
+                                    )}
+                                </div>
                             </div>
                         </div>
 
                         <div className={styles.formRow}>
-                            <label>THỜI GIAN BAY TỐI THIỂU</label>
-                            <input
-                                type="number"
-                                value={flightData.maxFlightTime}
-                                onChange={(e) =>
-                                    handleInputChange(
-                                        "maxFlightTime",
-                                        e.target.value,
-                                    )
-                                }
-                            />
+                            <label>Thời gian bay tối thiểu (phút)</label>
+                            <div className={styles.inputWithReset}>
+                                <input
+                                    type="number"
+                                    value={flightData.maxFlightTime}
+                                    onChange={(e) =>
+                                        handleInputChange(
+                                            "maxFlightTime",
+                                            e.target.value,
+                                        )
+                                    }
+                                    className={
+                                        modifiedFields.maxFlightTime
+                                            ? styles.modifiedInput
+                                            : ""
+                                    }
+                                />
+                                {modifiedFields.maxFlightTime && (
+                                    <div className={styles.modifiedIndicator}>
+                                        <span className={styles.oldValue}>
+                                            Giá trị cũ:{" "}
+                                            {originalFlightData.maxFlightTime}
+                                        </span>
+                                        <button
+                                            className={styles.resetButton}
+                                            onClick={() =>
+                                                resetField("maxFlightTime")
+                                            }
+                                            title="Hoàn tác thay đổi"
+                                        >
+                                            <RotateCcw size={14} />
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
                         </div>
 
                         <div className={styles.formRow}>
                             <label>SỐ SÂN BAY TRUNG GIAN TỐI ĐA</label>
                             <div className={styles.inputGroup}>
-                                <span className={styles.detailLink}>
+                                <span
+                                    className={styles.detailLink}
+                                    onClick={() => setOpenForm("flightRoute")}
+                                >
                                     Xem chi tiết tuyến bay
                                 </span>
-                                <input
-                                    type="number"
-                                    value={flightData.avgFlightTime}
-                                    onChange={(e) =>
-                                        handleInputChange(
-                                            "avgFlightTime",
-                                            e.target.value,
-                                        )
-                                    }
-                                />
+                                <div className={styles.inputWithReset}>
+                                    <input
+                                        type="number"
+                                        value={flightData.avgFlightTime}
+                                        onChange={(e) =>
+                                            handleInputChange(
+                                                "avgFlightTime",
+                                                e.target.value,
+                                            )
+                                        }
+                                        className={
+                                            modifiedFields.avgFlightTime
+                                                ? styles.modifiedInput
+                                                : ""
+                                        }
+                                    />
+                                    {modifiedFields.avgFlightTime && (
+                                        <div
+                                            className={styles.modifiedIndicator}
+                                        >
+                                            <span className={styles.oldValue}>
+                                                Giá trị cũ:{" "}
+                                                {
+                                                    originalFlightData.avgFlightTime
+                                                }
+                                            </span>
+                                            <button
+                                                className={styles.resetButton}
+                                                onClick={() =>
+                                                    resetField("avgFlightTime")
+                                                }
+                                                title="Hoàn tác thay đổi"
+                                            >
+                                                <RotateCcw size={14} />
+                                            </button>
+                                        </div>
+                                    )}
+                                </div>
                             </div>
                         </div>
 
                         <div className={styles.formRow}>
-                            <label>THỜI GIAN DỪNG TỐI THIỂU</label>
-                            <input
-                                type="number"
-                                value={flightData.maxStopTime}
-                                onChange={(e) =>
-                                    handleInputChange(
-                                        "maxStopTime",
-                                        e.target.value,
-                                    )
-                                }
-                            />
+                            <label>THỜI GIAN DỪNG TỐI THIỂU (PHÚT)</label>
+                            <div className={styles.inputWithReset}>
+                                <input
+                                    type="number"
+                                    value={flightData.maxStopTime}
+                                    onChange={(e) =>
+                                        handleInputChange(
+                                            "maxStopTime",
+                                            e.target.value,
+                                        )
+                                    }
+                                    className={
+                                        modifiedFields.maxStopTime
+                                            ? styles.modifiedInput
+                                            : ""
+                                    }
+                                />
+                                {modifiedFields.maxStopTime && (
+                                    <div className={styles.modifiedIndicator}>
+                                        <span className={styles.oldValue}>
+                                            Giá trị cũ:{" "}
+                                            {originalFlightData.maxStopTime}
+                                        </span>
+                                        <button
+                                            className={styles.resetButton}
+                                            onClick={() =>
+                                                resetField("maxStopTime")
+                                            }
+                                            title="Hoàn tác thay đổi"
+                                        >
+                                            <RotateCcw size={14} />
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
                         </div>
 
                         <div className={styles.formRow}>
-                            <label>THỜI GIAN DỪNG TỐI ĐA</label>
-                            <input
-                                type="number"
-                                value={flightData.maxTotalTime}
-                                onChange={(e) =>
-                                    handleInputChange(
-                                        "maxTotalTime",
-                                        e.target.value,
-                                    )
-                                }
-                            />
+                            <label>THỜI GIAN DỪNG TỐI ĐA (PHÚT)</label>
+                            <div className={styles.inputWithReset}>
+                                <input
+                                    type="number"
+                                    value={flightData.maxTotalTime}
+                                    onChange={(e) =>
+                                        handleInputChange(
+                                            "maxTotalTime",
+                                            e.target.value,
+                                        )
+                                    }
+                                    className={
+                                        modifiedFields.maxTotalTime
+                                            ? styles.modifiedInput
+                                            : ""
+                                    }
+                                />
+                                {modifiedFields.maxTotalTime && (
+                                    <div className={styles.modifiedIndicator}>
+                                        <span className={styles.oldValue}>
+                                            Giá trị cũ:{" "}
+                                            {originalFlightData.maxTotalTime}
+                                        </span>
+                                        <button
+                                            className={styles.resetButton}
+                                            onClick={() =>
+                                                resetField("maxTotalTime")
+                                            }
+                                            title="Hoàn tác thay đổi"
+                                        >
+                                            <RotateCcw size={14} />
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
                         </div>
                     </div>
                 )}
@@ -251,11 +422,11 @@ export default function RegulationForm() {
                     className={styles.sectionHeader}
                     onClick={() => setTimeRulesOpen(!timeRulesOpen)}
                 >
-                    <span>Thay đổi quy định thời gian</span>
+                    <span>THAY ĐỔI QUY ĐỊNH THỜI GIAN</span>
                     <span
                         className={`${styles.arrow} ${timeRulesOpen ? styles.open : ""}`}
                     >
-                        ▼
+                        <ChevronDown size={16} />
                     </span>
                 </div>
 
@@ -263,30 +434,80 @@ export default function RegulationForm() {
                     <div className={styles.sectionContent}>
                         <div className={styles.formRow}>
                             <label>THỜI GIAN CHẬM NHẤT KHI ĐẶT VÉ (GIỜ)</label>
-                            <input
-                                type="number"
-                                value={flightData.earliestBooking}
-                                onChange={(e) =>
-                                    handleInputChange(
-                                        "earliestBooking",
-                                        e.target.value,
-                                    )
-                                }
-                            />
+                            <div className={styles.inputWithReset}>
+                                <input
+                                    type="number"
+                                    value={flightData.earliestBooking}
+                                    onChange={(e) =>
+                                        handleInputChange(
+                                            "earliestBooking",
+                                            e.target.value,
+                                        )
+                                    }
+                                    className={
+                                        modifiedFields.earliestBooking
+                                            ? styles.modifiedInput
+                                            : ""
+                                    }
+                                />
+                                {modifiedFields.earliestBooking && (
+                                    <div className={styles.modifiedIndicator}>
+                                        <span className={styles.oldValue}>
+                                            Giá trị cũ:{" "}
+                                            {originalFlightData.earliestBooking}
+                                        </span>
+                                        <button
+                                            className={styles.resetButton}
+                                            onClick={() =>
+                                                resetField("earliestBooking")
+                                            }
+                                            title="Hoàn tác thay đổi"
+                                        >
+                                            <RotateCcw size={14} />
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
                         </div>
 
                         <div className={styles.formRow}>
                             <label>THỜI GIAN CHẬM NHẤT KHI HỦY VÉ (GIỜ)</label>
-                            <input
-                                type="number"
-                                value={flightData.latestCancellation}
-                                onChange={(e) =>
-                                    handleInputChange(
-                                        "latestCancellation",
-                                        e.target.value,
-                                    )
-                                }
-                            />
+                            <div className={styles.inputWithReset}>
+                                <input
+                                    type="number"
+                                    value={flightData.latestCancellation}
+                                    onChange={(e) =>
+                                        handleInputChange(
+                                            "latestCancellation",
+                                            e.target.value,
+                                        )
+                                    }
+                                    className={
+                                        modifiedFields.latestCancellation
+                                            ? styles.modifiedInput
+                                            : ""
+                                    }
+                                />
+                                {modifiedFields.latestCancellation && (
+                                    <div className={styles.modifiedIndicator}>
+                                        <span className={styles.oldValue}>
+                                            Giá trị cũ:{" "}
+                                            {
+                                                originalFlightData.latestCancellation
+                                            }
+                                        </span>
+                                        <button
+                                            className={styles.resetButton}
+                                            onClick={() =>
+                                                resetField("latestCancellation")
+                                            }
+                                            title="Hoàn tác thay đổi"
+                                        >
+                                            <RotateCcw size={14} />
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
                         </div>
                     </div>
                 )}
@@ -298,11 +519,11 @@ export default function RegulationForm() {
                     className={styles.sectionHeader}
                     onClick={() => setTicketRulesOpen(!ticketRulesOpen)}
                 >
-                    <span>Thay đổi quy định vé</span>
+                    <span>THAY ĐỔI QUY ĐỊNH VÉ</span>
                     <span
                         className={`${styles.arrow} ${ticketRulesOpen ? styles.open : ""}`}
                     >
-                        ▼
+                        <ChevronDown size={16} />
                     </span>
                 </div>
 
@@ -311,19 +532,48 @@ export default function RegulationForm() {
                         <div className={styles.formRow}>
                             <label>SỐ LƯỢNG CÁC HÃNG VÉ</label>
                             <div className={styles.inputGroup}>
-                                <span className={styles.detailLink}>
+                                <span
+                                    className={styles.detailLink}
+                                    onClick={() => setOpenForm("ticketClass")}
+                                >
                                     Xem chi tiết hãng vé
                                 </span>
-                                <input
-                                    type="number"
-                                    value={flightData.airlines}
-                                    onChange={(e) =>
-                                        handleInputChange(
-                                            "airlines",
-                                            e.target.value,
-                                        )
-                                    }
-                                />
+                                <div className={styles.inputWithReset}>
+                                    <input
+                                        type="number"
+                                        value={flightData.airlines}
+                                        onChange={(e) =>
+                                            handleInputChange(
+                                                "airlines",
+                                                e.target.value,
+                                            )
+                                        }
+                                        className={
+                                            modifiedFields.airlines
+                                                ? styles.modifiedInput
+                                                : ""
+                                        }
+                                    />
+                                    {modifiedFields.airlines && (
+                                        <div
+                                            className={styles.modifiedIndicator}
+                                        >
+                                            <span className={styles.oldValue}>
+                                                Giá trị cũ:{" "}
+                                                {originalFlightData.airlines}
+                                            </span>
+                                            <button
+                                                className={styles.resetButton}
+                                                onClick={() =>
+                                                    resetField("airlines")
+                                                }
+                                                title="Hoàn tác thay đổi"
+                                            >
+                                                <RotateCcw size={14} />
+                                            </button>
+                                        </div>
+                                    )}
+                                </div>
                             </div>
                         </div>
 
