@@ -3,7 +3,7 @@ import styles from "./FlightRouteDetail.module.css";
 import { Plus, Trash2, ChevronDown, X } from "lucide-react";
 import axios from "axios";
 
-export default function FlightRouteDetail({ setToast, onClose }) {
+export default function FlightRouteDetail({ setToast, onClose, setLoading }) {
     console.log(888);
     const [flightRoutes, setFlightRoutes] = useState([]);
     const [newFlightRoutes, setNewFlightRoutes] = useState([]);
@@ -22,6 +22,7 @@ export default function FlightRouteDetail({ setToast, onClose }) {
     const dropdownRefs = useRef({});
     useEffect(() => {
         const fetchAllData = async () => {
+            setLoading(true);
             try {
                 const [flightRoutesRes, intermediateAirportsRes, airportsRes] =
                     await Promise.all([
@@ -48,6 +49,8 @@ export default function FlightRouteDetail({ setToast, onClose }) {
                     "Lỗi khi lấy dữ liệu:",
                     error.response?.data || error.message,
                 );
+            } finally {
+                setLoading(false);
             }
         };
 

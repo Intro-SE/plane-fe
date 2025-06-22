@@ -25,6 +25,7 @@ export const AuthProvider = ({ children }) => {
                     logout();
                 }, remainingTime);
 
+                setLoading(false);
                 return () => clearTimeout(timer); // cleanup
             } else {
                 logout(); // Hết hạn, tự động đăng xuất

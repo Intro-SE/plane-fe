@@ -3,12 +3,13 @@ import styles from "./TicketClassDetail.module.css";
 import { Plus, Trash2 } from "lucide-react";
 import axios from "axios";
 
-export default function TicketClassDetail({ setToast, onClose }) {
+export default function TicketClassDetail({ setToast, onClose, setLoading }) {
     console.log(999);
     const [ticketClasses, setTicketClasses] = useState([]);
     const [newTicketClasses, setNewTicketClasses] = useState([]);
     useEffect(() => {
         const fetchTicketClassDetail = async () => {
+            setLoading(true);
             try {
                 const response = await axios.get(
                     "http://localhost:8000/api/v1/regulation/get_ticket_class",
@@ -19,6 +20,8 @@ export default function TicketClassDetail({ setToast, onClose }) {
                     "Lỗi khi lấy dữ liệu chi tiết hạng vé:",
                     error.response?.data || error.message,
                 );
+            } finally {
+                setLoading(false);
             }
         };
         fetchTicketClassDetail();

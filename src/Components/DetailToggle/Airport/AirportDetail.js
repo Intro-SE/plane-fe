@@ -4,11 +4,12 @@ import { Plus, Trash2 } from "lucide-react";
 import axios from "axios";
 import MessageDialog from "../../Dialog/Message/MessageDialog";
 
-export default function AirportDetail({ setToast, onClose }) {
+export default function AirportDetail({ setToast, onClose, setLoading }) {
     const [airports, setAirports] = useState([]);
     const [newAirports, setNewAirports] = useState([]);
 
     useEffect(() => {
+        setLoading(true);
         const fetchAirportDetail = async () => {
             try {
                 const response = await axios.get(
@@ -20,6 +21,8 @@ export default function AirportDetail({ setToast, onClose }) {
                     "Lỗi khi lấy dữ liệu chi tiết sân bay:",
                     error.response?.data || error.message,
                 );
+            } finally {
+                setLoading(false);
             }
         };
 

@@ -3,7 +3,7 @@ import { ChevronDown, X, Plus, Trash2, RotateCcw } from "lucide-react";
 import styles from "./RegulationForm.module.css";
 import axios from "axios";
 
-export default function RegulationForm({ setToast, setOpenForm }) {
+export default function RegulationForm({ setToast, setOpenForm, setLoading }) {
     const [flightRulesOpen, setFlightRulesOpen] = useState(false);
     const [timeRulesOpen, setTimeRulesOpen] = useState(false);
     const [ticketRulesOpen, setTicketRulesOpen] = useState(false);
@@ -37,6 +37,7 @@ export default function RegulationForm({ setToast, setOpenForm }) {
 
     useEffect(() => {
         const fetchData = async () => {
+            setLoading(true);
             try {
                 const [
                     regulationRes,
@@ -72,6 +73,8 @@ export default function RegulationForm({ setToast, setOpenForm }) {
                     "Lỗi khi lấy dữ liệu:",
                     error.response?.data || error.message,
                 );
+            } finally {
+                setLoading(false);
             }
         };
 

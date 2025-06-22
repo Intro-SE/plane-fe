@@ -9,7 +9,7 @@ import FlightBookingInfo from "../../Components/Form/AddFlightBooking/AddFlightB
 import styles from "./FlightManagement.module.css";
 import TopBar from "../../Components/TopBar/TopBar";
 import { useState, useEffect } from "react";
-import { Plus, Trash2, X } from "lucide-react";
+import { Plus, Trash2, X, Loader } from "lucide-react";
 import axios from "axios";
 import { BASE_URL } from "../api.js";
 
@@ -31,6 +31,77 @@ export default function FlightManagement() {
         message: "",
     });
     const [reloadFlag, setReloadFlag] = useState(0);
+
+    // Loading Component
+    const LoadingComponent = () => (
+        <div className={styles["loading-overlay"]}>
+            <div className={styles["loading-container"]}>
+                <div className={styles["loading-spinner"]}>
+                    <Loader size={32} className={styles["spinner-icon"]} />
+                </div>
+                <div className={styles["loading-text"]}>
+                    Đang tải dữ liệu chuyến bay...
+                </div>
+                <div className={styles["loading-dots"]}>
+                    <div className={styles.dot}></div>
+                    <div className={styles.dot}></div>
+                    <div className={styles.dot}></div>
+                </div>
+            </div>
+        </div>
+    );
+
+    // Skeleton Loading Card Component
+    const SkeletonCard = () => (
+        <div className={styles["skeleton-card"]}>
+            <div className={styles["skeleton-header"]}>
+                <div
+                    className={styles["skeleton-text"]}
+                    style={{ width: "120px", height: "20px" }}
+                ></div>
+                <div
+                    className={styles["skeleton-text"]}
+                    style={{ width: "80px", height: "16px" }}
+                ></div>
+            </div>
+            <div className={styles["skeleton-content"]}>
+                <div className={styles["skeleton-row"]}>
+                    <div
+                        className={styles["skeleton-text"]}
+                        style={{ width: "60%", height: "16px" }}
+                    ></div>
+                    <div
+                        className={styles["skeleton-text"]}
+                        style={{ width: "30%", height: "16px" }}
+                    ></div>
+                </div>
+                <div className={styles["skeleton-row"]}>
+                    <div
+                        className={styles["skeleton-text"]}
+                        style={{ width: "50%", height: "16px" }}
+                    ></div>
+                    <div
+                        className={styles["skeleton-text"]}
+                        style={{ width: "40%", height: "16px" }}
+                    ></div>
+                </div>
+                <div className={styles["skeleton-row"]}>
+                    <div
+                        className={styles["skeleton-text"]}
+                        style={{ width: "70%", height: "16px" }}
+                    ></div>
+                    <div
+                        className={styles["skeleton-text"]}
+                        style={{ width: "25%", height: "16px" }}
+                    ></div>
+                </div>
+            </div>
+            <div className={styles["skeleton-footer"]}>
+                <div className={styles["skeleton-button"]}></div>
+                <div className={styles["skeleton-button"]}></div>
+            </div>
+        </div>
+    );
 
     useEffect(() => {
         const fetchFlights = async () => {
@@ -84,6 +155,7 @@ export default function FlightManagement() {
     }, []);
 
     const handleFilter = async (data) => {
+        setLoading(true);
         try {
             const response = await axios.post(
                 `${BASE_URL}/api/v1/flight_management/search`,
@@ -248,10 +320,15 @@ export default function FlightManagement() {
                     <SideBar />
                 </div>
                 <div className={styles["content-container"]}>
-                    <div className={styles["filter-container"]}>
+                    {loading && <LoadingComponent />}
+                    <div
+                        className={`${styles["filter-container"]} ${loading ? styles["loading-blur"] : ""}`}
+                    >
                         <ManageFilter onSendData={handleFilter} />
                     </div>
-                    <div className={styles.container}>
+                    <div
+                        className={`${styles.container} ${loading ? styles["loading-blur"] : ""}`}
+                    >
                         <div className={styles.header}>
                             <h1 className={styles.title}>
                                 Danh sách các chuyến bay dựa theo bộ lọc
@@ -263,19 +340,46 @@ export default function FlightManagement() {
                             <div className={styles.actions}>
                                 <button
                                     onClick={handleOpenAddFlightForm}
-                                    className={styles.button}
+                                    className={`${styles.button} ${loading ? styles.disabled : ""}`}
+                                    disabled={loading}
                                 >
-                                    <Plus size={16} className={styles.icon} />
-                                    Thêm chuyến bay
+                                    {loading ? (
+                                        <Loader
+                                            size={16}
+                                            className={styles["button-spinner"]}
+                                        />
+                                    ) : (
+                                        <Plus
+                                            size={16}
+                                            className={styles.icon}
+                                        />
+                                    )}
+                                    {loading
+                                        ? "Đang tải..."
+                                        : "Thêm chuyến bay"}
                                 </button>
 
                                 <button
                                     onClick={handleDeleteSelected}
-                                    className={`${styles.button} ${selectedFlights.length > 0 ? styles["delete-active"] : ""}`}
+                                    className={`${styles.button} ${selectedFlights.length > 0 ? styles["delete-active"] : ""} ${loading ? styles.disabled : ""}`}
+                                    disabled={
+                                        loading || selectedFlights.length === 0
+                                    }
                                 >
-                                    <Trash2 size={16} className={styles.icon} />
-                                    Xóa chuyến bay đã chọn (
-                                    {selectedFlights.length})
+                                    {loading ? (
+                                        <Loader
+                                            size={16}
+                                            className={styles["button-spinner"]}
+                                        />
+                                    ) : (
+                                        <Trash2
+                                            size={16}
+                                            className={styles.icon}
+                                        />
+                                    )}
+                                    {loading
+                                        ? "Đang tải..."
+                                        : `Xóa chuyến bay đã chọn (${selectedFlights.length})`}
                                 </button>
                             </div>
                         </div>
@@ -324,29 +428,51 @@ export default function FlightManagement() {
                         message={toast.message}
                         onClose={() => setToast({ ...toast, show: false })}
                     />
-                    <div className={styles["card-container"]}>
-                        {flights
-                            .slice()
-                            .sort((a, b) => {
-                                const numA = parseInt(
-                                    a.flight_id.replace(/\D/g, ""),
-                                );
-                                const numB = parseInt(
-                                    b.flight_id.replace(/\D/g, ""),
-                                );
-                                return numA - numB;
-                            })
-                            .map((flight) => (
-                                <FlightCardEdit
-                                    key={flight.flight_id}
-                                    data={flight}
-                                    onSendData={handleOpenUpdateFlightForm}
-                                    onFlightSelect={handleFlightSelect}
-                                    isSelected={selectedFlights.includes(
-                                        flight.flight_id,
-                                    )}
-                                />
-                            ))}
+                    <div
+                        className={`${styles["card-container"]} ${loading ? styles["loading-blur"] : ""}`}
+                    >
+                        {loading && (
+                            <>
+                                {[...Array(3)].map((_, index) => (
+                                    <SkeletonCard key={`skeleton-${index}`} />
+                                ))}
+                            </>
+                        )}
+                        {!loading &&
+                            flights
+                                .slice()
+                                .sort((a, b) => {
+                                    const numA = parseInt(
+                                        a.flight_id.replace(/\D/g, ""),
+                                    );
+                                    const numB = parseInt(
+                                        b.flight_id.replace(/\D/g, ""),
+                                    );
+                                    return numA - numB;
+                                })
+                                .map((flight) => (
+                                    <FlightCardEdit
+                                        key={flight.flight_id}
+                                        data={flight}
+                                        onSendData={handleOpenUpdateFlightForm}
+                                        onFlightSelect={handleFlightSelect}
+                                        isSelected={selectedFlights.includes(
+                                            flight.flight_id,
+                                        )}
+                                    />
+                                ))}
+                        {!loading && flights.length === 0 && (
+                            <div className={styles["empty-state"]}>
+                                <div className={styles["empty-icon"]}>✈️</div>
+                                <div className={styles["empty-text"]}>
+                                    Không có chuyến bay nào được tìm thấy
+                                </div>
+                                <div className={styles["empty-subtext"]}>
+                                    Thử điều chỉnh bộ lọc hoặc thêm chuyến bay
+                                    mới
+                                </div>
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>
