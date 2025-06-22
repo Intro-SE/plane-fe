@@ -5,6 +5,7 @@ import FixFlightForm from "../../Components/Form/FixFlight/FixFlightForm";
 import FlightCardEdit from "../../Components/Info/FlightCardEdit/FlightCardEdit";
 import ConfirmDialog from "../../Components/Dialog/Confirm/ConfirmDialog";
 import MessageDialog from "../../Components/Dialog/Message/MessageDialog";
+import FlightBookingInfo from "../../Components/Form/AddFlightBooking/AddFlightBooking.js";
 import styles from "./FlightManagement.module.css";
 import TopBar from "../../Components/TopBar/TopBar";
 import { useState, useEffect } from "react";
@@ -13,13 +14,11 @@ import axios from "axios";
 import { BASE_URL } from "../api.js";
 
 export default function FlightManagement() {
-    console.log(666);
     const [flights, setFlights] = useState([]);
     const [loading, setLoading] = useState(true);
     const [isAddFlightFormOpen, setIsAddFlightFormOpen] = useState(false);
     const [isUpdateFlightFormOpen, setIsUpdateFlightFormOpen] = useState(false);
     const [routeData, setRouteData] = useState([]);
-    const [seatClassData, setSeatClassData] = useState([]);
     const [formData, setFormData] = useState({});
     const [selectedFlights, setSelectedFlights] = useState([]);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -36,11 +35,14 @@ export default function FlightManagement() {
     useEffect(() => {
         const fetchFlights = async () => {
             try {
-                const response = await axios.get(`${BASE_URL}/api/v1/flight`, {
-                    headers: {
-                        Accept: "application/json",
+                const response = await axios.get(
+                    `${BASE_URL}/api/v1/flight_management`,
+                    {
+                        headers: {
+                            Accept: "application/json",
+                        },
                     },
-                });
+                );
 
                 setFlights(response.data);
             } catch (error) {
@@ -77,8 +79,6 @@ export default function FlightManagement() {
                     error.message?.data || error.message,
                 );
             }
-            const seatClass = ["Phổ thông", "Thương gia", "Cao cấp", "Nhất"];
-            setSeatClassData(seatClass);
         };
         fetchFlightRoutes();
     }, []);
@@ -113,7 +113,6 @@ export default function FlightManagement() {
                     data,
                 );
                 console.log("Thêm chuyến bay thành công", response.data);
-                // setFlights((prevFlights) => [...prevFlights, response.data]);
                 setReloadFlag((f) => f + 1);
                 setToast({
                     show: true,
@@ -150,13 +149,6 @@ export default function FlightManagement() {
                 data,
             );
             console.log("Cập nhật chuyến bay thành công", response.data);
-            // setFlights((prevFlights) =>
-            //     prevFlights.map((flight) =>
-            //         flight.flight_id === response.data.flight_id
-            //             ? response.data
-            //             : flight,
-            //     ),
-            // );
             setReloadFlag((f) => f + 1);
             setToast({
                 show: true,
@@ -213,12 +205,6 @@ export default function FlightManagement() {
                 );
                 console.log(response);
 
-                // Cập nhật danh sách chuyến bay sau khi xóa
-                // setFlights((prev) =>
-                //     prev.filter(
-                //         (flight) => !selectedFlights.includes(flight.flight_id),
-                //     ),
-                // );
                 setReloadFlag((f) => f + 1);
                 console.log("Xóa chuyến bay thành công");
                 setToast({
@@ -255,6 +241,7 @@ export default function FlightManagement() {
 
     return (
         <div className={styles["overral-page-container"]}>
+            {/* <FlightBookingInfo /> */}
             <TopBar />
             <div className={styles["flight-management-container"]}>
                 <div className={styles["sidebar-container"]}>
@@ -301,7 +288,6 @@ export default function FlightManagement() {
                                         setIsAddFlightFormOpen(false)
                                     }
                                     routeData={routeData}
-                                    seatClassData={seatClassData}
                                     onSendData={handleAddFlight}
                                 />
                             </div>
@@ -315,7 +301,6 @@ export default function FlightManagement() {
                                         setIsUpdateFlightFormOpen(false)
                                     }
                                     routeData={routeData}
-                                    seatClassData={seatClassData}
                                     onSendData={handleUpdateFlight}
                                     data={formData}
                                 />

@@ -4,19 +4,41 @@ import RegulationForm from "../../Components/Form/Regulation/RegulationForm";
 import AirportDetail from "../../Components/DetailToggle/Airport/AirportDetail";
 import FlightRouteDetail from "../../Components/DetailToggle/FlightRoute/FlightRouteDetail";
 import TicketClassDetail from "../../Components/DetailToggle/TicketClass/TicketClassDetail";
+import MessageDialog from "../../Components/Dialog/Message/MessageDialog";
 import styles from "./RegulationSetting.module.css";
 import { useState } from "react";
 
 export default function RegulationSetting() {
+    console.log(666);
+    const [toast, setToast] = useState({
+        show: false,
+        type: "",
+        message: "",
+    });
     const [openForm, setOpenForm] = useState(null);
     const renderForm = () => {
         switch (openForm) {
             case "airport":
-                return <AirportDetail onClose={() => setOpenForm(null)} />;
+                return (
+                    <AirportDetail
+                        setToast={setToast}
+                        onClose={() => setOpenForm(null)}
+                    />
+                );
             case "flightRoute":
-                return <FlightRouteDetail onClose={() => setOpenForm(null)} />;
+                return (
+                    <FlightRouteDetail
+                        setToast={setToast}
+                        onClose={() => setOpenForm(null)}
+                    />
+                );
             case "ticketClass":
-                return <TicketClassDetail onClose={() => setOpenForm(null)} />;
+                return (
+                    <TicketClassDetail
+                        setToast={setToast}
+                        onClose={() => setOpenForm(null)}
+                    />
+                );
             default:
                 return null;
         }
@@ -29,7 +51,10 @@ export default function RegulationSetting() {
                     <SideBar />
                 </div>
                 <div className={styles["content-section"]}>
-                    <RegulationForm setOpenForm={setOpenForm} />
+                    <RegulationForm
+                        setToast={setToast}
+                        setOpenForm={setOpenForm}
+                    />
                 </div>
             </div>
 
@@ -39,6 +64,13 @@ export default function RegulationSetting() {
                     <div className={styles.modal}>{renderForm()}</div>
                 </div>
             )}
+
+            <MessageDialog
+                show={toast.show}
+                type={toast.type}
+                message={toast.message}
+                onClose={() => setToast({ ...toast, show: false })}
+            />
         </div>
     );
 }

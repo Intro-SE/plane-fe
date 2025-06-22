@@ -1,62 +1,90 @@
 import { useState, useRef, useEffect } from "react";
 import { ChevronDown, X, Plus, Trash2, RotateCcw } from "lucide-react";
 import styles from "./RegulationForm.module.css";
-import AirportDetail from "../../DetailToggle/Airport/AirportDetail";
-import TicketClassDetail from "../../DetailToggle/TicketClass/TicketClassDetail";
-import FlightRouteDetail from "../../DetailToggle/FlightRoute/FlightRouteDetail";
+import axios from "axios";
 
-export default function RegulationForm({ setOpenForm }) {
+export default function RegulationForm({ setToast, setOpenForm }) {
     const [flightRulesOpen, setFlightRulesOpen] = useState(false);
     const [timeRulesOpen, setTimeRulesOpen] = useState(false);
     const [ticketRulesOpen, setTicketRulesOpen] = useState(false);
 
-    // Original values to compare against
-    const [originalFlightData] = useState({
-        passengers: 10,
-        maxFlightTime: 30,
-        avgFlightTime: 2,
-        maxStopTime: 10,
-        maxTotalTime: 20,
-        earliestBooking: 24,
-        latestCancellation: 24,
-        airlines: 2,
+    const [originalRegulations, setOriginalRegulations] = useState({
+        airport_number: "",
+        min_flight_duration: "",
+        max_stop_number: "",
+        min_stop_duration: "",
+        max_stop_duration: "",
+        latest_time_to_book: "",
+        latest_time_to_cancel: "",
+        ticket_class_number: "",
     });
 
-    const [flightData, setFlightData] = useState({
-        passengers: 10,
-        maxFlightTime: 30,
-        avgFlightTime: 2,
-        maxStopTime: 10,
-        maxTotalTime: 20,
-        earliestBooking: 24,
-        latestCancellation: 24,
-        airlines: 2,
+    const [regulationData, setRegulationData] = useState({
+        airport_number: "",
+        min_flight_duration: "",
+        max_stop_number: "",
+        min_stop_duration: "",
+        max_stop_duration: "",
+        latest_time_to_book: "",
+        latest_time_to_cancel: "",
+        ticket_class_number: "",
     });
 
-    // Track which fields have been modified
+    const [ticketClasses, setTicketClasses] = useState([]);
+
+    const [ticketClassOptions, setTicketClassOptions] = useState([]);
+    const [flightRouteOptions, setFlightRouteOptions] = useState([]);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const [
+                    regulationRes,
+                    ticketClassRouteRes,
+                    ticketClassOptionRes,
+                    flightRoutesOptionRes,
+                ] = await Promise.all([
+                    axios.get(
+                        "http://localhost:8000/api/v1/regulation/regulations",
+                    ),
+                    axios.get(
+                        "http://localhost:8000/api/v1/regulation/ticket_class_by_route",
+                    ),
+                    axios.get(
+                        "http://localhost:8000/api/v1/regulation/get_ticket_class",
+                    ),
+                    axios.get("http://localhost:8000/api/v1/flightroutes_crud"),
+                ]);
+
+                setOriginalRegulations(regulationRes.data);
+                setRegulationData(regulationRes.data);
+                setTicketClasses(ticketClassRouteRes.data);
+                const ticketClassNames = ticketClassOptionRes.data.map(
+                    (item) => item.ticket_class_name,
+                );
+                setTicketClassOptions(ticketClassNames);
+                const flightRoutes = flightRoutesOptionRes.data.map(
+                    (item) => item.flight_route_id,
+                );
+                setFlightRouteOptions(flightRoutes);
+            } catch (error) {
+                console.log(
+                    "Lỗi khi lấy dữ liệu:",
+                    error.response?.data || error.message,
+                );
+            }
+        };
+
+        fetchData();
+    }, []);
+
     const [modifiedFields, setModifiedFields] = useState({});
 
-    const [ticketClasses, setTicketClasses] = useState([
-        {
-            code: "SG-HN",
-            airline: "Phổ thông",
-            price: "1500000",
-        },
-        {
-            code: "HUE-DBP",
-            airline: "Thương gia",
-            price: "2500000",
-        },
-        {
-            code: "DN-CM",
-            airline: "Cao Cấp",
-            price: "3800000",
-        },
-    ]);
+    const [newTicketClasses, setNewTicketClasses] = useState([]);
 
     const [newTicket, setNewTicket] = useState({
-        code: "",
-        airline: "",
+        flight_route_id: "",
+        ticket_class_name: "",
         price: "",
     });
 
@@ -68,13 +96,13 @@ export default function RegulationForm({ setOpenForm }) {
     const dropdownRefs = useRef({});
 
     const handleInputChange = (field, value) => {
-        setFlightData((prev) => ({
+        setRegulationData((prev) => ({
             ...prev,
             [field]: value,
         }));
 
         // Mark field as modified if value is different from original
-        if (value !== originalFlightData[field]) {
+        if (value !== originalRegulations[field]) {
             setModifiedFields((prev) => ({
                 ...prev,
                 [field]: true,
@@ -91,9 +119,9 @@ export default function RegulationForm({ setOpenForm }) {
 
     // Reset a field to its original value
     const resetField = (field) => {
-        setFlightData((prev) => ({
+        setRegulationData((prev) => ({
             ...prev,
-            [field]: originalFlightData[field],
+            [field]: originalRegulations[field],
         }));
 
         // Remove from modified fields
@@ -159,29 +187,90 @@ export default function RegulationForm({ setOpenForm }) {
     };
 
     const addTicket = () => {
-        if (newTicket.code && newTicket.airline && newTicket.price) {
-            setTicketClasses((prev) => [...prev, newTicket]);
+        if (
+            newTicket.flight_route_id &&
+            newTicket.ticket_class_name &&
+            newTicket.price
+        ) {
+            const newTicketEntry = { ...newTicket };
+            setTicketClasses((prev) => [...prev, newTicketEntry]);
+            setNewTicketClasses((prev) => [...prev, newTicketEntry]);
             setNewTicket({
-                code: "",
-                airline: "",
+                flight_route_id: "",
+                ticket_class_name: "",
                 price: "",
             });
         }
     };
 
-    const removeTicket = (index) => {
-        setTicketClasses((prev) => prev.filter((_, i) => i !== index));
+    const removeTicket = (index, ticket) => {
+        if (
+            newTicketClasses.some(
+                (item) =>
+                    item.flight_route_id === ticket.flight_route_id &&
+                    item.ticket_class_name === ticket.ticket_class_name &&
+                    item.price === ticket.price,
+            )
+        ) {
+            setTicketClasses((prev) => prev.filter((_, i) => i !== index));
+            setNewTicketClasses((prev) =>
+                prev.filter(
+                    (item) =>
+                        !(
+                            item.flight_route_id === ticket.flight_route_id &&
+                            item.ticket_class_name ===
+                                ticket.ticket_class_name &&
+                            item.price === ticket.price
+                        ),
+                ),
+            );
+        }
     };
 
-    const ticketClassOptions = ["Phổ thông", "Thương gia", "Cao Cấp", "VIP"];
-    const flightCodeOptions = [
-        "SG-HN",
-        "HUE-DBP",
-        "DN-CM",
-        "HN-SG",
-        "DN-HN",
-        "CM-SG",
-    ];
+    const handleConfirm = async () => {
+        try {
+            const updateRulePromise = axios.put(
+                "http://localhost:8000/api/v1/regulation/update_rule",
+                regulationData,
+            );
+
+            const ticketClassPromise = (async () => {
+                for (const ticket_class of newTicketClasses) {
+                    await axios.post(
+                        "http://localhost:8000/api/v1/regulation/create_ticket_class_by_route",
+                        ticket_class,
+                    );
+                }
+            })();
+
+            const [updateRegulationRes] = await Promise.all([
+                updateRulePromise,
+                ticketClassPromise,
+            ]);
+
+            // Cập nhật state sau khi xong cả hai
+            setOriginalRegulations(updateRegulationRes.data);
+            setRegulationData(updateRegulationRes.data);
+            setModifiedFields({});
+            setNewTicketClasses([]);
+
+            setToast({
+                show: true,
+                type: "success",
+                message: "Cập nhật quy định thành công!",
+            });
+        } catch (error) {
+            console.error(
+                "Lỗi khi cập nhật:",
+                error.response?.data || error.message,
+            );
+            setToast({
+                show: true,
+                type: "error",
+                message: "Cập nhật quy định không thành công!",
+            });
+        }
+    };
 
     return (
         <div className={styles.container}>
@@ -213,31 +302,33 @@ export default function RegulationForm({ setOpenForm }) {
                                 <div className={styles.inputWithReset}>
                                     <input
                                         type="number"
-                                        value={flightData.passengers}
+                                        value={regulationData.airport_number}
                                         onChange={(e) =>
                                             handleInputChange(
-                                                "passengers",
+                                                "airport_number",
                                                 e.target.value,
                                             )
                                         }
                                         className={
-                                            modifiedFields.passengers
+                                            modifiedFields.airport_number
                                                 ? styles.modifiedInput
                                                 : ""
                                         }
                                     />
-                                    {modifiedFields.passengers && (
+                                    {modifiedFields.airport_number && (
                                         <div
                                             className={styles.modifiedIndicator}
                                         >
                                             <span className={styles.oldValue}>
                                                 Giá trị cũ:{" "}
-                                                {originalFlightData.passengers}
+                                                {
+                                                    originalRegulations.airport_number
+                                                }
                                             </span>
                                             <button
                                                 className={styles.resetButton}
                                                 onClick={() =>
-                                                    resetField("passengers")
+                                                    resetField("airport_number")
                                                 }
                                                 title="Hoàn tác thay đổi"
                                             >
@@ -254,29 +345,33 @@ export default function RegulationForm({ setOpenForm }) {
                             <div className={styles.inputWithReset}>
                                 <input
                                     type="number"
-                                    value={flightData.maxFlightTime}
+                                    value={regulationData.min_flight_duration}
                                     onChange={(e) =>
                                         handleInputChange(
-                                            "maxFlightTime",
+                                            "min_flight_duration",
                                             e.target.value,
                                         )
                                     }
                                     className={
-                                        modifiedFields.maxFlightTime
+                                        modifiedFields.min_flight_duration
                                             ? styles.modifiedInput
                                             : ""
                                     }
                                 />
-                                {modifiedFields.maxFlightTime && (
+                                {modifiedFields.min_flight_duration && (
                                     <div className={styles.modifiedIndicator}>
                                         <span className={styles.oldValue}>
                                             Giá trị cũ:{" "}
-                                            {originalFlightData.maxFlightTime}
+                                            {
+                                                originalRegulations.min_flight_duration
+                                            }
                                         </span>
                                         <button
                                             className={styles.resetButton}
                                             onClick={() =>
-                                                resetField("maxFlightTime")
+                                                resetField(
+                                                    "min_flight_duration",
+                                                )
                                             }
                                             title="Hoàn tác thay đổi"
                                         >
@@ -299,33 +394,35 @@ export default function RegulationForm({ setOpenForm }) {
                                 <div className={styles.inputWithReset}>
                                     <input
                                         type="number"
-                                        value={flightData.avgFlightTime}
+                                        value={regulationData.max_stop_number}
                                         onChange={(e) =>
                                             handleInputChange(
-                                                "avgFlightTime",
+                                                "max_stop_number",
                                                 e.target.value,
                                             )
                                         }
                                         className={
-                                            modifiedFields.avgFlightTime
+                                            modifiedFields.max_stop_number
                                                 ? styles.modifiedInput
                                                 : ""
                                         }
                                     />
-                                    {modifiedFields.avgFlightTime && (
+                                    {modifiedFields.max_stop_number && (
                                         <div
                                             className={styles.modifiedIndicator}
                                         >
                                             <span className={styles.oldValue}>
                                                 Giá trị cũ:{" "}
                                                 {
-                                                    originalFlightData.avgFlightTime
+                                                    originalRegulations.max_stop_number
                                                 }
                                             </span>
                                             <button
                                                 className={styles.resetButton}
                                                 onClick={() =>
-                                                    resetField("avgFlightTime")
+                                                    resetField(
+                                                        "max_stop_number",
+                                                    )
                                                 }
                                                 title="Hoàn tác thay đổi"
                                             >
@@ -342,29 +439,31 @@ export default function RegulationForm({ setOpenForm }) {
                             <div className={styles.inputWithReset}>
                                 <input
                                     type="number"
-                                    value={flightData.maxStopTime}
+                                    value={regulationData.min_stop_duration}
                                     onChange={(e) =>
                                         handleInputChange(
-                                            "maxStopTime",
+                                            "min_stop_duration",
                                             e.target.value,
                                         )
                                     }
                                     className={
-                                        modifiedFields.maxStopTime
+                                        modifiedFields.min_stop_duration
                                             ? styles.modifiedInput
                                             : ""
                                     }
                                 />
-                                {modifiedFields.maxStopTime && (
+                                {modifiedFields.min_stop_duration && (
                                     <div className={styles.modifiedIndicator}>
                                         <span className={styles.oldValue}>
                                             Giá trị cũ:{" "}
-                                            {originalFlightData.maxStopTime}
+                                            {
+                                                originalRegulations.min_stop_duration
+                                            }
                                         </span>
                                         <button
                                             className={styles.resetButton}
                                             onClick={() =>
-                                                resetField("maxStopTime")
+                                                resetField("min_stop_duration")
                                             }
                                             title="Hoàn tác thay đổi"
                                         >
@@ -380,29 +479,31 @@ export default function RegulationForm({ setOpenForm }) {
                             <div className={styles.inputWithReset}>
                                 <input
                                     type="number"
-                                    value={flightData.maxTotalTime}
+                                    value={regulationData.max_stop_duration}
                                     onChange={(e) =>
                                         handleInputChange(
-                                            "maxTotalTime",
+                                            "max_stop_duration",
                                             e.target.value,
                                         )
                                     }
                                     className={
-                                        modifiedFields.maxTotalTime
+                                        modifiedFields.max_stop_duration
                                             ? styles.modifiedInput
                                             : ""
                                     }
                                 />
-                                {modifiedFields.maxTotalTime && (
+                                {modifiedFields.max_stop_duration && (
                                     <div className={styles.modifiedIndicator}>
                                         <span className={styles.oldValue}>
                                             Giá trị cũ:{" "}
-                                            {originalFlightData.maxTotalTime}
+                                            {
+                                                originalRegulations.max_stop_duration
+                                            }
                                         </span>
                                         <button
                                             className={styles.resetButton}
                                             onClick={() =>
-                                                resetField("maxTotalTime")
+                                                resetField("max_stop_duration")
                                             }
                                             title="Hoàn tác thay đổi"
                                         >
@@ -437,29 +538,33 @@ export default function RegulationForm({ setOpenForm }) {
                             <div className={styles.inputWithReset}>
                                 <input
                                     type="number"
-                                    value={flightData.earliestBooking}
+                                    value={regulationData.latest_time_to_book}
                                     onChange={(e) =>
                                         handleInputChange(
-                                            "earliestBooking",
+                                            "latest_time_to_book",
                                             e.target.value,
                                         )
                                     }
                                     className={
-                                        modifiedFields.earliestBooking
+                                        modifiedFields.latest_time_to_book
                                             ? styles.modifiedInput
                                             : ""
                                     }
                                 />
-                                {modifiedFields.earliestBooking && (
+                                {modifiedFields.latest_time_to_book && (
                                     <div className={styles.modifiedIndicator}>
                                         <span className={styles.oldValue}>
                                             Giá trị cũ:{" "}
-                                            {originalFlightData.earliestBooking}
+                                            {
+                                                originalRegulations.latest_time_to_book
+                                            }
                                         </span>
                                         <button
                                             className={styles.resetButton}
                                             onClick={() =>
-                                                resetField("earliestBooking")
+                                                resetField(
+                                                    "latest_time_to_book",
+                                                )
                                             }
                                             title="Hoàn tác thay đổi"
                                         >
@@ -475,31 +580,33 @@ export default function RegulationForm({ setOpenForm }) {
                             <div className={styles.inputWithReset}>
                                 <input
                                     type="number"
-                                    value={flightData.latestCancellation}
+                                    value={regulationData.latest_time_to_cancel}
                                     onChange={(e) =>
                                         handleInputChange(
-                                            "latestCancellation",
+                                            "latest_time_to_cancel",
                                             e.target.value,
                                         )
                                     }
                                     className={
-                                        modifiedFields.latestCancellation
+                                        modifiedFields.latest_time_to_cancel
                                             ? styles.modifiedInput
                                             : ""
                                     }
                                 />
-                                {modifiedFields.latestCancellation && (
+                                {modifiedFields.latest_time_to_cancel && (
                                     <div className={styles.modifiedIndicator}>
                                         <span className={styles.oldValue}>
                                             Giá trị cũ:{" "}
                                             {
-                                                originalFlightData.latestCancellation
+                                                originalRegulations.latest_time_to_cancel
                                             }
                                         </span>
                                         <button
                                             className={styles.resetButton}
                                             onClick={() =>
-                                                resetField("latestCancellation")
+                                                resetField(
+                                                    "latest_time_to_cancel",
+                                                )
                                             }
                                             title="Hoàn tác thay đổi"
                                         >
@@ -530,7 +637,7 @@ export default function RegulationForm({ setOpenForm }) {
                 {ticketRulesOpen && (
                     <div className={styles.sectionContent}>
                         <div className={styles.formRow}>
-                            <label>SỐ LƯỢNG CÁC HÃNG VÉ</label>
+                            <label>SỐ LƯỢNG CÁC HẠNG VÉ (CỦA TUYẾN BAY)</label>
                             <div className={styles.inputGroup}>
                                 <span
                                     className={styles.detailLink}
@@ -541,31 +648,37 @@ export default function RegulationForm({ setOpenForm }) {
                                 <div className={styles.inputWithReset}>
                                     <input
                                         type="number"
-                                        value={flightData.airlines}
+                                        value={
+                                            regulationData.ticket_class_number
+                                        }
                                         onChange={(e) =>
                                             handleInputChange(
-                                                "airlines",
+                                                "ticket_class_number",
                                                 e.target.value,
                                             )
                                         }
                                         className={
-                                            modifiedFields.airlines
+                                            modifiedFields.ticket_class_number
                                                 ? styles.modifiedInput
                                                 : ""
                                         }
                                     />
-                                    {modifiedFields.airlines && (
+                                    {modifiedFields.ticket_class_number && (
                                         <div
                                             className={styles.modifiedIndicator}
                                         >
                                             <span className={styles.oldValue}>
                                                 Giá trị cũ:{" "}
-                                                {originalFlightData.airlines}
+                                                {
+                                                    originalRegulations.ticket_class_number
+                                                }
                                             </span>
                                             <button
                                                 className={styles.resetButton}
                                                 onClick={() =>
-                                                    resetField("airlines")
+                                                    resetField(
+                                                        "ticket_class_number",
+                                                    )
                                                 }
                                                 title="Hoàn tác thay đổi"
                                             >
@@ -598,10 +711,10 @@ export default function RegulationForm({ setOpenForm }) {
                             {ticketClasses.map((ticket, index) => (
                                 <div key={index} className={styles.tableRow}>
                                     <div className={styles.tableCell}>
-                                        {ticket.code}
+                                        {ticket.flight_route_id}
                                     </div>
                                     <div className={styles.tableCell}>
-                                        {ticket.airline}
+                                        {ticket.ticket_class_name}
                                     </div>
                                     <div className={styles.tableCell}>
                                         {parseInt(ticket.price).toLocaleString(
@@ -610,8 +723,41 @@ export default function RegulationForm({ setOpenForm }) {
                                     </div>
                                     <div className={styles.tableCell}>
                                         <button
-                                            className={styles.deleteButton}
-                                            onClick={() => removeTicket(index)}
+                                            className={`${styles.deleteButton} ${
+                                                !newTicketClasses.some(
+                                                    (item) =>
+                                                        item.flight_route_id ===
+                                                            ticket.flight_route_id &&
+                                                        item.ticket_class_name ===
+                                                            ticket.ticket_class_name &&
+                                                        item.price ===
+                                                            ticket.price,
+                                                )
+                                                    ? styles.disabledButton
+                                                    : ""
+                                            }`}
+                                            onClick={() =>
+                                                newTicketClasses.some(
+                                                    (item) =>
+                                                        item.flight_route_id ===
+                                                            ticket.flight_route_id &&
+                                                        item.ticket_class_name ===
+                                                            ticket.ticket_class_name &&
+                                                        item.price ===
+                                                            ticket.price,
+                                                ) && removeTicket(index, ticket)
+                                            }
+                                            disabled={
+                                                !newTicketClasses.some(
+                                                    (item) =>
+                                                        item.flight_route_id ===
+                                                            ticket.flight_route_id &&
+                                                        item.ticket_class_name ===
+                                                            ticket.ticket_class_name &&
+                                                        item.price ===
+                                                            ticket.price,
+                                                )
+                                            }
                                         >
                                             <Trash2 size={16} />
                                             Xóa
@@ -638,18 +784,18 @@ export default function RegulationForm({ setOpenForm }) {
                                         }}
                                     >
                                         <button
-                                            className={`${styles.ticketClass} ${newTicket.code ? styles.airlineButton : ""}`}
+                                            className={`${styles.ticketClass} ${newTicket.flight_route_id ? styles.airlineButton : ""}`}
                                             onClick={() =>
                                                 toggleDropdown("flightCode")
                                             }
                                         >
-                                            {newTicket.code || "..."}
-                                            {newTicket.code ? (
+                                            {newTicket.flight_route_id || "..."}
+                                            {newTicket.flight_route_id ? (
                                                 <X
                                                     size={16}
                                                     onClick={(e) =>
                                                         clearSelection(
-                                                            "code",
+                                                            "flight_route_id",
                                                             e,
                                                         )
                                                     }
@@ -663,7 +809,7 @@ export default function RegulationForm({ setOpenForm }) {
                                             <div
                                                 className={styles.dropdownMenu}
                                             >
-                                                {flightCodeOptions.map(
+                                                {flightRouteOptions.map(
                                                     (option, idx) => (
                                                         <div
                                                             key={idx}
@@ -672,7 +818,7 @@ export default function RegulationForm({ setOpenForm }) {
                                                             }
                                                             onClick={() => {
                                                                 handleNewTicketChange(
-                                                                    "code",
+                                                                    "flight_route_id",
                                                                     option,
                                                                 );
                                                                 toggleDropdown(
@@ -704,18 +850,19 @@ export default function RegulationForm({ setOpenForm }) {
                                         }}
                                     >
                                         <button
-                                            className={`${styles.ticketClass} ${newTicket.airline ? styles.airlineButton : ""}`}
+                                            className={`${styles.ticketClass} ${newTicket.ticket_class_name ? styles.airlineButton : ""}`}
                                             onClick={() =>
                                                 toggleDropdown("ticketClass")
                                             }
                                         >
-                                            {newTicket.airline || "..."}
-                                            {newTicket.airline ? (
+                                            {newTicket.ticket_class_name ||
+                                                "..."}
+                                            {newTicket.ticket_class_name ? (
                                                 <X
                                                     size={16}
                                                     onClick={(e) =>
                                                         clearSelection(
-                                                            "airline",
+                                                            "ticket_class_name",
                                                             e,
                                                         )
                                                     }
@@ -738,7 +885,7 @@ export default function RegulationForm({ setOpenForm }) {
                                                             }
                                                             onClick={() => {
                                                                 handleNewTicketChange(
-                                                                    "airline",
+                                                                    "ticket_class_name",
                                                                     option,
                                                                 );
                                                                 toggleDropdown(
@@ -786,7 +933,9 @@ export default function RegulationForm({ setOpenForm }) {
             {/* Action Buttons */}
             <div className={styles.actionButtons}>
                 <button className={styles.cancelBtn}>Hủy</button>
-                <button className={styles.confirmBtn}>Xác nhận</button>
+                <button className={styles.confirmBtn} onClick={handleConfirm}>
+                    Xác nhận
+                </button>
             </div>
         </div>
     );

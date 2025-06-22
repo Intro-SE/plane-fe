@@ -1,28 +1,65 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import styles from "./AirportDetail.module.css";
 import { Plus, Trash2 } from "lucide-react";
+import axios from "axios";
+import MessageDialog from "../../Dialog/Message/MessageDialog";
 
-export default function AirportDetail({ onClose }) {
-    const [airports, setAirports] = useState([
-        { code: "TSN", name: "Tân Sơn Nhất", city: "TP HCM" },
-        { code: "HAN", name: "Nội Bài", city: "Hà Nội" },
-        { code: "DAN", name: "Đà Nẵng", city: "Đà Nẵng" },
-    ]);
+export default function AirportDetail({ setToast, onClose }) {
+    const [airports, setAirports] = useState([]);
+    const [newAirports, setNewAirports] = useState([]);
+
+    useEffect(() => {
+        const fetchAirportDetail = async () => {
+            try {
+                const response = await axios.get(
+                    "http://localhost:8000/api/v1/airports_crud",
+                );
+                setAirports(response.data);
+            } catch (error) {
+                console.log(
+                    "Lỗi khi lấy dữ liệu chi tiết sân bay:",
+                    error.response?.data || error.message,
+                );
+            }
+        };
+
+        fetchAirportDetail();
+    }, []);
 
     const [newAirport, setNewAirport] = useState({
-        code: "",
-        name: "",
-        city: "",
+        airport_id: "",
+        airport_name: "",
+        airport_address: "",
+        internal_id: "",
     });
 
-    const handleDelete = (code) => {
-        setAirports(airports.filter((airport) => airport.code !== code));
+    const handleDelete = (internalId) => {
+        // Chỉ cho phép xóa các sân bay mới được thêm vào
+        setNewAirports(
+            newAirports.filter((airport) => airport.internal_id !== internalId),
+        );
+        setAirports(
+            airports.filter((airport) => airport.internal_id !== internalId),
+        );
     };
 
     const handleAdd = () => {
-        if (newAirport.code && newAirport.name && newAirport.city) {
-            setAirports([...airports, { ...newAirport }]);
-            setNewAirport({ code: "", name: "", city: "" });
+        if (newAirport.airport_name && newAirport.airport_address) {
+            // Tạo một ID nội bộ dựa trên timestamp và số ngẫu nhiên để phân biệt các sân bay
+            const internalId = `internal_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
+            const newAirportEntry = {
+                ...newAirport,
+                airport_id: "SBxx",
+                internal_id: internalId,
+            };
+            setAirports([...airports, newAirportEntry]);
+            setNewAirports([...newAirports, newAirportEntry]);
+            setNewAirport({
+                airport_id: "",
+                airport_name: "",
+                airport_address: "",
+                internal_id: "",
+            });
         }
     };
 
@@ -37,7 +74,32 @@ export default function AirportDetail({ onClose }) {
         onClose();
     };
 
-    const handleSave = () => {
+    const handleSave = async () => {
+        try {
+            for (const airport of newAirports) {
+                await axios.post("http://localhost:8000/api/v1/airports_crud", {
+                    airport_name: airport.airport_name,
+                    airport_address: airport.airport_address,
+                });
+            }
+
+            setToast({
+                show: true,
+                type: "success",
+                message: "Cập nhật sân bay thành công!",
+            });
+        } catch (error) {
+            console.error(
+                "Lỗi khi cập nhật sân bay",
+                error.response?.data || error.message,
+            );
+            setToast({
+                show: true,
+                type: "error",
+                message: "Cập nhật sân bay không thành công!",
+            });
+        }
+
         onClose();
     };
 
@@ -65,18 +127,31 @@ export default function AirportDetail({ onClose }) {
                     {airports.map((airport, index) => (
                         <div key={index} className={styles.tableRow}>
                             <div className={styles.tableCell}>
-                                {airport.code}
+                                {airport.airport_id}
                             </div>
                             <div className={styles.tableCell}>
-                                {airport.name}
+                                {airport.airport_name}
                             </div>
                             <div className={styles.tableCell}>
-                                {airport.city}
+                                {airport.airport_address}
                             </div>
                             <div className={styles.tableCell}>
                                 <button
-                                    className={styles.deleteButton}
-                                    onClick={() => handleDelete(airport.code)}
+                                    className={`${styles.deleteButton} ${!newAirports.some((item) => item.internal_id === airport.internal_id) ? styles.disabledButton : ""}`}
+                                    onClick={() =>
+                                        newAirports.some(
+                                            (item) =>
+                                                item.internal_id ===
+                                                airport.internal_id,
+                                        ) && handleDelete(airport.internal_id)
+                                    }
+                                    disabled={
+                                        !newAirports.some(
+                                            (item) =>
+                                                item.internal_id ===
+                                                airport.internal_id,
+                                        )
+                                    }
                                 >
                                     <Trash2 size={16} />
                                     Xóa
@@ -89,15 +164,17 @@ export default function AirportDetail({ onClose }) {
                         <div className={styles.tableCell}>
                             <input
                                 type="text"
-                                className={styles.quantityInput}
-                                placeholder="Mã sân bay"
-                                value={newAirport.code}
+                                className={`${styles.quantityInput} ${styles.disabledInput}`}
+                                placeholder="Mã tự động sinh"
+                                value={newAirport.airport_id}
                                 onChange={(e) =>
                                     handleNewAirportChange(
-                                        "code",
+                                        "airport_id",
                                         e.target.value,
                                     )
                                 }
+                                disabled
+                                title="Mã sân bay được tạo tự động"
                             />
                         </div>
                         <div className={styles.tableCell}>
@@ -105,10 +182,10 @@ export default function AirportDetail({ onClose }) {
                                 type="text"
                                 className={styles.quantityInput}
                                 placeholder="Tên sân bay"
-                                value={newAirport.name}
+                                value={newAirport.airport_name}
                                 onChange={(e) =>
                                     handleNewAirportChange(
-                                        "name",
+                                        "airport_name",
                                         e.target.value,
                                     )
                                 }
@@ -119,10 +196,10 @@ export default function AirportDetail({ onClose }) {
                                 type="text"
                                 className={styles.quantityInput}
                                 placeholder="Địa chỉ"
-                                value={newAirport.city}
+                                value={newAirport.airport_address}
                                 onChange={(e) =>
                                     handleNewAirportChange(
-                                        "city",
+                                        "airport_address",
                                         e.target.value,
                                     )
                                 }

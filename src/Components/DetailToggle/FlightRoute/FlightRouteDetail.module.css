@@ -5,6 +5,8 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    position: relative;
+    z-index: 1;
 }
 
 .card {
@@ -15,6 +17,8 @@
     width: fit-content;
     margin: 0;
     display: inline-block;
+    position: relative;
+    z-index: 10;
 }
 
 .header {
@@ -41,18 +45,20 @@
     font-weight: bold;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     letter-spacing: 0.5px;
+    position: relative;
+    z-index: 20;
 }
 
 .tableContainer {
     border: 2px solid #ddd;
     border-radius: 12px;
-    overflow-x: auto;
+    overflow: visible;
     background: white;
     margin-top: 20px;
     table-layout: fixed;
     width: 100%;
     position: relative;
-    z-index: 1;
+    z-index: 50;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
     margin-bottom: 30px;
     display: block;
@@ -107,7 +113,7 @@
     grid-template-columns: 1.5fr 1.5fr 1.5fr 0.5fr;
     border-bottom: 1px solid #f0f0f0;
     position: relative;
-    z-index: 100;
+    z-index: 10;
     width: 100%;
     min-height: 56px;
 }
@@ -118,7 +124,7 @@
     grid-template-columns: 1.3fr 1.5fr 1.6fr 1.9fr 0.7fr;
     border-bottom: 1px solid #f0f0f0;
     position: relative;
-    z-index: 100;
+    z-index: 10;
     width: 100%;
     min-height: 56px;
 }
@@ -136,6 +142,7 @@
     min-height: 56px;
     box-sizing: border-box;
     font-size: 15px;
+    z-index: 10;
 }
 
 /* Đặc biệt hóa cho cột thao tác (cột cuối cùng) */
@@ -169,6 +176,20 @@
 .deleteButton:hover {
     background: linear-gradient(135deg, #ff8c00, #ffa500);
     transform: translateY(-2px);
+}
+
+.disabledButton {
+    background: linear-gradient(135deg, #cccccc, #dddddd) !important;
+    color: #888888 !important;
+    cursor: not-allowed;
+    opacity: 0.7;
+    box-shadow: none;
+}
+
+.disabledButton:hover {
+    background: linear-gradient(135deg, #cccccc, #dddddd) !important;
+    transform: none;
+    box-shadow: none;
 }
 
 .addButton {
@@ -245,11 +266,11 @@
 
 .quantityInput {
     width: 100%;
-    height: 42px;
-    padding: 0 12px;
-    border: 1px solid #ddd;
-    border-radius: 6px;
-    font-size: 15px;
+    height: 50px;
+    padding: 0 15px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    font-size: 16px;
     text-align: left;
     box-sizing: border-box;
     display: flex;
@@ -258,8 +279,315 @@
     outline: none;
     transition: border-color 0.3s ease;
     min-width: 120px;
+    color: #333;
 }
 
 .quantityInput:focus {
     border-color: #007bff;
+}
+
+.dropdown {
+    position: relative;
+    width: 100%;
+    display: inline-block;
+    z-index: 2147483646;
+    height: 50px;
+}
+
+.tableCell .dropdown {
+    position: relative;
+    z-index: 2147483646;
+}
+
+.dropdownButton {
+    width: 100%;
+    height: 50px;
+    padding: 0 15px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    background: white;
+    font-size: 16px;
+    text-align: left;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: border-color 0.3s ease;
+    box-sizing: border-box;
+    color: #999;
+    gap: 10px;
+    line-height: 1;
+}
+
+.dropdownButton:hover {
+    border-color: #007bff;
+}
+
+.disabledDropdown {
+    background: linear-gradient(135deg, #e8f4f8, #f2f9fb);
+    cursor: not-allowed;
+    border: 2px solid #c8e1e9;
+    position: relative;
+    box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+}
+
+.disabledDropdown .inputIcon {
+    opacity: 0.5;
+}
+
+.disabledDropdown::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    right: 40px;
+    transform: translateY(-50%);
+    width: 18px;
+    height: 18px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='%2320b2aa' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect width='18' height='11' x='3' y='11' rx='2' ry='2'/%3E%3Cpath d='M7 11V7a5 5 0 0 1 10 0v4'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: center;
+    opacity: 0.8;
+}
+
+.disabledDropdown:hover {
+    border-color: #a8d1d9;
+    box-shadow: inset 0 0 8px rgba(32, 178, 170, 0.1);
+}
+
+.airlineButton {
+    background: linear-gradient(135deg, #20b2aa, #40e0d0);
+    color: white;
+    border: none;
+    font-weight: 600;
+}
+
+.airlineButton:hover {
+    background: linear-gradient(135deg, #008b8b, #20b2aa);
+}
+
+.airlineButton.disabledDropdown {
+    background: linear-gradient(135deg, #b5e8e4, #d1f0ed);
+    border: 2px solid #95d8d3;
+    opacity: 0.95;
+    color: #333;
+}
+
+.airlineButton.disabledDropdown:hover {
+    background: linear-gradient(135deg, #b5e8e4, #d1f0ed);
+    border: 2px solid #95d8d3;
+    box-shadow: inset 0 0 8px rgba(32, 178, 170, 0.1);
+}
+
+.airlineButton.disabledDropdown::after {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect width='18' height='11' x='3' y='11' rx='2' ry='2'/%3E%3Cpath d='M7 11V7a5 5 0 0 1 10 0v4'/%3E%3C/svg%3E");
+    right: 40px;
+}
+
+.dropdownButtonSmall {
+    width: 100%;
+    min-width: 120px;
+    height: 44px;
+    padding: 0 10px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    background: white;
+    font-size: 14px;
+    text-align: left;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-sizing: border-box;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition:
+        background 0.3s ease,
+        color 0.3s ease;
+}
+
+.dropdownButtonSmall.airlineButton {
+    background: linear-gradient(135deg, #20b2aa, #40e0d0);
+    color: white;
+    border: none;
+    font-weight: 600;
+}
+
+.dropdownButtonSmall.airlineButton:hover {
+    background: linear-gradient(135deg, #008b8b, #20b2aa);
+}
+
+.airlineButton {
+    background: linear-gradient(135deg, #20b2aa, #40e0d0);
+    color: white;
+    border: none;
+    font-weight: 600;
+}
+
+.airlineButton:hover {
+    background: linear-gradient(135deg, #008b8b, #20b2aa);
+}
+
+.airlineButton.disabledDropdown {
+    background: linear-gradient(135deg, #b5e8e4, #d1f0ed);
+    border: 2px solid #95d8d3;
+    opacity: 0.95;
+    color: #333;
+}
+
+.airlineButton.disabledDropdown:hover {
+    background: linear-gradient(135deg, #b5e8e4, #d1f0ed);
+    border: 2px solid #95d8d3;
+    box-shadow: inset 0 0 8px rgba(32, 178, 170, 0.1);
+}
+
+.airlineButton.disabledDropdown::after {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect width='18' height='11' x='3' y='11' rx='2' ry='2'/%3E%3Cpath d='M7 11V7a5 5 0 0 1 10 0v4'/%3E%3C/svg%3E");
+    right: 40px;
+}
+
+/* For small dropdown buttons */
+.dropdownButtonSmall.airlineButton {
+    background: linear-gradient(135deg, #20b2aa, #40e0d0);
+    color: white;
+    border: none;
+    font-weight: 600;
+
+    color: #333;
+}
+
+.airlineButton.disabledDropdown:hover {
+    background: linear-gradient(135deg, #b5e8e4, #d1f0ed);
+    border: 2px solid #95d8d3;
+    box-shadow: inset 0 0 8px rgba(32, 178, 170, 0.1);
+}
+
+.airlineButton.disabledDropdown::after {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect width='18' height='11' x='3' y='11' rx='2' ry='2'/%3E%3Cpath d='M7 11V7a5 5 0 0 1 10 0v4'/%3E%3C/svg%3E");
+    right: 40px;
+}
+
+/* For small dropdown buttons */
+.dropdownButtonSmall.airlineButton {
+    background: linear-gradient(135deg, #20b2aa, #40e0d0);
+    color: white;
+    border: none;
+    font-weight: 600;
+}
+
+.dropdownButtonSmall.airlineButton:hover {
+    background: linear-gradient(135deg, #008b8b, #20b2aa);
+}
+
+.ticketClass {
+    width: 100%;
+    height: 38px;
+    padding: 0 12px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    background: white;
+    font-size: 14px;
+    text-align: left;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: border-color 0.3s ease;
+    box-sizing: border-box;
+    color: #999;
+    z-index: 2;
+    gap: 8px;
+    line-height: 1;
+}
+
+.dropdownMenu {
+    position: absolute;
+    top: calc(100% + 2px);
+    left: 0;
+    right: 0;
+    background: white;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+    z-index: 2147483647;
+    max-height: 200px;
+    overflow-y: auto;
+    width: 100%;
+    min-width: 200px;
+}
+
+.dropdownItem {
+    padding: 12px 15px;
+    cursor: pointer;
+    border-bottom: 1px solid #f0f0f0;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+    font-size: 15px;
+}
+
+.dropdownItem:hover {
+    background-color: #f8f9fa;
+    color: #007bff;
+    padding-left: 18px;
+}
+
+.dropdownItem.selected {
+    background-color: #e3f2fd;
+    color: #1976d2;
+    font-weight: 600;
+}
+
+.dropdownItem.selected:hover {
+    background-color: #bbdefb;
+    color: #1565c0;
+}
+
+.dropdownItem:last-child {
+    border-bottom: none;
+}
+
+.inputIcon {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #666;
+    pointer-events: none;
+    transition: color 0.3s ease;
+}
+
+.clearIcon {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #666;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.clearIcon:hover {
+    color: #333;
+}
+
+.disabledInput {
+    background-color: #f5f5f5;
+    color: #888;
+    cursor: not-allowed;
+    border: 1px dashed #ccc;
+    position: relative;
+}
+
+.disabledInput::after {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 14px;
 }

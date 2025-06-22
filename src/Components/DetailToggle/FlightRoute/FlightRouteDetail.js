@@ -1,66 +1,129 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import styles from "./FlightRouteDetail.module.css";
-import { Plus, Trash2 } from "lucide-react";
+import { Plus, Trash2, ChevronDown, X } from "lucide-react";
+import axios from "axios";
 
-export default function FlightRouteDetail({ onClose }) {
-    // State for flight routes
-    const [flightRoutes, setFlightRoutes] = useState([
-        { code: "SG-HN", departureAirport: "TSN", arrivalAirport: "HAN" },
-        { code: "HN-DN", departureAirport: "HAN", arrivalAirport: "DAN" },
-        { code: "DN-SG", departureAirport: "DAN", arrivalAirport: "TSN" },
-    ]);
+export default function FlightRouteDetail({ setToast, onClose }) {
+    console.log(888);
+    const [flightRoutes, setFlightRoutes] = useState([]);
+    const [newFlightRoutes, setNewFlightRoutes] = useState([]);
+    const [intermediateAirports, setIntermediateAirports] = useState([]);
+    const [newIntermediateAirports, setNewIntermediateAirports] = useState([]);
+    const [airports, setAirports] = useState([]);
 
-    // State for intermediate airports
-    const [intermediateAirports, setIntermediateAirports] = useState([
-        {
-            routeCode: "SG-HN",
-            airport: "HUI",
-            stopDuration: "45 phút",
-            note: "Tiếp nhiên liệu",
-        },
-        {
-            routeCode: "HN-DN",
-            airport: "VDO",
-            stopDuration: "30 phút",
-            note: "Đón khách",
-        },
-    ]);
+    // Dropdown states
+    const [dropdowns, setDropdowns] = useState({
+        departureAirport: false,
+        arrivalAirport: false,
+        transitAirport: false,
+        routeCode: false,
+    });
+
+    const dropdownRefs = useRef({});
+    useEffect(() => {
+        const fetchAllData = async () => {
+            try {
+                const [flightRoutesRes, intermediateAirportsRes, airportsRes] =
+                    await Promise.all([
+                        axios.get(
+                            "http://localhost:8000/api/v1/flightroutes_crud",
+                        ),
+                        axios.get(
+                            "http://localhost:8000/api/v1/regulation/flight_detail",
+                        ),
+                        axios.get("http://localhost:8000/api/v1/airports_crud"),
+                    ]);
+
+                const routes = flightRoutesRes.data.map((route) => ({
+                    code: route.flight_route_id,
+                    departureAirport: route.departure_airport.airport_name,
+                    arrivalAirport: route.arrival_airport.airport_name,
+                }));
+
+                setFlightRoutes(routes);
+                setIntermediateAirports(intermediateAirportsRes.data);
+                setAirports(airportsRes.data || []);
+            } catch (error) {
+                console.log(
+                    "Lỗi khi lấy dữ liệu:",
+                    error.response?.data || error.message,
+                );
+            }
+        };
+
+        fetchAllData();
+    }, []);
+
+    // Handle click outside to close dropdowns
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            Object.keys(dropdowns).forEach((key) => {
+                if (
+                    dropdownRefs.current[key] &&
+                    !dropdownRefs.current[key].contains(event.target) &&
+                    dropdowns[key]
+                ) {
+                    setDropdowns((prev) => ({
+                        ...prev,
+                        [key]: false,
+                    }));
+                }
+            });
+        };
+
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, [dropdowns]);
 
     // State for new flight route
     const [newFlightRoute, setNewFlightRoute] = useState({
         code: "",
         departureAirport: "",
         arrivalAirport: "",
+        departureAirportID: "",
+        arrivalAirportID: "",
     });
 
     // State for new intermediate airport
     const [newIntermediateAirport, setNewIntermediateAirport] = useState({
-        routeCode: "",
-        airport: "",
-        stopDuration: "",
+        flight_route_id: "",
+        transit_airport_name: "",
+        stop_time: "",
         note: "",
     });
 
     // Handle delete flight route
-    const handleDeleteRoute = (code) => {
-        setFlightRoutes(flightRoutes.filter((route) => route.code !== code));
-        setIntermediateAirports(
-            intermediateAirports.filter((stop) => stop.routeCode !== code),
+    const handleDeleteRoute = (internalId) => {
+        // Remove from newFlightRoutes array
+        setNewFlightRoutes(
+            newFlightRoutes.filter((route) => route.internalId !== internalId),
+        );
+        // Remove from flightRoutes array
+        setFlightRoutes(
+            flightRoutes.filter((route) => route.internalId !== internalId),
         );
     };
 
     // Handle add new flight route
     const handleAddRoute = () => {
-        if (
-            newFlightRoute.code &&
-            newFlightRoute.departureAirport &&
-            newFlightRoute.arrivalAirport
-        ) {
-            setFlightRoutes([...flightRoutes, { ...newFlightRoute }]);
+        if (newFlightRoute.departureAirport && newFlightRoute.arrivalAirport) {
+            const internalId = `internal_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
+            const newRouteEntry = {
+                ...newFlightRoute,
+                code: "TBxx",
+                internalId: internalId,
+            };
+            setFlightRoutes((prev) => [...prev, newRouteEntry]);
+            setNewFlightRoutes((prev) => [...prev, newRouteEntry]);
             setNewFlightRoute({
                 code: "",
                 departureAirport: "",
                 arrivalAirport: "",
+                departureAirportID: "",
+                arrivalAirportID: "",
+                internalId: "",
             });
         }
     };
@@ -73,28 +136,102 @@ export default function FlightRouteDetail({ onClose }) {
         });
     };
 
+    // Toggle dropdown
+    const toggleDropdown = (dropdown) => {
+        setDropdowns((prev) => ({
+            ...prev,
+            [dropdown]: !prev[dropdown],
+        }));
+    };
+
+    // Select option from dropdown
+    const selectOption = (field, value) => {
+        if (field === "departureAirport" || field === "arrivalAirport") {
+            const { name, id } = value;
+            setNewFlightRoute((prev) => ({
+                ...prev,
+                [field]: name,
+                [field + "ID"]: id,
+            }));
+        } else if (field === "transitAirport") {
+            setNewIntermediateAirport((prev) => ({
+                ...prev,
+                transit_airport_name: value,
+            }));
+        } else if (field === "routeCode") {
+            setNewIntermediateAirport((prev) => ({
+                ...prev,
+                flight_route_id: value,
+            }));
+        }
+        setDropdowns((prev) => ({
+            ...prev,
+            [field]: false,
+        }));
+    };
+
+    // Clear selection
+    const clearSelection = (field, event) => {
+        event.stopPropagation();
+        if (field === "departureAirport" || field === "arrivalAirport") {
+            setNewFlightRoute((prev) => ({
+                ...prev,
+                [field]: "",
+                [field + "ID"]: "",
+            }));
+        } else if (field === "transitAirport") {
+            setNewIntermediateAirport((prev) => ({
+                ...prev,
+                transit_airport_name: "",
+            }));
+        } else if (field === "routeCode") {
+            setNewIntermediateAirport((prev) => ({
+                ...prev,
+                flight_route_id: "",
+            }));
+        }
+    };
+
     // Handle delete intermediate airport
-    const handleDeleteIntermediate = (index) => {
+    const handleDeleteIntermediate = (index, airport) => {
+        // Remove from intermediateAirports array using index
         setIntermediateAirports(
             intermediateAirports.filter((_, i) => i !== index),
+        );
+        // Remove from newIntermediateAirports array using matching properties
+        setNewIntermediateAirports(
+            newIntermediateAirports.filter(
+                (item) =>
+                    !(
+                        item.flight_route_id === airport.flight_route_id &&
+                        item.transit_airport_name ===
+                            airport.transit_airport_name &&
+                        item.stop_time === airport.stop_time
+                    ),
+            ),
         );
     };
 
     // Handle add intermediate airport
     const handleAddIntermediate = () => {
         if (
-            newIntermediateAirport.routeCode &&
-            newIntermediateAirport.airport &&
-            newIntermediateAirport.stopDuration
+            newIntermediateAirport.flight_route_id &&
+            newIntermediateAirport.transit_airport_name &&
+            newIntermediateAirport.stop_time
         ) {
+            const newIntermediateEntry = { ...newIntermediateAirport };
             setIntermediateAirports([
                 ...intermediateAirports,
-                { ...newIntermediateAirport },
+                newIntermediateEntry,
+            ]);
+            setNewIntermediateAirports([
+                ...newIntermediateAirports,
+                newIntermediateEntry,
             ]);
             setNewIntermediateAirport({
-                routeCode: "",
-                airport: "",
-                stopDuration: "",
+                flight_route_id: "",
+                transit_airport_name: "",
+                stop_time: "",
                 note: "",
             });
         }
@@ -114,7 +251,60 @@ export default function FlightRouteDetail({ onClose }) {
     };
 
     // Handle save button
-    const handleSave = () => {
+    const handleSave = async () => {
+        const saveFlightRoutes = async () => {
+            for (const flightRoute of newFlightRoutes) {
+                await axios.post(
+                    "http://localhost:8000/api/v1/flightroutes_crud",
+                    {
+                        departure_airport_id: flightRoute.departureAirportID,
+                        arrival_airport_id: flightRoute.arrivalAirportID,
+                    },
+                );
+            }
+
+            setToast({
+                show: true,
+                type: "success",
+                message: "Cập nhật tuyến bay thành công!",
+            });
+        };
+
+        const saveIntermediateAirports = async () => {
+            for (const intermediateAirport of newIntermediateAirports) {
+                await axios.post(
+                    "http://localhost:8000/api/v1/regulation/create_transit_airport",
+                    {
+                        flight_route_id: intermediateAirport.flight_route_id,
+                        transit_airport_name:
+                            intermediateAirport.transit_airport_name,
+                        stop_time: intermediateAirport.stop_time,
+                        note: intermediateAirport.note,
+                    },
+                );
+            }
+
+            setToast({
+                show: true,
+                type: "success",
+                message: "Cập nhật sân bay trung gian thành công!",
+            });
+        };
+
+        try {
+            await Promise.all([saveFlightRoutes(), saveIntermediateAirports()]);
+        } catch (error) {
+            console.error(
+                "Lỗi khi cập nhật dữ liệu:",
+                error.response?.data || error.message,
+            );
+            setToast({
+                show: true,
+                type: "error",
+                message: "Cập nhật dữ liệu không thành công!",
+            });
+        }
+
         onClose();
     };
 
@@ -151,9 +341,28 @@ export default function FlightRouteDetail({ onClose }) {
                             </div>
                             <div className={styles.tableCell}>
                                 <button
-                                    className={styles.deleteButton}
+                                    className={`${styles.deleteButton} ${
+                                        !newFlightRoutes.some(
+                                            (item) =>
+                                                item.internalId ===
+                                                route.internalId,
+                                        )
+                                            ? styles.disabledButton
+                                            : ""
+                                    }`}
                                     onClick={() =>
-                                        handleDeleteRoute(route.code)
+                                        newFlightRoutes.some(
+                                            (item) =>
+                                                item.internalId ===
+                                                route.internalId,
+                                        ) && handleDeleteRoute(route.internalId)
+                                    }
+                                    disabled={
+                                        !newFlightRoutes.some(
+                                            (item) =>
+                                                item.internalId ===
+                                                route.internalId,
+                                        )
                                     }
                                 >
                                     <Trash2 size={16} />
@@ -167,41 +376,147 @@ export default function FlightRouteDetail({ onClose }) {
                         <div className={styles.tableCell}>
                             <input
                                 type="text"
-                                className={styles.quantityInput}
-                                placeholder="Mã tuyến bay"
+                                className={`${styles.quantityInput} ${styles.disabledInput}`}
+                                placeholder="Mã tự động sinh"
                                 value={newFlightRoute.code}
                                 onChange={(e) =>
                                     handleNewRouteChange("code", e.target.value)
                                 }
+                                disabled
+                                title="Mã sân bay được tạo tự động"
                             />
                         </div>
                         <div className={styles.tableCell}>
-                            <input
-                                type="text"
-                                className={styles.quantityInput}
-                                placeholder="Sân bay đi"
-                                value={newFlightRoute.departureAirport}
-                                onChange={(e) =>
-                                    handleNewRouteChange(
-                                        "departureAirport",
-                                        e.target.value,
-                                    )
+                            <div
+                                className={styles.dropdown}
+                                ref={(el) =>
+                                    (dropdownRefs.current.departureAirport = el)
                                 }
-                            />
+                                style={{
+                                    zIndex: dropdowns.departureAirport
+                                        ? 2500
+                                        : 1000,
+                                }}
+                            >
+                                <button
+                                    className={`${styles.dropdownButton} ${newFlightRoute.departureAirport ? styles.airlineButton : ""}`}
+                                    onClick={() =>
+                                        toggleDropdown("departureAirport")
+                                    }
+                                >
+                                    {newFlightRoute.departureAirport ||
+                                        "Sân bay đi"}
+                                    {newFlightRoute.departureAirport ? (
+                                        <X
+                                            size={20}
+                                            onClick={(e) =>
+                                                clearSelection(
+                                                    "departureAirport",
+                                                    e,
+                                                )
+                                            }
+                                            className={styles.clearIcon}
+                                        />
+                                    ) : (
+                                        <ChevronDown
+                                            size={20}
+                                            className={styles.inputIcon}
+                                        />
+                                    )}
+                                </button>
+                                {dropdowns.departureAirport && (
+                                    <div className={styles.dropdownMenu}>
+                                        {airports.map((airport, index) => (
+                                            <div
+                                                key={index}
+                                                className={`${styles.dropdownItem} ${
+                                                    newFlightRoute.departureAirport ===
+                                                    airport.airport_name
+                                                        ? styles.selected
+                                                        : ""
+                                                }`}
+                                                onClick={() =>
+                                                    selectOption(
+                                                        "departureAirport",
+                                                        {
+                                                            name: airport.airport_name,
+                                                            id: airport.airport_id,
+                                                        },
+                                                    )
+                                                }
+                                            >
+                                                {airport.airport_name}
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
                         </div>
                         <div className={styles.tableCell}>
-                            <input
-                                type="text"
-                                className={styles.quantityInput}
-                                placeholder="Sân bay đến"
-                                value={newFlightRoute.arrivalAirport}
-                                onChange={(e) =>
-                                    handleNewRouteChange(
-                                        "arrivalAirport",
-                                        e.target.value,
-                                    )
+                            <div
+                                className={styles.dropdown}
+                                ref={(el) =>
+                                    (dropdownRefs.current.arrivalAirport = el)
                                 }
-                            />
+                                style={{
+                                    zIndex: dropdowns.arrivalAirport
+                                        ? 2500
+                                        : 1000,
+                                }}
+                            >
+                                <button
+                                    className={`${styles.dropdownButton} ${newFlightRoute.arrivalAirport ? styles.airlineButton : ""}`}
+                                    onClick={() =>
+                                        toggleDropdown("arrivalAirport")
+                                    }
+                                >
+                                    {newFlightRoute.arrivalAirport ||
+                                        "Sân bay đến"}
+                                    {newFlightRoute.arrivalAirport ? (
+                                        <X
+                                            size={20}
+                                            onClick={(e) =>
+                                                clearSelection(
+                                                    "arrivalAirport",
+                                                    e,
+                                                )
+                                            }
+                                            className={styles.clearIcon}
+                                        />
+                                    ) : (
+                                        <ChevronDown
+                                            size={20}
+                                            className={styles.inputIcon}
+                                        />
+                                    )}
+                                </button>
+                                {dropdowns.arrivalAirport && (
+                                    <div className={styles.dropdownMenu}>
+                                        {airports.map((airport, index) => (
+                                            <div
+                                                key={index}
+                                                className={`${styles.dropdownItem} ${
+                                                    newFlightRoute.arrivalAirport ===
+                                                    airport.airport_name
+                                                        ? styles.selected
+                                                        : ""
+                                                }`}
+                                                onClick={() =>
+                                                    selectOption(
+                                                        "arrivalAirport",
+                                                        {
+                                                            name: airport.airport_name,
+                                                            id: airport.airport_id,
+                                                        },
+                                                    )
+                                                }
+                                            >
+                                                {airport.airport_name}
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
                         </div>
                         <div className={styles.tableCell}>
                             <button
@@ -239,20 +554,52 @@ export default function FlightRouteDetail({ onClose }) {
                     {intermediateAirports.map((stop, index) => (
                         <div key={index} className={styles.tableRowFive}>
                             <div className={styles.tableCell}>
-                                {stop.routeCode}
+                                {stop.flight_route_id}
                             </div>
                             <div className={styles.tableCell}>
-                                {stop.airport}
+                                {stop.transit_airport_name}
                             </div>
                             <div className={styles.tableCell}>
-                                {stop.stopDuration}
+                                {stop.stop_time}
                             </div>
                             <div className={styles.tableCell}>{stop.note}</div>
                             <div className={styles.tableCell}>
                                 <button
-                                    className={styles.deleteButton}
+                                    className={`${styles.deleteButton} ${
+                                        !newIntermediateAirports.some(
+                                            (item) =>
+                                                item.flight_route_id ===
+                                                    stop.flight_route_id &&
+                                                item.transit_airport_name ===
+                                                    stop.transit_airport_name &&
+                                                item.stop_time ===
+                                                    stop.stop_time,
+                                        )
+                                            ? styles.disabledButton
+                                            : ""
+                                    }`}
                                     onClick={() =>
-                                        handleDeleteIntermediate(index)
+                                        newIntermediateAirports.some(
+                                            (item) =>
+                                                item.flight_route_id ===
+                                                    stop.flight_route_id &&
+                                                item.transit_airport_name ===
+                                                    stop.transit_airport_name &&
+                                                item.stop_time ===
+                                                    stop.stop_time,
+                                        ) &&
+                                        handleDeleteIntermediate(index, stop)
+                                    }
+                                    disabled={
+                                        !newIntermediateAirports.some(
+                                            (item) =>
+                                                item.flight_route_id ===
+                                                    stop.flight_route_id &&
+                                                item.transit_airport_name ===
+                                                    stop.transit_airport_name &&
+                                                item.stop_time ===
+                                                    stop.stop_time,
+                                        )
                                     }
                                 >
                                     <Trash2 size={16} />
@@ -264,42 +611,133 @@ export default function FlightRouteDetail({ onClose }) {
 
                     <div className={styles.tableRowFive}>
                         <div className={styles.tableCell}>
-                            <input
-                                type="text"
-                                className={styles.quantityInput}
-                                placeholder="Mã tuyến bay"
-                                value={newIntermediateAirport.routeCode}
-                                onChange={(e) =>
-                                    handleNewIntermediateChange(
-                                        "routeCode",
-                                        e.target.value,
-                                    )
+                            <div
+                                className={styles.dropdown}
+                                ref={(el) =>
+                                    (dropdownRefs.current.routeCode = el)
                                 }
-                            />
+                                style={{
+                                    zIndex: dropdowns.routeCode ? 2500 : 1000,
+                                }}
+                            >
+                                <button
+                                    className={`${styles.dropdownButton} ${newIntermediateAirport.flight_route_id ? styles.airlineButton : ""}`}
+                                    onClick={() => toggleDropdown("routeCode")}
+                                >
+                                    {newIntermediateAirport.flight_route_id ||
+                                        "Mã tuyến bay"}
+                                    {newIntermediateAirport.flight_route_id ? (
+                                        <X
+                                            size={20}
+                                            onClick={(e) =>
+                                                clearSelection("routeCode", e)
+                                            }
+                                            className={styles.clearIcon}
+                                        />
+                                    ) : (
+                                        <ChevronDown
+                                            size={20}
+                                            className={styles.inputIcon}
+                                        />
+                                    )}
+                                </button>
+                                {dropdowns.routeCode && (
+                                    <div className={styles.dropdownMenu}>
+                                        {flightRoutes.map((route, index) => (
+                                            <div
+                                                key={index}
+                                                className={`${styles.dropdownItem} ${
+                                                    newIntermediateAirport.flight_route_id ===
+                                                    route.code
+                                                        ? styles.selected
+                                                        : ""
+                                                }`}
+                                                onClick={() =>
+                                                    selectOption(
+                                                        "routeCode",
+                                                        route.code,
+                                                    )
+                                                }
+                                            >
+                                                {route.code}
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
                         </div>
                         <div className={styles.tableCell}>
-                            <input
-                                type="text"
-                                className={styles.quantityInput}
-                                placeholder="Sân bay trung gian"
-                                value={newIntermediateAirport.airport}
-                                onChange={(e) =>
-                                    handleNewIntermediateChange(
-                                        "airport",
-                                        e.target.value,
-                                    )
+                            <div
+                                className={styles.dropdown}
+                                ref={(el) =>
+                                    (dropdownRefs.current.transitAirport = el)
                                 }
-                            />
+                                style={{
+                                    zIndex: dropdowns.transitAirport
+                                        ? 2500
+                                        : 1000,
+                                }}
+                            >
+                                <button
+                                    className={`${styles.dropdownButton} ${newIntermediateAirport.transit_airport_name ? styles.airlineButton : ""}`}
+                                    onClick={() =>
+                                        toggleDropdown("transitAirport")
+                                    }
+                                >
+                                    {newIntermediateAirport.transit_airport_name ||
+                                        "Sân bay trung gian"}
+                                    {newIntermediateAirport.transit_airport_name ? (
+                                        <X
+                                            size={20}
+                                            onClick={(e) =>
+                                                clearSelection(
+                                                    "transitAirport",
+                                                    e,
+                                                )
+                                            }
+                                            className={styles.clearIcon}
+                                        />
+                                    ) : (
+                                        <ChevronDown
+                                            size={20}
+                                            className={styles.inputIcon}
+                                        />
+                                    )}
+                                </button>
+                                {dropdowns.transitAirport && (
+                                    <div className={styles.dropdownMenu}>
+                                        {airports.map((airport, index) => (
+                                            <div
+                                                key={index}
+                                                className={`${styles.dropdownItem} ${
+                                                    newIntermediateAirport.transit_airport_name ===
+                                                    airport.airport_name
+                                                        ? styles.selected
+                                                        : ""
+                                                }`}
+                                                onClick={() =>
+                                                    selectOption(
+                                                        "transitAirport",
+                                                        airport.airport_name,
+                                                    )
+                                                }
+                                            >
+                                                {airport.airport_name}
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
                         </div>
                         <div className={styles.tableCell}>
                             <input
                                 type="text"
                                 className={styles.quantityInput}
                                 placeholder="Thời gian dừng"
-                                value={newIntermediateAirport.stopDuration}
+                                value={newIntermediateAirport.stop_time}
                                 onChange={(e) =>
                                     handleNewIntermediateChange(
-                                        "stopDuration",
+                                        "stop_time",
                                         e.target.value,
                                     )
                                 }

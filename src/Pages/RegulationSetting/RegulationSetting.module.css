@@ -36,6 +36,8 @@
     box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
     z-index: 1001;
     max-width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
     animation: slideUp 0.3s ease-out;
     border-top: 5px solid #0d9488;
 }

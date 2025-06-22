@@ -149,7 +149,7 @@ export default function Login() {
                         className={styles["sign-in-button"]}
                         onClick={handleLogin}
                     >
-                        Sign in
+                        Đăng nhập
                     </button>
                 </div>
 

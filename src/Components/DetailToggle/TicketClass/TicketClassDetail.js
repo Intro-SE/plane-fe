@@ -1,29 +1,60 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import styles from "./TicketClassDetail.module.css";
 import { Plus, Trash2 } from "lucide-react";
+import axios from "axios";
 
-export default function TicketClassDetail({ onClose }) {
-    const [ticketClasses, setTicketClasses] = useState([
-        { code: "ECO", name: "Phổ thông" },
-        { code: "BUS", name: "Thương gia" },
-        { code: "FST", name: "Hạng nhất" },
-    ]);
+export default function TicketClassDetail({ setToast, onClose }) {
+    console.log(999);
+    const [ticketClasses, setTicketClasses] = useState([]);
+    const [newTicketClasses, setNewTicketClasses] = useState([]);
+    useEffect(() => {
+        const fetchTicketClassDetail = async () => {
+            try {
+                const response = await axios.get(
+                    "http://localhost:8000/api/v1/regulation/get_ticket_class",
+                );
+                setTicketClasses(response.data);
+            } catch (error) {
+                console.log(
+                    "Lỗi khi lấy dữ liệu chi tiết hạng vé:",
+                    error.response?.data || error.message,
+                );
+            }
+        };
+        fetchTicketClassDetail();
+    }, []);
 
     const [newTicketClass, setNewTicketClass] = useState({
-        code: "",
-        name: "",
+        ticket_class_id: "",
+        ticket_class_name: "",
     });
 
-    const handleDelete = (code) => {
+    const handleDelete = (ticket_class_id) => {
+        // Remove from newTicketClasses
+        setNewTicketClasses(
+            newTicketClasses.filter(
+                (ticketClass) =>
+                    ticketClass.ticket_class_id !== ticket_class_id,
+            ),
+        );
+        // Remove from ticketClasses
         setTicketClasses(
-            ticketClasses.filter((ticketClass) => ticketClass.code !== code),
+            ticketClasses.filter(
+                (ticketClass) =>
+                    ticketClass.ticket_class_id !== ticket_class_id,
+            ),
         );
     };
 
     const handleAdd = () => {
-        if (newTicketClass.code && newTicketClass.name) {
-            setTicketClasses([...ticketClasses, { ...newTicketClass }]);
-            setNewTicketClass({ code: "", name: "" });
+        if (
+            newTicketClass.ticket_class_id &&
+            newTicketClass.ticket_class_name
+        ) {
+            const newTicketClassEntry = { ...newTicketClass };
+            setTicketClasses([...ticketClasses, newTicketClassEntry]);
+            setNewTicketClasses([...newTicketClasses, newTicketClassEntry]);
+            setNewTicketClass({ ticket_class_id: "", ticket_class_name: "" });
         }
     };
 
@@ -38,7 +69,35 @@ export default function TicketClassDetail({ onClose }) {
         onClose();
     };
 
-    const handleSave = () => {
+    const handleSave = async () => {
+        try {
+            for (const ticket_class of newTicketClasses) {
+                await axios.post(
+                    "http://localhost:8000/api/v1/regulation/create_ticket_class",
+                    {
+                        ticket_class_id: ticket_class.ticket_class_id,
+                        ticket_class_name: ticket_class.ticket_class_name,
+                    },
+                );
+            }
+
+            setToast({
+                show: true,
+                type: "success",
+                message: "Cập nhật hạng vé thành công!",
+            });
+        } catch (error) {
+            console.error(
+                "Lỗi khi cập nhật hạng vé",
+                error.response?.data || error.message,
+            );
+            setToast({
+                show: true,
+                type: "error",
+                message: "Cập nhật hạng vé không thành công!",
+            });
+        }
+
         onClose();
     };
 
@@ -63,16 +122,38 @@ export default function TicketClassDetail({ onClose }) {
                     {ticketClasses.map((ticketClass, index) => (
                         <div key={index} className={styles.tableRow}>
                             <div className={styles.tableCell}>
-                                {ticketClass.code}
+                                {ticketClass.ticket_class_id}
                             </div>
                             <div className={styles.tableCell}>
-                                {ticketClass.name}
+                                {ticketClass.ticket_class_name}
                             </div>
                             <div className={styles.tableCell}>
                                 <button
-                                    className={styles.deleteButton}
+                                    className={`${styles.deleteButton} ${
+                                        !newTicketClasses.some(
+                                            (item) =>
+                                                item.ticket_class_id ===
+                                                ticketClass.ticket_class_id,
+                                        )
+                                            ? styles.disabledButton
+                                            : ""
+                                    }`}
                                     onClick={() =>
-                                        handleDelete(ticketClass.code)
+                                        newTicketClasses.some(
+                                            (item) =>
+                                                item.ticket_class_id ===
+                                                ticketClass.ticket_class_id,
+                                        ) &&
+                                        handleDelete(
+                                            ticketClass.ticket_class_id,
+                                        )
+                                    }
+                                    disabled={
+                                        !newTicketClasses.some(
+                                            (item) =>
+                                                item.ticket_class_id ===
+                                                ticketClass.ticket_class_id,
+                                        )
                                     }
                                 >
                                     <Trash2 size={16} />
@@ -88,10 +169,10 @@ export default function TicketClassDetail({ onClose }) {
                                 type="text"
                                 className={styles.quantityInput}
                                 placeholder="Mã hạng vé"
-                                value={newTicketClass.code}
+                                value={newTicketClass.ticket_class_id}
                                 onChange={(e) =>
                                     handleNewTicketClassChange(
-                                        "code",
+                                        "ticket_class_id",
                                         e.target.value,
                                     )
                                 }
@@ -102,10 +183,10 @@ export default function TicketClassDetail({ onClose }) {
                                 type="text"
                                 className={styles.quantityInput}
                                 placeholder="Tên hạng vé"
-                                value={newTicketClass.name}
+                                value={newTicketClass.ticket_class_name}
                                 onChange={(e) =>
                                     handleNewTicketClassChange(
-                                        "name",
+                                        "ticket_class_name",
                                         e.target.value,
                                     )
                                 }
