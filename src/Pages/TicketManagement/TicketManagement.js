@@ -89,32 +89,6 @@ export default function TicketManagement() {
     }
   };
 
-  const confirmExport = async () => {
-    try {
-      await axios.patch(
-        `${BASE_URL}/api/v1/booking_management/export`,
-        selectedTickets,
-        { headers: { "Content-Type": "application/json" } }
-      );
-      setToast({
-        show: true,
-        type: "success",
-        message: `Xuất thành công ${selectedTickets.length} vé!`,
-      });
-      setReloadFlag((f) => f + 1);
-      setSelectedTickets([]);
-    } catch (err) {
-      console.error("Lỗi xuất vé:", err.response?.data || err.message);
-      setToast({
-        show: true,
-        type: "error",
-        message: "Xuất vé không thành công!",
-      });
-    } finally {
-      setIsDialogOpen(false); // đóng dialog xác nhận
-    }
-  };
-
   const handleDeleteSelected = async () => {
     if (selectedTickets.length === 0) {
       return setToast({
@@ -229,11 +203,17 @@ export default function TicketManagement() {
                   mode={formState.mode}
                   defaultData={formState.data}
                   onClose={() => setFormState({ mode: null, data: null })}
-                  onSendData={
-                    formState.mode === "add"
-                      ? () => setReloadFlag((f) => f + 1)
-                      : () => setReloadFlag((f) => f + 1)
-                  }
+                  onSendData={(data) => {
+                    setToast({
+                      show: true,
+                      type: "success",
+                      message:
+                        formState.mode === "add"
+                          ? "Tạo vé thành công!"
+                          : "Cập nhật vé thành công!",
+                    });
+                    setReloadFlag((f) => f + 1);
+                  }}
                 />
               </div>
             </div>

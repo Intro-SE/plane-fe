@@ -263,8 +263,22 @@ export default function BookingManagement() {
                   onClose={() => setFormState({ mode: null, data: null })}
                   onSendData={
                     formState.mode === "add"
-                      ? () => setReloadFlag((f) => f + 1)
-                      : () => setReloadFlag((f) => f + 1)
+                      ? () => {
+                          setToast({
+                            show: true,
+                            type: "success",
+                            message: "Tạo phiếu thành công!",
+                          });
+                          setReloadFlag((f) => f + 1);
+                        }
+                      : () => {
+                          setToast({
+                            show: true,
+                            type: "success",
+                            message: "Cập nhật phiếu thành công!",
+                          });
+                          setReloadFlag((f) => f + 1);
+                        }
                   }
                 />
               </div>

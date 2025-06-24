@@ -23,9 +23,9 @@ export default function FlightTicket({
     departure_date,
     arrival_date,
     departure_time,
-    departure_airport,
+    departure_name,
     arrival_time,
-    arrival_airport,
+    arrival_name,
     passenger_name,
     national_id,
     passenger_phone,
@@ -105,7 +105,7 @@ export default function FlightTicket({
             <div className={styles["icon-wrapper"]}>
               <TbBuildingAirport />
             </div>
-            <div>{departure_airport}</div>
+            <div>{departure_name}</div>
           </div>
           <div className={styles["info-row"]}>
             <div className={styles["icon-wrapper"]}>
@@ -125,7 +125,7 @@ export default function FlightTicket({
             <div className={styles["icon-wrapper"]}>
               <TbBuildingAirport />
             </div>
-            <div>{arrival_airport}</div>
+            <div>{arrival_name}</div>
           </div>
           <div className={styles["info-row"]}>
             <div className={styles["icon-wrapper"]}>
