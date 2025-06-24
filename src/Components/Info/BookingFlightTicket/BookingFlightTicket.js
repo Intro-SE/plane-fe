@@ -5,11 +5,11 @@ import { useState } from "react"; // bạn đã quên import useState
 import { MdOutlineCalendarMonth } from "react-icons/md";
 import { LuClock, LuPencil } from "react-icons/lu";
 import { TbBuildingAirport } from "react-icons/tb";
-import styles from "./FlightTicket.module.css";
+import styles from "./BookingFlightTicket.module.css";
 import AddTicketForm from "../../Form/AddTicket/AddTicketForm";
 
 // FIX: Chỉ cần 4 props chính
-export default function FlightTicket({
+export default function BookingFlightTicket({
   data,
   onEdit,
   onTicketSelect,
@@ -75,7 +75,7 @@ export default function FlightTicket({
         <div className={styles["action-buttons"]}>
           <button className={styles["edit-btn"]} onClick={handleEditClick}>
             <LuPencil size={14} />
-            <span>Sửa vé</span>
+            <span>Sửa phiếu</span>
           </button>
 
           {/* FIX: Chỉ giữ lại MỘT checkbox duy nhất để chọn vé */}

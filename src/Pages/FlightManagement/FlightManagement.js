@@ -115,19 +115,28 @@ export default function FlightManagement() {
                     },
                 );
 
-                setFlights(response.data);
-            } catch (error) {
-                console.log(
-                    "Lỗi khi lấy dữ liệu chuyến bay:",
-                    error.response?.data || error.message,
-                );
-            } finally {
-                setLoading(false);
-            }
-        };
+  useEffect(() => {
+    const fetchFlights = async () => {
+      try {
+        const response = await axios.get(`${BASE_URL}/api/v1/flight`, {
+          headers: {
+            Accept: "application/json",
+          },
+        });
 
-        fetchFlights();
-    }, [reloadFlag]);
+        setFlights(response.data);
+      } catch (error) {
+        console.log(
+          "Lỗi khi lấy dữ liệu chuyến bay:",
+          error.response?.data || error.message
+        );
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchFlights();
+  }, [reloadFlag]);
 
     useEffect(() => {
         const fetchFlightRoutes = async () => {
@@ -476,6 +485,44 @@ export default function FlightManagement() {
                     </div>
                 </div>
             </div>
+          )}
+          {isDialogOpen && (
+            <div>
+              <ConfirmDialog
+                open={isDialogOpen}
+                message={message}
+                onConfirm={handleConfirm}
+                onCancel={handleCancel}
+              />
+            </div>
+          )}
+
+          <MessageDialog
+            show={toast.show}
+            type={toast.type}
+            message={toast.message}
+            onClose={() => setToast({ ...toast, show: false })}
+          />
+          <div className={styles["card-container"]}>
+            {flights
+              .slice()
+              .sort((a, b) => {
+                const numA = parseInt(a.flight_id.replace(/\D/g, ""));
+                const numB = parseInt(b.flight_id.replace(/\D/g, ""));
+                return numA - numB;
+              })
+              .map((flight) => (
+                <FlightCardEdit
+                  key={flight.flight_id}
+                  data={flight}
+                  onSendData={handleOpenUpdateFlightForm}
+                  onFlightSelect={handleFlightSelect}
+                  isSelected={selectedFlights.includes(flight.flight_id)}
+                />
+              ))}
+          </div>
         </div>
-    );
+      </div>
+    </div>
+  );
 }

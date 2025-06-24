@@ -1,24 +1,24 @@
 .overral-page-container {
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    width: 100%;
-    height: 100vh;
-    background-color: #f7f9fc;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  width: 100%;
+  height: 100vh;
+  background-color: #f7f9fc;
 }
 
 .flight-management-container {
-    display: flex;
-    width: 100%;
-    height: 100%;
+  display: flex;
+  width: 100%;
+  height: 100%;
 }
 
 .sidebar-container {
-    flex: 0 0 250px; /* Fixed width for sidebar */
-    height: 100%;
-    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
-    z-index: 10;
-    background-color: #fff;
+  flex: 0 0 250px; /* Fixed width for sidebar */
+  height: 100%;
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+  z-index: 10;
+  background-color: #fff;
 }
 
 .content-container {
@@ -33,21 +33,21 @@
 }
 
 .filter-container {
-    margin-bottom: 25px;
-    width: 100%;
-    background-color: #fff;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  margin-bottom: 25px;
+  width: 100%;
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
 .action-section {
-    width: 100%;
-    margin-bottom: 20px;
-    margin-left: 30px;
-    display: flex; /* Cho phép các phần tử con xếp hàng ngang */
-    gap: 350px; /* (Tùy chọn) khoảng cách giữa các phần tử */
-    align-items: center; /* (Tùy chọn) căn giữa theo chiều dọc */
+  width: 100%;
+  margin-bottom: 20px;
+  margin-left: 30px;
+  display: flex; /* Cho phép các phần tử con xếp hàng ngang */
+  gap: 350px; /* (Tùy chọn) khoảng cách giữa các phần tử */
+  align-items: center; /* (Tùy chọn) căn giữa theo chiều dọc */
 }
 
 .section-title {
@@ -58,29 +58,29 @@
 }
 
 .action-buttons {
-    display: flex;
-    gap: 30px;
-    margin-bottom: 15px;
+  display: flex;
+  gap: 30px;
+  margin-bottom: 15px;
 }
 
 .action-button {
-    padding: 8px 8px;
-    border: none;
-    border-radius: 5px;
-    color: white;
-    font-weight: 500;
-    cursor: pointer;
-    transition: background-color 0.3s;
+  padding: 8px 8px;
+  border: none;
+  border-radius: 5px;
+  color: white;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.3s;
 }
 
 .add-button,
 .delete-button,
 .edit-button {
-    background-color: #26a69a;
+  background-color: #26a69a;
 }
 
 .action-button:hover {
-    background-color: #2bbbad;
+  background-color: #2bbbad;
 }
 
 .card-container {
@@ -101,419 +101,419 @@
 }
 
 .card-container::-webkit-scrollbar {
-    width: 8px;
+  width: 8px;
 }
 
 .card-container::-webkit-scrollbar-track {
-    background-color: #f1f1f1;
-    border-radius: 10px;
+  background-color: #f1f1f1;
+  border-radius: 10px;
 }
 
 .card-container::-webkit-scrollbar-thumb {
-    background-color: #0d9488;
-    border-radius: 10px;
-    border: 2px solid #f1f1f1;
+  background-color: #0d9488;
+  border-radius: 10px;
+  border: 2px solid #f1f1f1;
 }
 
 .card-container::-webkit-scrollbar-thumb:hover {
-    background-color: #0f766e;
+  background-color: #0f766e;
 }
 
 .modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background-color: rgba(0, 0, 0, 0.4);
-    z-index: 1000;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.4);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .modal-content {
-    align-items: center;
-    justify-content: center;
-    background-color: white;
-    padding: 25px 35px;
-    border-radius: 12px;
-    box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.15);
-    z-index: 1001;
-    border-top: 4px solid #0d9488;
+  align-items: center;
+  justify-content: center;
+  background-color: white;
+  padding: 25px 35px;
+  border-radius: 12px;
+  box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.15);
+  z-index: 1001;
+  border-top: 4px solid #0d9488;
 }
 
 .modal-content h3 {
-    text-align: center;
-    width: 100%;
+  text-align: center;
+  width: 100%;
 }
 
 .modal-table {
-    width: 100%;
-    border-collapse: separate;
-    border-spacing: 0;
-    margin-top: 20px;
-    margin-bottom: 20px;
-    border-radius: 8px;
-    overflow: hidden;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
 }
 
 .modal-table th,
 .modal-table td {
-    border: 1px solid #e5e7eb;
-    padding: 12px;
-    text-align: center;
+  border: 1px solid #e5e7eb;
+  padding: 12px;
+  text-align: center;
 }
 
 .modal-table th {
-    background-color: #0d9488;
-    color: white;
-    font-weight: 600;
-    text-transform: uppercase;
-    font-size: 13px;
-    letter-spacing: 0.5px;
+  background-color: #0d9488;
+  color: white;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 13px;
+  letter-spacing: 0.5px;
 }
 
 .modal-table tr:nth-child(even) {
-    background-color: #f9fafb;
+  background-color: #f9fafb;
 }
 
 .modal-table tr:hover {
-    background-color: #f3f4f6;
+  background-color: #f3f4f6;
 }
 
 .input-area {
-    display: grid;
-    grid-template-columns: 1fr 1fr; /* 2 cột bằng nhau */
-    gap: 24px 30px; /* khoảng cách giữa các hàng và cột */
-    margin-bottom: 20px;
-    padding: 24px;
-    background-color: #f9fafb;
-    border-radius: 10px;
-    border: 1px solid #e5e7eb;
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* 2 cột bằng nhau */
+  gap: 24px 30px; /* khoảng cách giữa các hàng và cột */
+  margin-bottom: 20px;
+  padding: 24px;
+  background-color: #f9fafb;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
 }
 
 .flight-id-icon {
-    position: absolute;
-    right: 10px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: black;
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: black;
 }
 
 .flight-id-input {
-    position: relative;
+  position: relative;
 }
 
 .flight-id-input input {
-    width: 100%;
-    padding: 10px 14px;
-    padding-right: 30px;
-    border: 1px solid #d1d5db;
-    border-radius: 8px;
-    box-sizing: border-box;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-    transition: all 0.2s ease-in-out;
+  width: 100%;
+  padding: 10px 14px;
+  padding-right: 30px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  box-sizing: border-box;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  transition: all 0.2s ease-in-out;
 }
 
 .flight-id-input input:focus {
-    border-color: #0d9488;
-    box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.15);
-    outline: none;
+  border-color: #0d9488;
+  box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.15);
+  outline: none;
 }
 
 .route-id-input {
-    position: relative;
+  position: relative;
 }
 
 .route-id-input select {
-    width: 100%;
-    padding: 10px 14px;
-    padding-left: 10px;
-    border: 1px solid #d1d5db;
-    border-radius: 8px;
-    font-size: 14px;
-    color: #333;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-    appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%230d9488' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 10px center;
-    transition: all 0.2s ease-in-out;
+  width: 100%;
+  padding: 10px 14px;
+  padding-left: 10px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 14px;
+  color: #333;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%230d9488' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  transition: all 0.2s ease-in-out;
 }
 
 .route-id-input select:focus {
-    border-color: #0d9488;
-    box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.15);
-    outline: none;
+  border-color: #0d9488;
+  box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.15);
+  outline: none;
 }
 
 .departure-icon {
-    position: absolute;
-    right: 10px;
-    top: 50%;
-    transform: translateY(-50%);
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
 }
 
 .departure-input {
-    position: relative;
+  position: relative;
 }
 
 .departure-input input {
-    width: 100%;
-    padding: 8px 12px;
-    padding-right: 30px;
-    border: 1px solid #ced4da;
-    border-radius: 8px;
-    box-sizing: border-box;
+  width: 100%;
+  padding: 8px 12px;
+  padding-right: 30px;
+  border: 1px solid #ced4da;
+  border-radius: 8px;
+  box-sizing: border-box;
 }
 
 .arrival-icon {
-    position: absolute;
-    right: 10px;
-    top: 50%;
-    transform: translateY(-50%);
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
 }
 
 .arrival-input {
-    position: relative;
+  position: relative;
 }
 
 .arrival-input input {
-    width: 100%;
-    padding: 8px 12px;
-    padding-right: 30px;
-    border: 1px solid #ced4da;
-    border-radius: 8px;
-    box-sizing: border-box;
+  width: 100%;
+  padding: 8px 12px;
+  padding-right: 30px;
+  border: 1px solid #ced4da;
+  border-radius: 8px;
+  box-sizing: border-box;
 }
 
 .departure-date-icon {
-    position: absolute;
-    right: 10px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: black;
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: black;
 }
 
 .departure-date-input {
-    position: relative;
+  position: relative;
 }
 
 .departure-date-input input {
-    width: 100%;
-    padding: 8px 12px;
-    padding-right: 30px;
-    border: 1px solid #ced4da;
-    border-radius: 8px;
-    box-sizing: border-box;
+  width: 100%;
+  padding: 8px 12px;
+  padding-right: 30px;
+  border: 1px solid #ced4da;
+  border-radius: 8px;
+  box-sizing: border-box;
 }
 
 .flight-time-icon {
-    position: absolute;
-    right: 10px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: black;
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: black;
 }
 
 .flight-time-input {
-    position: relative;
+  position: relative;
 }
 
 .flight-time-input input {
-    width: 100%;
-    padding: 8px 12px;
-    padding-right: 30px;
-    border: 1px solid #ced4da;
-    border-radius: 8px;
-    box-sizing: border-box;
+  width: 100%;
+  padding: 8px 12px;
+  padding-right: 30px;
+  border: 1px solid #ced4da;
+  border-radius: 8px;
+  box-sizing: border-box;
 }
 
 .seat-icon {
-    position: absolute;
-    right: 10px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: black;
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: black;
 }
 
 .seat-input {
-    position: relative;
+  position: relative;
 }
 
 .seat-input input {
-    width: 100%;
-    padding: 8px 12px;
-    padding-right: 30px;
-    border: 1px solid #ced4da;
-    border-radius: 8px;
-    box-sizing: border-box;
+  width: 100%;
+  padding: 8px 12px;
+  padding-right: 30px;
+  border: 1px solid #ced4da;
+  border-radius: 8px;
+  box-sizing: border-box;
 }
 
 .ticket-type-input {
-    position: relative;
+  position: relative;
 }
 
 .ticket-type-input select {
-    width: 100%;
-    padding: 8px 12px;
-    padding-left: 10px; /* để chừa chỗ cho icon */
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    font-size: 13px;
-    color: #333;
+  width: 100%;
+  padding: 8px 12px;
+  padding-left: 10px; /* để chừa chỗ cho icon */
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 13px;
+  color: #333;
 }
 
 .ticket-quantity-input {
-    position: relative;
+  position: relative;
 }
 
 .ticket-quantity-input input {
-    /* width: 100%; */
-    padding: 8px 12px;
-    border: 1px solid #ced4da;
-    border-radius: 8px;
-    box-sizing: border-box;
+  /* width: 100%; */
+  padding: 8px 12px;
+  border: 1px solid #ced4da;
+  border-radius: 8px;
+  box-sizing: border-box;
 }
 
 .ticket-action-button {
-    display: flex;
-    align-items: center;
-    padding: 6px 12px;
-    gap: 8px;
-    border: none;
-    background-color: #14ae5c;
-    color: white;
-    border-radius: 4px;
-    cursor: pointer;
+  display: flex;
+  align-items: center;
+  padding: 6px 12px;
+  gap: 8px;
+  border: none;
+  background-color: #14ae5c;
+  color: white;
+  border-radius: 4px;
+  cursor: pointer;
 }
 
 .ticket-action-button:hover {
-    background-color: #30d87f;
-    transform: scale(1.03); /* hơi phóng to nhẹ */
+  background-color: #30d87f;
+  transform: scale(1.03); /* hơi phóng to nhẹ */
 }
 
 .addRowButton {
-    background-color: #faa85c; /* xanh lá */
-    color: black;
-    padding: 8px 16px;
-    font-size: 14px;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
+  background-color: #faa85c; /* xanh lá */
+  color: black;
+  padding: 8px 16px;
+  font-size: 14px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
 }
 
 .addRowButton:hover {
-    background-color: #fff9c4;
+  background-color: #fff9c4;
 }
 
 .addRowButton:active {
-    background-color: #fff9c4;
+  background-color: #fff9c4;
 }
 
 .modal-footer {
-    display: flex;
-    justify-content: flex-end;
-    gap: 15px;
-    padding-top: 20px;
-    border-top: 1px solid #e5e7eb;
-    margin-top: 25px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 15px;
+  padding-top: 20px;
+  border-top: 1px solid #e5e7eb;
+  margin-top: 25px;
 }
 
 .modal-cancel-button {
-    background-color: #f3f4f6;
-    color: #4b5563;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 8px;
-    font-size: 14px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  background-color: #f3f4f6;
+  color: #4b5563;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .modal-cancel-button:hover {
-    background-color: #e5e7eb;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  background-color: #e5e7eb;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .modal-save-button {
-    background-color: #0d9488;
-    color: white;
-    padding: 10px 22px;
-    border: none;
-    border-radius: 8px;
-    font-size: 14px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    box-shadow: 0 2px 4px rgba(13, 148, 136, 0.3);
+  background-color: #0d9488;
+  color: white;
+  padding: 10px 22px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(13, 148, 136, 0.3);
 }
 
 .modal-save-button:hover {
-    background-color: #0f766e;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(13, 148, 136, 0.4);
+  background-color: #0f766e;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(13, 148, 136, 0.4);
 }
 
 .container {
-    background-color: white;
-    border-radius: 10px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-    border: 1px solid #e5e7eb; /* border-gray-200 */
-    padding: 0.75rem 1.25rem;
-    margin-bottom: 1.5rem;
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e5e7eb; /* border-gray-200 */
+  padding: 0.75rem 1.25rem;
+  margin-bottom: 1.5rem;
 }
 
 .flight-count {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    background-color: #0d9488;
-    color: white;
-    font-size: 0.75rem;
-    font-weight: 600;
-    height: 1.25rem;
-    min-width: 1.25rem;
-    padding: 0 0.5rem;
-    border-radius: 9999px;
-    margin-left: 0.5rem;
-    box-shadow: 0 2px 4px rgba(13, 148, 136, 0.2);
-    animation: pulse 2s infinite;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #0d9488;
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 600;
+  height: 1.25rem;
+  min-width: 1.25rem;
+  padding: 0 0.5rem;
+  border-radius: 9999px;
+  margin-left: 0.5rem;
+  box-shadow: 0 2px 4px rgba(13, 148, 136, 0.2);
+  animation: pulse 2s infinite;
 }
 
 @keyframes pulse {
-    0% {
-        box-shadow: 0 0 0 0 rgba(13, 148, 136, 0.7);
-    }
-    70% {
-        box-shadow: 0 0 0 6px rgba(13, 148, 136, 0);
-    }
-    100% {
-        box-shadow: 0 0 0 0 rgba(13, 148, 136, 0);
-    }
+  0% {
+    box-shadow: 0 0 0 0 rgba(13, 148, 136, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 6px rgba(13, 148, 136, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(13, 148, 136, 0);
+  }
 }
 
 .header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .title {
-    font-size: 1.125rem;
-    font-weight: 600;
-    color: #1f2937; /* text-gray-800 */
-    position: relative;
-    padding-left: 12px;
-    display: flex;
-    align-items: center;
-    margin: 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #1f2937; /* text-gray-800 */
+  position: relative;
+  padding-left: 12px;
+  display: flex;
+  align-items: center;
+  margin: 0;
 }
 
 .title::before {
@@ -529,60 +529,60 @@
 }
 
 .actions {
-    display: flex;
-    gap: 0.5rem;
+  display: flex;
+  gap: 0.5rem;
 }
 
 .button {
-    display: flex;
-    align-items: center;
-    padding: 0.5rem 1rem;
-    background-color: #0d9488; /* bg-teal-600 */
-    color: white;
-    border-radius: 0.375rem;
-    border: none;
-    cursor: pointer;
-    transition: all 0.2s ease-in-out;
-    font-weight: 500;
-    box-shadow: 0 2px 5px rgba(13, 148, 136, 0.3);
-    font-size: 0.875rem;
+  display: flex;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  background-color: #0d9488; /* bg-teal-600 */
+  color: white;
+  border-radius: 0.375rem;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  font-weight: 500;
+  box-shadow: 0 2px 5px rgba(13, 148, 136, 0.3);
+  font-size: 0.875rem;
 }
 
 .button:hover {
-    background-color: #0f766e; /* bg-teal-700 */
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(13, 148, 136, 0.4);
+  background-color: #0f766e; /* bg-teal-700 */
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(13, 148, 136, 0.4);
 }
 
 .button.delete-active {
-    background-color: #dc2626; /* bg-red-600 */
-    box-shadow: 0 2px 5px rgba(220, 38, 38, 0.3);
+  background-color: #dc2626; /* bg-red-600 */
+  box-shadow: 0 2px 5px rgba(220, 38, 38, 0.3);
 }
 
 .button.delete-active:hover {
-    background-color: #b91c1c; /* bg-red-700 */
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(220, 38, 38, 0.4);
+  background-color: #b91c1c; /* bg-red-700 */
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(220, 38, 38, 0.4);
 }
 
 .icon {
-    margin-right: 0.25rem;
+  margin-right: 0.25rem;
 }
 
 /* Làm mờ nền và căn giữa modal */
 .overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background-color: rgba(0, 0, 0, 0.5); /* lớp mờ đậm hơn */
-    backdrop-filter: blur(5px); /* tăng hiệu ứng làm mờ */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-    animation: fadeIn 0.3s ease-in-out;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5); /* lớp mờ đậm hơn */
+  backdrop-filter: blur(5px); /* tăng hiệu ứng làm mờ */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease-in-out;
 }
 
 @keyframes fadeIn {
