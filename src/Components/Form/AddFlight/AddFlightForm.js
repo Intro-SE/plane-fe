@@ -8,17 +8,14 @@ import {
     Plus,
     Trash2,
     X,
+    Lock,
 } from "lucide-react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import styles from "./AddFlightForm.module.css";
+import axios from "axios";
 
-export default function AddFlightForm({
-    onClose,
-    routeData,
-    seatClassData,
-    onSendData,
-}) {
+export default function AddFlightForm({ onClose, routeData, onSendData }) {
     const [formData, setFormData] = useState({
         flightCode: "",
         airline: "",
@@ -30,6 +27,37 @@ export default function AddFlightForm({
         duration: "",
         seatClasses: [],
     });
+
+    const [seatClassData, setSeatClassData] = useState([]);
+
+    useEffect(() => {
+        const fetchTicketClasses = async () => {
+            try {
+                const response = await axios.get(
+                    "http://localhost:8000/api/v1/flight_management/ticket_route",
+                    {
+                        params: {
+                            flight_route_id: formData.airline,
+                            skip: 0,
+                            limit: 1000,
+                        },
+                    },
+                );
+                const seatData = response.data.map((ticketClass) => {
+                    return ticketClass.ticket_class_name;
+                });
+                setSeatClassData(seatData);
+            } catch (error) {
+                console.error(
+                    "Lỗi khi lấy hạng vé:",
+                    error.response?.data || error.message,
+                );
+            }
+        };
+        if (formData.airline) {
+            fetchTicketClasses();
+        }
+    }, [formData.airline]);
 
     const [dropdowns, setDropdowns] = useState({
         airline: false,
@@ -127,7 +155,7 @@ export default function AddFlightForm({
     return (
         <div className={styles.container}>
             <div className={styles.header}>
-                <h2>Biểu mẫu thêm một chuyến bay mới</h2>
+                <h2>Biểu mẫu thêm một chuyến bay</h2>
             </div>
 
             <div className={styles.form}>
@@ -163,9 +191,21 @@ export default function AddFlightForm({
                             {formData.airline ? (
                                 <X
                                     size={20}
-                                    onClick={(e) =>
-                                        clearSelection("airline", e)
-                                    }
+                                    onClick={(e) => {
+                                        // Clear flight route will also clear airport selections
+                                        e.stopPropagation();
+                                        setFormData((prev) => ({
+                                            ...prev,
+                                            airline: "",
+                                            departure: "",
+                                            destination: "",
+                                        }));
+                                        // Reset any dropdowns that might be open
+                                        setDropdowns((prev) => ({
+                                            ...prev,
+                                            airline: false,
+                                        }));
+                                    }}
                                     className={styles.clearIcon}
                                 />
                             ) : (
@@ -190,6 +230,7 @@ export default function AddFlightForm({
                                                         route.arrival_airport
                                                             ?.airport_name ||
                                                         "Unknown Arrival",
+                                                    seatClasses: [],
                                                 });
                                                 selectOption(
                                                     "airline",
@@ -217,18 +258,39 @@ export default function AddFlightForm({
                         }}
                     >
                         <button
-                            className={`${styles.dropdownButton} ${formData.departure ? styles.airlineButton : ""}`}
-                            onClick={() => toggleDropdown("departure")}
+                            className={`${styles.dropdownButton} ${formData.departure ? styles.airlineButton : ""} ${formData.airline ? styles.disabledDropdown : ""}`}
+                            title={
+                                formData.airline
+                                    ? "Đã được khóa khi chọn mã tuyến bay"
+                                    : "Chọn sân bay đi"
+                            }
+                            onClick={() =>
+                                formData.airline
+                                    ? null
+                                    : toggleDropdown("departure")
+                            }
+                            style={{
+                                cursor: formData.airline
+                                    ? "default"
+                                    : "pointer",
+                            }}
                         >
                             {formData.departure || "Sân bay đi"}
                             {formData.departure ? (
-                                <X
-                                    size={20}
-                                    onClick={(e) =>
-                                        clearSelection("departure", e)
-                                    }
-                                    className={styles.clearIcon}
-                                />
+                                formData.airline ? (
+                                    <Lock
+                                        className={styles.inputIcon}
+                                        size={20}
+                                    />
+                                ) : (
+                                    <X
+                                        size={20}
+                                        onClick={(e) => {
+                                            clearSelection("departure", e);
+                                        }}
+                                        className={styles.clearIcon}
+                                    />
+                                )
                             ) : (
                                 <Plane className={styles.inputIcon} size={20} />
                             )}
@@ -263,18 +325,39 @@ export default function AddFlightForm({
                         }}
                     >
                         <button
-                            className={`${styles.dropdownButton} ${formData.destination ? styles.airlineButton : ""}`}
-                            onClick={() => toggleDropdown("destination")}
+                            className={`${styles.dropdownButton} ${formData.destination ? styles.airlineButton : ""} ${formData.airline ? styles.disabledDropdown : ""}`}
+                            title={
+                                formData.airline
+                                    ? "Đã được khóa khi chọn mã tuyến bay"
+                                    : "Chọn sân bay đến"
+                            }
+                            onClick={() =>
+                                formData.airline
+                                    ? null
+                                    : toggleDropdown("destination")
+                            }
+                            style={{
+                                cursor: formData.airline
+                                    ? "default"
+                                    : "pointer",
+                            }}
                         >
                             {formData.destination || "Sân bay đến"}
                             {formData.destination ? (
-                                <X
-                                    size={20}
-                                    onClick={(e) =>
-                                        clearSelection("destination", e)
-                                    }
-                                    className={styles.clearIcon}
-                                />
+                                formData.airline ? (
+                                    <Lock
+                                        className={styles.inputIcon}
+                                        size={20}
+                                    />
+                                ) : (
+                                    <X
+                                        size={20}
+                                        onClick={(e) => {
+                                            clearSelection("destination", e);
+                                        }}
+                                        className={styles.clearIcon}
+                                    />
+                                )
                             ) : (
                                 <Plane className={styles.inputIcon} size={20} />
                             )}
@@ -481,24 +564,54 @@ export default function AddFlightForm({
                                 </button>
                                 {dropdowns.seatClass && (
                                     <div className={styles.dropdownMenu}>
-                                        {seatClassData.map((option) => (
+                                        {seatClassData.filter(
+                                            (option) =>
+                                                !formData.seatClasses.some(
+                                                    (seatClass) =>
+                                                        seatClass.class ===
+                                                        option,
+                                                ),
+                                        ).length > 0 ? (
+                                            seatClassData
+                                                .filter(
+                                                    (option) =>
+                                                        !formData.seatClasses.some(
+                                                            (seatClass) =>
+                                                                seatClass.class ===
+                                                                option,
+                                                        ),
+                                                )
+                                                .map((option) => (
+                                                    <div
+                                                        key={option}
+                                                        className={
+                                                            styles.dropdownItem
+                                                        }
+                                                        onClick={() => {
+                                                            setNewSeatClass(
+                                                                (prev) => ({
+                                                                    ...prev,
+                                                                    class: option,
+                                                                }),
+                                                            );
+                                                            setDropdowns(
+                                                                (prev) => ({
+                                                                    ...prev,
+                                                                    seatClass: false,
+                                                                }),
+                                                            );
+                                                        }}
+                                                    >
+                                                        {option}
+                                                    </div>
+                                                ))
+                                        ) : (
                                             <div
-                                                key={option}
-                                                className={styles.dropdownItem}
-                                                onClick={() => {
-                                                    setNewSeatClass((prev) => ({
-                                                        ...prev,
-                                                        class: option,
-                                                    }));
-                                                    setDropdowns((prev) => ({
-                                                        ...prev,
-                                                        seatClass: false,
-                                                    }));
-                                                }}
+                                                className={`${styles.dropdownItem} ${styles.disabledItem}`}
                                             >
-                                                {option}
+                                                Không còn hạng vé nào để chọn
                                             </div>
-                                        ))}
+                                        )}
                                     </div>
                                 )}
                             </div>

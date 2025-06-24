@@ -15,13 +15,13 @@ export default function MessageDialog({
     // Auto close after 3s
     setTimeout(() => {
         onClose?.();
-    }, 3000);
+    }, 4000);
 
     return (
         <div className={`${styles.toast} ${toastStyle}`}>
             <span className={styles.icon}>{icon}</span>
             <span>{message}</span>
-            <button 
+            <button
                 className={styles.closeButton}
                 onClick={onClose}
                 title="Đóng"
