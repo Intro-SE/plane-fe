@@ -106,37 +106,23 @@ export default function FlightManagement() {
     useEffect(() => {
         const fetchFlights = async () => {
             try {
-                const response = await axios.get(
-                    `${BASE_URL}/api/v1/flight_management`,
-                    {
-                        headers: {
-                            Accept: "application/json",
-                        },
+                const response = await axios.get(`${BASE_URL}/api/v1/flight`, {
+                    headers: {
+                        Accept: "application/json",
                     },
+                });
+                setFlights(response.data);
+            } catch (error) {
+                console.log(
+                    "Lỗi khi lấy dữ liệu chuyến bay:",
+                    error.response?.data || error.message,
                 );
-
-  useEffect(() => {
-    const fetchFlights = async () => {
-      try {
-        const response = await axios.get(`${BASE_URL}/api/v1/flight`, {
-          headers: {
-            Accept: "application/json",
-          },
-        });
-
-        setFlights(response.data);
-      } catch (error) {
-        console.log(
-          "Lỗi khi lấy dữ liệu chuyến bay:",
-          error.response?.data || error.message
-        );
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchFlights();
-  }, [reloadFlag]);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchFlights();
+    }, [reloadFlag]);
 
     useEffect(() => {
         const fetchFlightRoutes = async () => {
@@ -322,7 +308,6 @@ export default function FlightManagement() {
 
     return (
         <div className={styles["overral-page-container"]}>
-            {/* <FlightBookingInfo /> */}
             <TopBar />
             <div className={styles["flight-management-container"]}>
                 <div className={styles["sidebar-container"]}>
@@ -345,7 +330,6 @@ export default function FlightManagement() {
                                     {flights.length}
                                 </span>
                             </h1>
-
                             <div className={styles.actions}>
                                 <button
                                     onClick={handleOpenAddFlightForm}
@@ -367,7 +351,6 @@ export default function FlightManagement() {
                                         ? "Đang tải..."
                                         : "Thêm chuyến bay"}
                                 </button>
-
                                 <button
                                     onClick={handleDeleteSelected}
                                     className={`${styles.button} ${selectedFlights.length > 0 ? styles["delete-active"] : ""} ${loading ? styles.disabled : ""}`}
@@ -430,7 +413,6 @@ export default function FlightManagement() {
                             />
                         </div>
                     )}
-
                     <MessageDialog
                         show={toast.show}
                         type={toast.type}
@@ -485,44 +467,6 @@ export default function FlightManagement() {
                     </div>
                 </div>
             </div>
-          )}
-          {isDialogOpen && (
-            <div>
-              <ConfirmDialog
-                open={isDialogOpen}
-                message={message}
-                onConfirm={handleConfirm}
-                onCancel={handleCancel}
-              />
-            </div>
-          )}
-
-          <MessageDialog
-            show={toast.show}
-            type={toast.type}
-            message={toast.message}
-            onClose={() => setToast({ ...toast, show: false })}
-          />
-          <div className={styles["card-container"]}>
-            {flights
-              .slice()
-              .sort((a, b) => {
-                const numA = parseInt(a.flight_id.replace(/\D/g, ""));
-                const numB = parseInt(b.flight_id.replace(/\D/g, ""));
-                return numA - numB;
-              })
-              .map((flight) => (
-                <FlightCardEdit
-                  key={flight.flight_id}
-                  data={flight}
-                  onSendData={handleOpenUpdateFlightForm}
-                  onFlightSelect={handleFlightSelect}
-                  isSelected={selectedFlights.includes(flight.flight_id)}
-                />
-              ))}
-          </div>
         </div>
-      </div>
-    </div>
-  );
+    );
 }
