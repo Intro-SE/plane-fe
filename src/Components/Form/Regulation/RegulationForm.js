@@ -1,5 +1,13 @@
 import { useState, useRef, useEffect } from "react";
-import { ChevronDown, X, Plus, Trash2, RotateCcw } from "lucide-react";
+import {
+    ChevronDown,
+    X,
+    Plus,
+    Trash2,
+    RotateCcw,
+    Edit,
+    Save,
+} from "lucide-react";
 import styles from "./RegulationForm.module.css";
 import axios from "axios";
 
@@ -31,6 +39,11 @@ export default function RegulationForm({ setToast, setOpenForm, setLoading }) {
     });
 
     const [ticketClasses, setTicketClasses] = useState([]);
+    const [newTicketClasses, setNewTicketClasses] = useState([]);
+    const [editingTicketClasses, setEditingTicketClasses] = useState({});
+    const [modifiedTicketClasses, setModifiedTicketClasses] = useState([]);
+    const [originalTicketValues, setOriginalTicketValues] = useState({});
+    const [changedTicketClasses, setChangedTicketClasses] = useState({});
 
     const [ticketClassOptions, setTicketClassOptions] = useState([]);
     const [flightRouteOptions, setFlightRouteOptions] = useState([]);
@@ -59,7 +72,13 @@ export default function RegulationForm({ setToast, setOpenForm, setLoading }) {
 
                 setOriginalRegulations(regulationRes.data);
                 setRegulationData(regulationRes.data);
-                setTicketClasses(ticketClassRouteRes.data);
+                const routes = ticketClassRouteRes.data.map((route) => ({
+                    flight_route_id: route.flight_route_id,
+                    ticket_class_name: route.ticket_class_name,
+                    price: route.price,
+                    internalId: `internal_${Date.now()}_${Math.floor(Math.random() * 1000)}`,
+                }));
+                setTicketClasses(routes);
                 const ticketClassNames = ticketClassOptionRes.data.map(
                     (item) => item.ticket_class_name,
                 );
@@ -79,11 +98,9 @@ export default function RegulationForm({ setToast, setOpenForm, setLoading }) {
         };
 
         fetchData();
-    }, []);
+    }, [setLoading]);
 
     const [modifiedFields, setModifiedFields] = useState({});
-
-    const [newTicketClasses, setNewTicketClasses] = useState([]);
 
     const [newTicket, setNewTicket] = useState({
         flight_route_id: "",
@@ -94,6 +111,8 @@ export default function RegulationForm({ setToast, setOpenForm, setLoading }) {
     const [dropdowns, setDropdowns] = useState({
         ticketClass: false,
         flightCode: false,
+        editFlightCode: {},
+        editTicketClass: {},
     });
 
     const dropdownRefs = useRef({});
@@ -104,14 +123,12 @@ export default function RegulationForm({ setToast, setOpenForm, setLoading }) {
             [field]: value,
         }));
 
-        // Mark field as modified if value is different from original
         if (value !== originalRegulations[field]) {
             setModifiedFields((prev) => ({
                 ...prev,
                 [field]: true,
             }));
         } else {
-            // If value matches original, remove from modified fields
             setModifiedFields((prev) => {
                 const updated = { ...prev };
                 delete updated[field];
@@ -120,14 +137,12 @@ export default function RegulationForm({ setToast, setOpenForm, setLoading }) {
         }
     };
 
-    // Reset a field to its original value
     const resetField = (field) => {
         setRegulationData((prev) => ({
             ...prev,
             [field]: originalRegulations[field],
         }));
 
-        // Remove from modified fields
         setModifiedFields((prev) => {
             const updated = { ...prev };
             delete updated[field];
@@ -135,37 +150,128 @@ export default function RegulationForm({ setToast, setOpenForm, setLoading }) {
         });
     };
 
-    const toggleDropdown = (dropdown) => {
-        // Close all other dropdowns first
-        const newDropdownState = Object.keys(dropdowns).reduce((acc, key) => {
-            acc[key] = key === dropdown ? !dropdowns[key] : false;
-            return acc;
-        }, {});
+    const toggleDropdown = (dropdownName, ticketKey = null) => {
+        setDropdowns((prev) => {
+            const nextState = {};
+            let isCurrentlyOpen = false;
 
-        setDropdowns(newDropdownState);
+            Object.keys(prev).forEach((key) => {
+                if (typeof prev[key] === "boolean") {
+                    nextState[key] = false;
+                } else {
+                    nextState[key] = {};
+                    Object.keys(prev[key]).forEach((subKey) => {
+                        nextState[key][subKey] = false;
+                    });
+                }
+            });
+
+            if (ticketKey) {
+                isCurrentlyOpen = prev[dropdownName]?.[ticketKey] || false;
+                if (!isCurrentlyOpen) {
+                    if (!nextState[dropdownName]) nextState[dropdownName] = {};
+                    nextState[dropdownName][ticketKey] = true;
+                }
+            } else {
+                isCurrentlyOpen = prev[dropdownName] || false;
+                if (!isCurrentlyOpen) {
+                    nextState[dropdownName] = true;
+                }
+            }
+            return nextState;
+        });
     };
 
-    const clearSelection = (field, event) => {
+    const clearSelection = (
+        field,
+        event,
+        dropdownNameToCloseIfSimple = null,
+        ticketKeyIfEdit = null,
+    ) => {
         event.stopPropagation();
-        setNewTicket((prev) => ({
-            ...prev,
-            [field]: "",
-        }));
+        if (field === "flight_route_id" || field === "ticket_class_name") {
+            setNewTicket((prev) => ({
+                ...prev,
+                [field]: "",
+            }));
+            if (dropdownNameToCloseIfSimple) {
+                setDropdowns((prev) => ({
+                    ...prev,
+                    [dropdownNameToCloseIfSimple]: false,
+                }));
+            }
+        } else if (field === "editFlightCode" || field === "editTicketClass") {
+            const editField =
+                field === "editFlightCode"
+                    ? "flight_route_id"
+                    : "ticket_class_name";
+            setEditingTicketClasses((prev) => ({
+                ...prev,
+                [ticketKeyIfEdit]: {
+                    ...prev[ticketKeyIfEdit],
+                    [editField]: "",
+                },
+            }));
+            if (ticketKeyIfEdit) {
+                setDropdowns((prev) => ({
+                    ...prev,
+                    [field]: {
+                        ...prev[field],
+                        [ticketKeyIfEdit]: false,
+                    },
+                }));
+            }
+        }
     };
 
-    // Handle click outside to close dropdowns
     useEffect(() => {
         const handleClickOutside = (event) => {
-            Object.keys(dropdowns).forEach((key) => {
+            Object.keys(dropdownRefs.current).forEach((refKey) => {
                 if (
-                    dropdownRefs.current[key] &&
-                    !dropdownRefs.current[key].contains(event.target) &&
-                    dropdowns[key]
+                    dropdownRefs.current[refKey] &&
+                    !dropdownRefs.current[refKey].contains(event.target)
                 ) {
-                    setDropdowns((prev) => ({
-                        ...prev,
-                        [key]: false,
-                    }));
+                    setDropdowns((prevDropdownStates) => {
+                        const updatedDropdownStates = { ...prevDropdownStates };
+
+                        if (
+                            refKey === "flightCode" ||
+                            refKey === "ticketClass"
+                        ) {
+                            if (prevDropdownStates[refKey] === true) {
+                                updatedDropdownStates[refKey] = false;
+                            }
+                        } else if (refKey.startsWith("editFlightCode_")) {
+                            const ticketId = refKey.substring(
+                                "editFlightCode_".length,
+                            );
+                            if (
+                                prevDropdownStates.editFlightCode &&
+                                prevDropdownStates.editFlightCode[ticketId] ===
+                                    true
+                            ) {
+                                updatedDropdownStates.editFlightCode = {
+                                    ...prevDropdownStates.editFlightCode,
+                                    [ticketId]: false,
+                                };
+                            }
+                        } else if (refKey.startsWith("editTicketClass_")) {
+                            const ticketId = refKey.substring(
+                                "editTicketClass_".length,
+                            );
+                            if (
+                                prevDropdownStates.editTicketClass &&
+                                prevDropdownStates.editTicketClass[ticketId] ===
+                                    true
+                            ) {
+                                updatedDropdownStates.editTicketClass = {
+                                    ...prevDropdownStates.editTicketClass,
+                                    [ticketId]: false,
+                                };
+                            }
+                        }
+                        return updatedDropdownStates;
+                    });
                 }
             });
         };
@@ -174,13 +280,7 @@ export default function RegulationForm({ setToast, setOpenForm, setLoading }) {
         return () => {
             document.removeEventListener("mousedown", handleClickOutside);
         };
-    }, [dropdowns]);
-
-    // No need to reposition dropdowns as they use absolute positioning
-    useEffect(() => {
-        // This effect is kept to prevent breaking changes
-        // but the repositioning logic is removed
-    }, [dropdowns]);
+    }, []);
 
     const handleNewTicketChange = (field, value) => {
         setNewTicket((prev) => ({
@@ -189,13 +289,60 @@ export default function RegulationForm({ setToast, setOpenForm, setLoading }) {
         }));
     };
 
+    const selectOption = (field, value, ticketKey = null) => {
+        if (field === "flight_route_id" || field === "ticket_class_name") {
+            setNewTicket((prev) => ({
+                ...prev,
+                [field]: value,
+            }));
+        } else if (field === "editFlightCode" || field === "editTicketClass") {
+            const editField =
+                field === "editFlightCode"
+                    ? "flight_route_id"
+                    : "ticket_class_name";
+            setEditingTicketClasses((prev) => ({
+                ...prev,
+                [ticketKey]: {
+                    ...prev[ticketKey],
+                    [editField]: value,
+                },
+            }));
+        }
+
+        if (ticketKey) {
+            const dropdownName = field;
+            setDropdowns((prev) => ({
+                ...prev,
+                [dropdownName]: {
+                    ...prev[dropdownName],
+                    [ticketKey]: false,
+                },
+            }));
+        } else {
+            let dropdownNameToClose = "";
+            if (field === "flight_route_id") {
+                dropdownNameToClose = "flightCode";
+            } else if (field === "ticket_class_name") {
+                dropdownNameToClose = "ticketClass";
+            }
+
+            if (dropdownNameToClose) {
+                setDropdowns((prev) => ({
+                    ...prev,
+                    [dropdownNameToClose]: false,
+                }));
+            }
+        }
+    };
+
     const addTicket = () => {
         if (
             newTicket.flight_route_id &&
             newTicket.ticket_class_name &&
             newTicket.price
         ) {
-            const newTicketEntry = { ...newTicket };
+            const internalId = `internal_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
+            const newTicketEntry = { ...newTicket, internalId };
             setTicketClasses((prev) => [...prev, newTicketEntry]);
             setNewTicketClasses((prev) => [...prev, newTicketEntry]);
             setNewTicket({
@@ -207,30 +354,127 @@ export default function RegulationForm({ setToast, setOpenForm, setLoading }) {
     };
 
     const removeTicket = (index, ticket) => {
-        if (
-            newTicketClasses.some(
-                (item) =>
-                    item.flight_route_id === ticket.flight_route_id &&
-                    item.ticket_class_name === ticket.ticket_class_name &&
-                    item.price === ticket.price,
-            )
-        ) {
-            setTicketClasses((prev) => prev.filter((_, i) => i !== index));
+        if (ticket.internalId) {
+            // Xóa khỏi danh sách hiển thị chính
+            setTicketClasses((prev) =>
+                prev.filter((t) => t.internalId !== ticket.internalId),
+            );
+
             setNewTicketClasses((prev) =>
-                prev.filter(
-                    (item) =>
-                        !(
-                            item.flight_route_id === ticket.flight_route_id &&
-                            item.ticket_class_name ===
-                                ticket.ticket_class_name &&
-                            item.price === ticket.price
-                        ),
-                ),
+                prev.filter((item) => item.internalId !== ticket.internalId),
             );
         }
     };
 
+    const handleEditTicket = (ticket) => {
+        const key =
+            ticket.internalId ||
+            `${ticket.flight_route_id}_${ticket.ticket_class_name}`;
+        setEditingTicketClasses({
+            ...editingTicketClasses,
+            [key]: {
+                flight_route_id: ticket.flight_route_id,
+                ticket_class_name: ticket.ticket_class_name,
+                price: ticket.price,
+            },
+        });
+
+        setOriginalTicketValues({
+            ...originalTicketValues,
+            [key]: {
+                flight_route_id: ticket.flight_route_id,
+                ticket_class_name: ticket.ticket_class_name,
+                price: ticket.price,
+            },
+        });
+    };
+
+    const handleSaveEditTicket = (ticket) => {
+        const key =
+            ticket.internalId ||
+            `${ticket.flight_route_id}_${ticket.ticket_class_name}`;
+        const editedData = editingTicketClasses[key];
+        const original = originalTicketValues[key];
+
+        const hasChanged =
+            original?.flight_route_id !== editedData.flight_route_id ||
+            original?.ticket_class_name !== editedData.ticket_class_name ||
+            original?.price !== editedData.price;
+
+        setTicketClasses((prev) =>
+            prev.map((t) => {
+                const tKey =
+                    t.internalId ||
+                    `${t.flight_route_id}_${t.ticket_class_name}`;
+                if (tKey === key) {
+                    return { ...t, ...editedData };
+                }
+                return t;
+            }),
+        );
+
+        if (hasChanged) {
+            setChangedTicketClasses({
+                ...changedTicketClasses,
+                [key]: {
+                    original: original,
+                    current: {
+                        flight_route_id: editedData.flight_route_id,
+                        ticket_class_name: editedData.ticket_class_name,
+                        price: editedData.price,
+                    },
+                },
+            });
+        }
+
+        if (!ticket.internalId) {
+            const existingIndex = modifiedTicketClasses.findIndex(
+                (t) =>
+                    t.flight_route_id === ticket.flight_route_id &&
+                    t.ticket_class_name === ticket.ticket_class_name,
+            );
+            if (existingIndex >= 0) {
+                const updated = [...modifiedTicketClasses];
+                updated[existingIndex] = { ...ticket, ...editedData };
+                setModifiedTicketClasses(updated);
+            } else {
+                setModifiedTicketClasses([
+                    ...modifiedTicketClasses,
+                    { ...ticket, ...editedData },
+                ]);
+            }
+        }
+
+        const newEditingTicketClasses = { ...editingTicketClasses };
+        delete newEditingTicketClasses[key];
+        setEditingTicketClasses(newEditingTicketClasses);
+    };
+
+    const handleCancelEditTicket = (ticket) => {
+        const key =
+            ticket.internalId ||
+            `${ticket.flight_route_id}_${ticket.ticket_class_name}`;
+        const newEditingTicketClasses = { ...editingTicketClasses };
+        delete newEditingTicketClasses[key];
+        setEditingTicketClasses(newEditingTicketClasses);
+
+        const newOriginalTicketValues = { ...originalTicketValues };
+        delete newOriginalTicketValues[key];
+        setOriginalTicketValues(newOriginalTicketValues);
+    };
+
     const handleConfirm = async () => {
+        const saveModifiedTicketClasses = async () => {
+            for (const ticket of modifiedTicketClasses) {
+                await axios.put(
+                    `http://localhost:8000/api/v1/regulation/ticket_class_by_route/${ticket.flight_route_id}/${ticket.ticket_class_name}`,
+                    {
+                        price: ticket.price,
+                    },
+                );
+            }
+        };
+
         try {
             const updateRulePromise = axios.put(
                 "http://localhost:8000/api/v1/regulation/update_rule",
@@ -246,16 +490,20 @@ export default function RegulationForm({ setToast, setOpenForm, setLoading }) {
                 }
             })();
 
+            const modifiedTicketClassPromise = saveModifiedTicketClasses();
+
             const [updateRegulationRes] = await Promise.all([
                 updateRulePromise,
                 ticketClassPromise,
+                modifiedTicketClassPromise,
             ]);
 
-            // Cập nhật state sau khi xong cả hai
             setOriginalRegulations(updateRegulationRes.data);
             setRegulationData(updateRegulationRes.data);
             setModifiedFields({});
             setNewTicketClasses([]);
+            setModifiedTicketClasses([]);
+            setChangedTicketClasses({});
 
             setToast({
                 show: true,
@@ -694,7 +942,13 @@ export default function RegulationForm({ setToast, setOpenForm, setLoading }) {
                         </div>
 
                         {/* Flight Table */}
-                        <div className={styles.tableContainer}>
+                        <div
+                            className={`${styles.tableContainer} ${
+                                Object.keys(editingTicketClasses).length > 0
+                                    ? styles.editing
+                                    : ""
+                            }`}
+                        >
                             <div className={styles.tableHeader}>
                                 <div className={styles.tableHeaderCell}>
                                     Mã tuyến bay
@@ -711,63 +965,399 @@ export default function RegulationForm({ setToast, setOpenForm, setLoading }) {
                             </div>
 
                             {/* Existing Ticket Classes */}
-                            {ticketClasses.map((ticket, index) => (
-                                <div key={index} className={styles.tableRow}>
-                                    <div className={styles.tableCell}>
-                                        {ticket.flight_route_id}
+                            {ticketClasses.map((ticket, index) => {
+                                const key =
+                                    ticket.internalId ||
+                                    `${ticket.flight_route_id}_${ticket.ticket_class_name}`;
+                                const isEditing = editingTicketClasses[key];
+                                const isNewTicket = newTicketClasses.some(
+                                    (item) =>
+                                        item.internalId === ticket.internalId,
+                                );
+                                const hasChanged = changedTicketClasses[key];
+
+                                return (
+                                    <div
+                                        key={index}
+                                        className={`${styles.tableRow} ${
+                                            isEditing ? styles.editingRow : ""
+                                        } ${
+                                            hasChanged ? styles.changedRow : ""
+                                        }`}
+                                    >
+                                        <div className={styles.tableCell}>
+                                            <div className={styles.cellContent}>
+                                                {isEditing ? (
+                                                    <div
+                                                        className={
+                                                            styles.dropdown
+                                                        }
+                                                        ref={(el) =>
+                                                            (dropdownRefs.current[
+                                                                `editFlightCode_${key}`
+                                                            ] = el)
+                                                        }
+                                                        style={{
+                                                            zIndex: dropdowns
+                                                                .editFlightCode[
+                                                                key
+                                                            ]
+                                                                ? 999999
+                                                                : 1000,
+                                                        }}
+                                                    >
+                                                        <button
+                                                            className={`${styles.dropdownButtonSmall} ${
+                                                                editingTicketClasses[
+                                                                    key
+                                                                ]
+                                                                    ?.flight_route_id
+                                                                    ? styles.airlineButton
+                                                                    : ""
+                                                            } ${styles.editingInput}`}
+                                                            onClick={() =>
+                                                                toggleDropdown(
+                                                                    "editFlightCode",
+                                                                    key,
+                                                                )
+                                                            }
+                                                        >
+                                                            {editingTicketClasses[
+                                                                key
+                                                            ]
+                                                                ?.flight_route_id ||
+                                                                "Mã tuyến bay"}
+                                                            <ChevronDown
+                                                                size={20}
+                                                                className={
+                                                                    styles.inputIcon
+                                                                }
+                                                            />
+                                                        </button>
+                                                        {dropdowns
+                                                            .editFlightCode[
+                                                            key
+                                                        ] && (
+                                                            <div
+                                                                className={
+                                                                    styles.dropdownMenu
+                                                                }
+                                                            >
+                                                                {flightRouteOptions.map(
+                                                                    (
+                                                                        option,
+                                                                        idx,
+                                                                    ) => (
+                                                                        <div
+                                                                            key={
+                                                                                idx
+                                                                            }
+                                                                            className={`${styles.dropdownItem} ${
+                                                                                editingTicketClasses[
+                                                                                    key
+                                                                                ]
+                                                                                    ?.flight_route_id ===
+                                                                                option
+                                                                                    ? styles.selected
+                                                                                    : ""
+                                                                            }`}
+                                                                            onClick={() =>
+                                                                                selectOption(
+                                                                                    "editFlightCode",
+                                                                                    option,
+                                                                                    key,
+                                                                                )
+                                                                            }
+                                                                        >
+                                                                            {
+                                                                                option
+                                                                            }
+                                                                        </div>
+                                                                    ),
+                                                                )}
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                ) : (
+                                                    <>
+                                                        <span>
+                                                            {
+                                                                ticket.flight_route_id
+                                                            }
+                                                        </span>
+                                                        {hasChanged &&
+                                                            hasChanged.original
+                                                                .flight_route_id !==
+                                                                ticket.flight_route_id && (
+                                                                <div
+                                                                    className={
+                                                                        styles.oldValue
+                                                                    }
+                                                                >
+                                                                    Cũ:{" "}
+                                                                    {
+                                                                        hasChanged
+                                                                            .original
+                                                                            .flight_route_id
+                                                                    }
+                                                                </div>
+                                                            )}
+                                                    </>
+                                                )}
+                                            </div>
+                                        </div>
+                                        <div className={styles.tableCell}>
+                                            <div className={styles.cellContent}>
+                                                {isEditing ? (
+                                                    <div
+                                                        className={
+                                                            styles.dropdown
+                                                        }
+                                                        ref={(el) =>
+                                                            (dropdownRefs.current[
+                                                                `editTicketClass_${key}`
+                                                            ] = el)
+                                                        }
+                                                        style={{
+                                                            zIndex: dropdowns
+                                                                .editTicketClass[
+                                                                key
+                                                            ]
+                                                                ? 999999
+                                                                : 1000,
+                                                        }}
+                                                    >
+                                                        <button
+                                                            className={`${styles.dropdownButtonSmall} ${
+                                                                editingTicketClasses[
+                                                                    key
+                                                                ]
+                                                                    ?.ticket_class_name
+                                                                    ? styles.airlineButton
+                                                                    : ""
+                                                            } ${styles.editingInput}`}
+                                                            onClick={() =>
+                                                                toggleDropdown(
+                                                                    "editTicketClass",
+                                                                    key,
+                                                                )
+                                                            }
+                                                        >
+                                                            {editingTicketClasses[
+                                                                key
+                                                            ]
+                                                                ?.ticket_class_name ||
+                                                                "Hạng vé"}
+                                                            <ChevronDown
+                                                                size={20}
+                                                                className={
+                                                                    styles.inputIcon
+                                                                }
+                                                            />
+                                                        </button>
+                                                        {dropdowns
+                                                            .editTicketClass[
+                                                            key
+                                                        ] && (
+                                                            <div
+                                                                className={
+                                                                    styles.dropdownMenu
+                                                                }
+                                                            >
+                                                                {ticketClassOptions.map(
+                                                                    (
+                                                                        option,
+                                                                        idx,
+                                                                    ) => (
+                                                                        <div
+                                                                            key={
+                                                                                idx
+                                                                            }
+                                                                            className={`${styles.dropdownItem} ${
+                                                                                editingTicketClasses[
+                                                                                    key
+                                                                                ]
+                                                                                    ?.ticket_class_name ===
+                                                                                option
+                                                                                    ? styles.selected
+                                                                                    : ""
+                                                                            }`}
+                                                                            onClick={() =>
+                                                                                selectOption(
+                                                                                    "editTicketClass",
+                                                                                    option,
+                                                                                    key,
+                                                                                )
+                                                                            }
+                                                                        >
+                                                                            {
+                                                                                option
+                                                                            }
+                                                                        </div>
+                                                                    ),
+                                                                )}
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                ) : (
+                                                    <>
+                                                        <span>
+                                                            {
+                                                                ticket.ticket_class_name
+                                                            }
+                                                        </span>
+                                                        {hasChanged &&
+                                                            hasChanged.original
+                                                                .ticket_class_name !==
+                                                                ticket.ticket_class_name && (
+                                                                <div
+                                                                    className={
+                                                                        styles.oldValue
+                                                                    }
+                                                                >
+                                                                    Cũ:{" "}
+                                                                    {
+                                                                        hasChanged
+                                                                            .original
+                                                                            .ticket_class_name
+                                                                    }
+                                                                </div>
+                                                            )}
+                                                    </>
+                                                )}
+                                            </div>
+                                        </div>
+                                        <div className={styles.tableCell}>
+                                            <div className={styles.cellContent}>
+                                                {isEditing ? (
+                                                    <input
+                                                        type="number"
+                                                        className={`${styles.quantityInput} ${styles.editingInput}`}
+                                                        value={
+                                                            editingTicketClasses[
+                                                                key
+                                                            ]?.price || ""
+                                                        }
+                                                        onChange={(e) =>
+                                                            setEditingTicketClasses(
+                                                                (prev) => ({
+                                                                    ...prev,
+                                                                    [key]: {
+                                                                        ...prev[
+                                                                            key
+                                                                        ],
+                                                                        price: e
+                                                                            .target
+                                                                            .value,
+                                                                    },
+                                                                }),
+                                                            )
+                                                        }
+                                                        placeholder="Đơn giá"
+                                                    />
+                                                ) : (
+                                                    <>
+                                                        <span>
+                                                            {parseInt(
+                                                                ticket.price,
+                                                            ).toLocaleString(
+                                                                "vi-VN",
+                                                            )}
+                                                        </span>
+                                                        {hasChanged &&
+                                                            hasChanged.original
+                                                                .price !==
+                                                                ticket.price && (
+                                                                <div
+                                                                    className={
+                                                                        styles.oldValue
+                                                                    }
+                                                                >
+                                                                    Cũ:{" "}
+                                                                    {parseInt(
+                                                                        hasChanged
+                                                                            .original
+                                                                            .price,
+                                                                    ).toLocaleString(
+                                                                        "vi-VN",
+                                                                    )}
+                                                                </div>
+                                                            )}
+                                                    </>
+                                                )}
+                                            </div>
+                                        </div>
+                                        <div className={styles.tableCell}>
+                                            <div
+                                                className={
+                                                    styles.actionButtonGroup
+                                                }
+                                            >
+                                                {isEditing ? (
+                                                    <>
+                                                        <button
+                                                            className={
+                                                                styles.saveButton
+                                                            }
+                                                            onClick={() =>
+                                                                handleSaveEditTicket(
+                                                                    ticket,
+                                                                )
+                                                            }
+                                                        >
+                                                            <Save size={14} />
+                                                        </button>
+                                                        <button
+                                                            className={
+                                                                styles.cancelEditButton
+                                                            }
+                                                            onClick={() =>
+                                                                handleCancelEditTicket(
+                                                                    ticket,
+                                                                )
+                                                            }
+                                                        >
+                                                            <X size={14} />
+                                                        </button>
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <button
+                                                            className={
+                                                                styles.editButton
+                                                            }
+                                                            onClick={() =>
+                                                                handleEditTicket(
+                                                                    ticket,
+                                                                )
+                                                            }
+                                                        >
+                                                            <Edit size={14} />
+                                                        </button>
+                                                        {isNewTicket && (
+                                                            <button
+                                                                className={
+                                                                    styles.deleteButton
+                                                                }
+                                                                onClick={() =>
+                                                                    removeTicket(
+                                                                        index,
+                                                                        ticket,
+                                                                    )
+                                                                }
+                                                            >
+                                                                <Trash2
+                                                                    size={16}
+                                                                />
+                                                            </button>
+                                                        )}
+                                                    </>
+                                                )}
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div className={styles.tableCell}>
-                                        {ticket.ticket_class_name}
-                                    </div>
-                                    <div className={styles.tableCell}>
-                                        {parseInt(ticket.price).toLocaleString(
-                                            "vi-VN",
-                                        )}
-                                    </div>
-                                    <div className={styles.tableCell}>
-                                        <button
-                                            className={`${styles.deleteButton} ${
-                                                !newTicketClasses.some(
-                                                    (item) =>
-                                                        item.flight_route_id ===
-                                                            ticket.flight_route_id &&
-                                                        item.ticket_class_name ===
-                                                            ticket.ticket_class_name &&
-                                                        item.price ===
-                                                            ticket.price,
-                                                )
-                                                    ? styles.disabledButton
-                                                    : ""
-                                            }`}
-                                            onClick={() =>
-                                                newTicketClasses.some(
-                                                    (item) =>
-                                                        item.flight_route_id ===
-                                                            ticket.flight_route_id &&
-                                                        item.ticket_class_name ===
-                                                            ticket.ticket_class_name &&
-                                                        item.price ===
-                                                            ticket.price,
-                                                ) && removeTicket(index, ticket)
-                                            }
-                                            disabled={
-                                                !newTicketClasses.some(
-                                                    (item) =>
-                                                        item.flight_route_id ===
-                                                            ticket.flight_route_id &&
-                                                        item.ticket_class_name ===
-                                                            ticket.ticket_class_name &&
-                                                        item.price ===
-                                                            ticket.price,
-                                                )
-                                            }
-                                        >
-                                            <Trash2 size={16} />
-                                            Xóa
-                                        </button>
-                                    </div>
-                                </div>
-                            ))}
+                                );
+                            })}
 
                             {/* Add New Ticket Class Row */}
                             <div className={styles.tableRow}>
@@ -784,10 +1374,17 @@ export default function RegulationForm({ setToast, setOpenForm, setLoading }) {
                                         style={{
                                             position: "relative",
                                             width: "100%",
+                                            zIndex: dropdowns.flightCode
+                                                ? 999999
+                                                : 999998,
                                         }}
                                     >
                                         <button
-                                            className={`${styles.ticketClass} ${newTicket.flight_route_id ? styles.airlineButton : ""}`}
+                                            className={`${styles.dropdownButton} ${
+                                                newTicket.flight_route_id
+                                                    ? styles.airlineButton
+                                                    : ""
+                                            }`}
                                             onClick={() =>
                                                 toggleDropdown("flightCode")
                                             }
@@ -795,17 +1392,21 @@ export default function RegulationForm({ setToast, setOpenForm, setLoading }) {
                                             {newTicket.flight_route_id || "..."}
                                             {newTicket.flight_route_id ? (
                                                 <X
-                                                    size={16}
+                                                    size={20}
                                                     onClick={(e) =>
                                                         clearSelection(
                                                             "flight_route_id",
                                                             e,
+                                                            "flightCode",
                                                         )
                                                     }
                                                     className={styles.clearIcon}
                                                 />
                                             ) : (
-                                                <ChevronDown size={16} />
+                                                <ChevronDown
+                                                    size={20}
+                                                    className={styles.inputIcon}
+                                                />
                                             )}
                                         </button>
                                         {dropdowns.flightCode && (
@@ -816,18 +1417,18 @@ export default function RegulationForm({ setToast, setOpenForm, setLoading }) {
                                                     (option, idx) => (
                                                         <div
                                                             key={idx}
-                                                            className={
-                                                                styles.dropdownItem
-                                                            }
-                                                            onClick={() => {
-                                                                handleNewTicketChange(
+                                                            className={`${styles.dropdownItem} ${
+                                                                newTicket.flight_route_id ===
+                                                                option
+                                                                    ? styles.selected
+                                                                    : ""
+                                                            }`}
+                                                            onClick={() =>
+                                                                selectOption(
                                                                     "flight_route_id",
                                                                     option,
-                                                                );
-                                                                toggleDropdown(
-                                                                    "flightCode",
-                                                                );
-                                                            }}
+                                                                )
+                                                            }
                                                         >
                                                             {option}
                                                         </div>
@@ -850,10 +1451,17 @@ export default function RegulationForm({ setToast, setOpenForm, setLoading }) {
                                         style={{
                                             position: "relative",
                                             width: "100%",
+                                            zIndex: dropdowns.ticketClass
+                                                ? 999999
+                                                : 999998,
                                         }}
                                     >
                                         <button
-                                            className={`${styles.ticketClass} ${newTicket.ticket_class_name ? styles.airlineButton : ""}`}
+                                            className={`${styles.dropdownButton} ${
+                                                newTicket.ticket_class_name
+                                                    ? styles.airlineButton
+                                                    : ""
+                                            }`}
                                             onClick={() =>
                                                 toggleDropdown("ticketClass")
                                             }
@@ -862,17 +1470,21 @@ export default function RegulationForm({ setToast, setOpenForm, setLoading }) {
                                                 "..."}
                                             {newTicket.ticket_class_name ? (
                                                 <X
-                                                    size={16}
+                                                    size={20}
                                                     onClick={(e) =>
                                                         clearSelection(
                                                             "ticket_class_name",
                                                             e,
+                                                            "ticketClass",
                                                         )
                                                     }
                                                     className={styles.clearIcon}
                                                 />
                                             ) : (
-                                                <ChevronDown size={16} />
+                                                <ChevronDown
+                                                    size={20}
+                                                    className={styles.inputIcon}
+                                                />
                                             )}
                                         </button>
                                         {dropdowns.ticketClass && (
@@ -883,18 +1495,18 @@ export default function RegulationForm({ setToast, setOpenForm, setLoading }) {
                                                     (option, idx) => (
                                                         <div
                                                             key={idx}
-                                                            className={
-                                                                styles.dropdownItem
-                                                            }
-                                                            onClick={() => {
-                                                                handleNewTicketChange(
+                                                            className={`${styles.dropdownItem} ${
+                                                                newTicket.ticket_class_name ===
+                                                                option
+                                                                    ? styles.selected
+                                                                    : ""
+                                                            }`}
+                                                            onClick={() =>
+                                                                selectOption(
                                                                     "ticket_class_name",
                                                                     option,
-                                                                );
-                                                                toggleDropdown(
-                                                                    "ticketClass",
-                                                                );
-                                                            }}
+                                                                )
+                                                            }
                                                         >
                                                             {option}
                                                         </div>
@@ -915,7 +1527,7 @@ export default function RegulationForm({ setToast, setOpenForm, setLoading }) {
                                             )
                                         }
                                         className={styles.quantityInput}
-                                        placeholder="..."
+                                        placeholder="Nhập giá vé"
                                     />
                                 </div>
                                 <div className={styles.tableCell}>

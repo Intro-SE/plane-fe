@@ -203,7 +203,8 @@ export default function FlightCardEdit({
                                 <tbody>
                                     {intermediate_stops.map((item, index) => (
                                         <tr key={index}>
-                                            <td>{index + 1}</td>
+                                            {/* <td>{index + 1}</td> */}
+                                            <td>{item.stop_number}</td>
                                             <td>{item.stop_name}</td>
                                             <td>{item.stop_time}</td>
                                             <td>{item.note}</td>

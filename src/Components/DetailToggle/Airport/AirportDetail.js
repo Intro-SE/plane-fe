@@ -1,12 +1,15 @@
 import { useEffect, useState } from "react";
 import styles from "./AirportDetail.module.css";
-import { Plus, Trash2 } from "lucide-react";
+import { Plus, Trash2, Edit, Save, X } from "lucide-react";
 import axios from "axios";
-import MessageDialog from "../../Dialog/Message/MessageDialog";
 
 export default function AirportDetail({ setToast, onClose, setLoading }) {
     const [airports, setAirports] = useState([]);
     const [newAirports, setNewAirports] = useState([]);
+    const [editingAirports, setEditingAirports] = useState({});
+    const [modifiedAirports, setModifiedAirports] = useState([]);
+    const [originalValues, setOriginalValues] = useState({});
+    const [changedAirports, setChangedAirports] = useState({});
 
     useEffect(() => {
         setLoading(true);
@@ -27,7 +30,7 @@ export default function AirportDetail({ setToast, onClose, setLoading }) {
         };
 
         fetchAirportDetail();
-    }, []);
+    }, [setLoading]);
 
     const [newAirport, setNewAirport] = useState({
         airport_id: "",
@@ -44,6 +47,10 @@ export default function AirportDetail({ setToast, onClose, setLoading }) {
         setAirports(
             airports.filter((airport) => airport.internal_id !== internalId),
         );
+        // Xóa khỏi editing state nếu đang edit
+        const newEditingAirports = { ...editingAirports };
+        delete newEditingAirports[internalId];
+        setEditingAirports(newEditingAirports);
     };
 
     const handleAdd = () => {
@@ -77,13 +84,127 @@ export default function AirportDetail({ setToast, onClose, setLoading }) {
         onClose();
     };
 
+    const handleEdit = (airport) => {
+        const key = airport.internal_id || airport.airport_id;
+        setEditingAirports({
+            ...editingAirports,
+            [key]: {
+                airport_name: airport.airport_name,
+                airport_address: airport.airport_address,
+                airport_id: airport.airport_id,
+                internal_id: airport.internal_id,
+            },
+        });
+
+        // Lưu giá trị gốc để so sánh sau này
+        setOriginalValues({
+            ...originalValues,
+            [key]: {
+                airport_name: airport.airport_name,
+                airport_address: airport.airport_address,
+            },
+        });
+    };
+
+    const handleEditChange = (key, field, value) => {
+        setEditingAirports({
+            ...editingAirports,
+            [key]: {
+                ...editingAirports[key],
+                [field]: value,
+            },
+        });
+    };
+
+    const handleSaveEdit = (airport) => {
+        const key = airport.internal_id || airport.airport_id;
+        const editedData = editingAirports[key];
+        const original = originalValues[key];
+
+        // Kiểm tra có thay đổi không
+        const hasChanged =
+            original?.airport_name !== editedData.airport_name ||
+            original?.airport_address !== editedData.airport_address;
+
+        // Cập nhật airports array
+        setAirports(
+            airports.map((a) => {
+                const aKey = a.internal_id || a.airport_id;
+                if (aKey === key) {
+                    return { ...a, ...editedData };
+                }
+                return a;
+            }),
+        );
+
+        // Cập nhật trạng thái thay đổi
+        if (hasChanged) {
+            setChangedAirports({
+                ...changedAirports,
+                [key]: {
+                    original: original,
+                    current: {
+                        airport_name: editedData.airport_name,
+                        airport_address: editedData.airport_address,
+                    },
+                },
+            });
+        }
+
+        // Thêm vào modified airports nếu không phải airport mới
+        if (!airport.internal_id) {
+            const existingIndex = modifiedAirports.findIndex(
+                (a) => a.airport_id === airport.airport_id,
+            );
+            if (existingIndex >= 0) {
+                const updated = [...modifiedAirports];
+                updated[existingIndex] = { ...airport, ...editedData };
+                setModifiedAirports(updated);
+            } else {
+                setModifiedAirports([
+                    ...modifiedAirports,
+                    { ...airport, ...editedData },
+                ]);
+            }
+        }
+
+        // Xóa khỏi editing state
+        const newEditingAirports = { ...editingAirports };
+        delete newEditingAirports[key];
+        setEditingAirports(newEditingAirports);
+    };
+
+    const handleCancelEdit = (airport) => {
+        const key = airport.internal_id || airport.airport_id;
+        const newEditingAirports = { ...editingAirports };
+        delete newEditingAirports[key];
+        setEditingAirports(newEditingAirports);
+
+        // Xóa giá trị gốc nếu hủy edit
+        const newOriginalValues = { ...originalValues };
+        delete newOriginalValues[key];
+        setOriginalValues(newOriginalValues);
+    };
+
     const handleSave = async () => {
         try {
+            // Lưu các sân bay mới
             for (const airport of newAirports) {
                 await axios.post("http://localhost:8000/api/v1/airports_crud", {
                     airport_name: airport.airport_name,
                     airport_address: airport.airport_address,
                 });
+            }
+
+            // Cập nhật các sân bay đã chỉnh sửa
+            for (const airport of modifiedAirports) {
+                await axios.put(
+                    `http://localhost:8000/api/v1/airports_crud?airport_id=${airport.airport_id}`,
+                    {
+                        airport_name: airport.airport_name,
+                        airport_address: airport.airport_address,
+                    },
+                );
             }
 
             setToast({
@@ -127,41 +248,172 @@ export default function AirportDetail({ setToast, onClose, setLoading }) {
                         </div>
                     </div>
 
-                    {airports.map((airport, index) => (
-                        <div key={index} className={styles.tableRow}>
-                            <div className={styles.tableCell}>
-                                {airport.airport_id}
+                    {airports.map((airport, index) => {
+                        const key = airport.internal_id || airport.airport_id;
+                        const isEditing = editingAirports[key];
+                        const isNewAirport = newAirports.some(
+                            (item) => item.internal_id === airport.internal_id,
+                        );
+                        const hasChanged = changedAirports[key];
+
+                        return (
+                            <div
+                                key={index}
+                                className={`${styles.tableRow} ${isEditing ? styles.editingRow : ""} ${hasChanged ? styles.changedRow : ""}`}
+                            >
+                                <div className={styles.tableCell}>
+                                    <div className={styles.cellContent}>
+                                        {airport.airport_id}
+                                    </div>
+                                </div>
+                                <div className={styles.tableCell}>
+                                    <div className={styles.cellContent}>
+                                        {isEditing ? (
+                                            <input
+                                                type="text"
+                                                className={`${styles.quantityInput} ${styles.editingInput}`}
+                                                value={
+                                                    editingAirports[key]
+                                                        .airport_name
+                                                }
+                                                onChange={(e) =>
+                                                    handleEditChange(
+                                                        key,
+                                                        "airport_name",
+                                                        e.target.value,
+                                                    )
+                                                }
+                                            />
+                                        ) : (
+                                            <>
+                                                <span>
+                                                    {airport.airport_name}
+                                                </span>
+                                                {hasChanged &&
+                                                    hasChanged.original
+                                                        .airport_name !==
+                                                        airport.airport_name && (
+                                                        <div
+                                                            className={
+                                                                styles.oldValue
+                                                            }
+                                                        >
+                                                            Cũ:{" "}
+                                                            {
+                                                                hasChanged
+                                                                    .original
+                                                                    .airport_name
+                                                            }
+                                                        </div>
+                                                    )}
+                                            </>
+                                        )}
+                                    </div>
+                                </div>
+                                <div className={styles.tableCell}>
+                                    <div className={styles.cellContent}>
+                                        {isEditing ? (
+                                            <input
+                                                type="text"
+                                                className={`${styles.quantityInput} ${styles.editingInput}`}
+                                                value={
+                                                    editingAirports[key]
+                                                        .airport_address
+                                                }
+                                                onChange={(e) =>
+                                                    handleEditChange(
+                                                        key,
+                                                        "airport_address",
+                                                        e.target.value,
+                                                    )
+                                                }
+                                            />
+                                        ) : (
+                                            <>
+                                                <span>
+                                                    {airport.airport_address}
+                                                </span>
+                                                {hasChanged &&
+                                                    hasChanged.original
+                                                        .airport_address !==
+                                                        airport.airport_address && (
+                                                        <div
+                                                            className={
+                                                                styles.oldValue
+                                                            }
+                                                        >
+                                                            Cũ:{" "}
+                                                            {
+                                                                hasChanged
+                                                                    .original
+                                                                    .airport_address
+                                                            }
+                                                        </div>
+                                                    )}
+                                            </>
+                                        )}
+                                    </div>
+                                </div>
+                                <div className={styles.tableCell}>
+                                    <div className={styles.actionButtonGroup}>
+                                        {isEditing ? (
+                                            <>
+                                                <button
+                                                    className={
+                                                        styles.saveEditButton
+                                                    }
+                                                    onClick={() =>
+                                                        handleSaveEdit(airport)
+                                                    }
+                                                >
+                                                    <Save size={14} />
+                                                </button>
+                                                <button
+                                                    className={
+                                                        styles.cancelEditButton
+                                                    }
+                                                    onClick={() =>
+                                                        handleCancelEdit(
+                                                            airport,
+                                                        )
+                                                    }
+                                                >
+                                                    <X size={14} />
+                                                </button>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <button
+                                                    className={
+                                                        styles.editButton
+                                                    }
+                                                    onClick={() =>
+                                                        handleEdit(airport)
+                                                    }
+                                                >
+                                                    <Edit size={14} />
+                                                </button>
+                                                {isNewAirport && (
+                                                    <button
+                                                        className={
+                                                            styles.deleteButton
+                                                        }
+                                                        onClick={() =>
+                                                            handleDelete(
+                                                                airport.internal_id,
+                                                            )
+                                                        }
+                                                    >
+                                                        <Trash2 size={14} />
+                                                    </button>
+                                                )}
+                                            </>
+                                        )}
+                                    </div>
+                                </div>
                             </div>
-                            <div className={styles.tableCell}>
-                                {airport.airport_name}
-                            </div>
-                            <div className={styles.tableCell}>
-                                {airport.airport_address}
-                            </div>
-                            <div className={styles.tableCell}>
-                                <button
-                                    className={`${styles.deleteButton} ${!newAirports.some((item) => item.internal_id === airport.internal_id) ? styles.disabledButton : ""}`}
-                                    onClick={() =>
-                                        newAirports.some(
-                                            (item) =>
-                                                item.internal_id ===
-                                                airport.internal_id,
-                                        ) && handleDelete(airport.internal_id)
-                                    }
-                                    disabled={
-                                        !newAirports.some(
-                                            (item) =>
-                                                item.internal_id ===
-                                                airport.internal_id,
-                                        )
-                                    }
-                                >
-                                    <Trash2 size={16} />
-                                    Xóa
-                                </button>
-                            </div>
-                        </div>
-                    ))}
+                        );
+                    })}
 
                     <div className={styles.tableRow}>
                         <div className={styles.tableCell}>

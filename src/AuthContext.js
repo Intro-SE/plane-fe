@@ -2,7 +2,7 @@ import { createContext, useState, useEffect } from "react";
 
 export const AuthContext = createContext();
 
-const AUTO_LOGOUT_TIME = 60 * 60 * 1000;
+const AUTO_LOGOUT_TIME = 5 * 60 * 60 * 1000;
 
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);

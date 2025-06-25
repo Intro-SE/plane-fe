@@ -23,6 +23,7 @@ input[type="number"] {
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
     border: 1px solid #e0e0e0;
     margin-bottom: 300px;
+    z-index: 1; /* Base z-index for the form */
 }
 
 .section {
@@ -33,6 +34,7 @@ input[type="number"] {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     position: relative;
     border: 1px solid #eaeaea;
+    z-index: 2; /* Slightly above container */
 }
 
 .sectionHeader {
@@ -47,6 +49,7 @@ input[type="number"] {
     user-select: none;
     transition: background-color 0.2s;
     border-radius: 8px 8px 0 0;
+    z-index: 3; /* Above section content */
 }
 
 .sectionHeader:hover {
@@ -67,6 +70,7 @@ input[type="number"] {
 .sectionContent {
     padding: 20px;
     overflow: visible;
+    z-index: 4; /* Above section background */
 }
 
 .formRow {
@@ -75,6 +79,7 @@ input[type="number"] {
     align-items: center;
     margin-bottom: 15px;
     padding: 10px 0;
+    z-index: 5; /* Above section content */
 }
 
 .formRow label {
@@ -109,6 +114,7 @@ input[type="number"] {
     align-items: center;
     gap: 15px;
     position: relative;
+    z-index: 6; /* Above form row */
 }
 
 .inputContainer {
@@ -132,11 +138,7 @@ input[type="number"] {
     position: relative;
     width: 100%;
     justify-content: space-between;
-}
-
-.oldValue {
-    margin-right: 10px;
-    font-weight: 500;
+    z-index: 7; /* Above input group */
 }
 
 .resetButton {
@@ -152,6 +154,7 @@ input[type="number"] {
     color: #666;
     transition: all 0.2s ease;
     flex-shrink: 0;
+    z-index: 8; /* Above modified indicator */
 }
 
 .resetButton:hover {
@@ -167,6 +170,7 @@ input[type="number"] {
     text-decoration: none;
     white-space: nowrap;
     font-weight: 500;
+    z-index: 9; /* Above reset button */
 }
 
 .detailLink:hover {
@@ -183,8 +187,21 @@ input[type="number"] {
     table-layout: fixed;
     width: 100%;
     position: relative;
-    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.12);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
     margin-bottom: 60px;
+    z-index: 100; /* Base z-index for table */
+}
+
+/* Ensure table container doesn't clip dropdowns when editing */
+.tableContainer:has(.editingRow) {
+    overflow: visible;
+    z-index: 101; /* Slightly above base */
+}
+
+/* Backup for browsers not supporting :has() */
+.tableContainer.editing {
+    overflow: visible !important;
+    z-index: 101 !important;
 }
 
 .tableHeader {
@@ -195,20 +212,24 @@ input[type="number"] {
     min-height: 45px;
     border-radius: 10px 10px 0 0;
     width: 100%;
+    z-index: 102; /* Above table container */
 }
 
 .tableHeaderCell {
-    padding: 10px;
+    padding: 12px 10px;
     font-weight: 700;
     color: white;
-    border-right: 1px solid #ddd;
+    border-right: 1px solid rgba(255, 255, 255, 0.2);
     text-align: left;
     display: flex;
     align-items: center;
     justify-content: flex-start;
-    font-size: 14px;
-    letter-spacing: 0.3px;
+    font-size: 15px;
+    letter-spacing: 0px;
     box-sizing: border-box;
+    white-space: nowrap;
+    overflow: hidden;
+    z-index: 103; /* Above table header */
 }
 
 .tableHeaderCell:last-child {
@@ -218,22 +239,22 @@ input[type="number"] {
 .tableRow {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr 0.4fr;
-    border-bottom: none;
+    border-bottom: 1px solid #f0f0f0;
     position: relative;
+    z-index: 104; /* Above table header cells */
     width: 100%;
-    min-height: 50px;
-    overflow: visible;
+    min-height: 56px;
 }
 
 .tableRow:last-child {
-    z-index: 500;
+    z-index: 105; /* Above other rows for add row */
     border-bottom: none;
-    margin-bottom: 20px; /* Add space after the last row */
+    margin-bottom: 20px;
 }
 
 .tableCell {
-    padding: 6px 12px;
-    border-right: none;
+    padding: 8px 10px;
+    border-right: 1px solid #f0f0f0;
     display: flex;
     align-items: center;
     justify-content: flex-start;
@@ -241,48 +262,57 @@ input[type="number"] {
     overflow: visible;
     width: 100%;
     min-width: 0;
-    min-height: 50px;
+    min-height: 56px;
     box-sizing: border-box;
+    font-size: 15px;
+    z-index: 106; /* Above table row */
 }
 
-.tableCell .dropdown {
-    width: 100%;
-    position: relative;
+/* Table cell when editing */
+.editingRow .tableCell {
+    overflow: visible;
+    z-index: 107; /* Above normal cells */
 }
 
-.tableCell .ticketClass {
-    width: 100%;
-    min-width: 0;
-    max-width: 100%;
-}
-
-.tableCell:first-child {
-    padding: 8px 15px;
+/* Style for the last column (actions) */
+.tableRow > .tableCell:last-child {
+    justify-content: center;
 }
 
 .tableCell:last-child {
     border-right: none;
 }
 
+.cellContent {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
+    position: relative;
+    z-index: 108; /* Above table cell */
+}
+
 .deleteButton {
     background: linear-gradient(135deg, #ffa500, #ffd700);
     color: #333;
     border: none;
-    padding: 8px 12px;
+    padding: 6px 8px;
     border-radius: 6px;
     cursor: pointer;
     font-size: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 6px;
-    transition: background 0.3s ease;
-    height: 34px;
-    min-width: 75px;
+    gap: 4px;
+    transition: all 0.3s ease;
+    height: 28px;
+    min-width: 35px;
+    z-index: 109; /* Above cell content */
 }
 
 .deleteButton:hover {
     background: linear-gradient(135deg, #ff8c00, #ffa500);
+    transform: translateY(-2px);
 }
 
 .disabledButton {
@@ -291,6 +321,7 @@ input[type="number"] {
     cursor: not-allowed;
     opacity: 0.7;
     box-shadow: none;
+    z-index: 109; /* Same as delete button */
 }
 
 .disabledButton:hover {
@@ -303,55 +334,30 @@ input[type="number"] {
     background: linear-gradient(135deg, #20b2aa, #40e0d0);
     color: white;
     border: none;
-    padding: 8px 12px;
+    padding: 6px 12px;
     border-radius: 6px;
     cursor: pointer;
     font-size: 12px;
     display: flex;
     align-items: center;
-    justify-content: center;
-    gap: 6px;
-    transition: background 0.3s ease;
-    height: 34px;
-    min-width: 75px;
+    justify-content: flex-start;
+    text-align: left;
+    gap: 4px;
+    width: 100%;
+    transition: all 0.3s ease;
+    height: 28px;
+    min-width: 35px;
+    z-index: 109; /* Same as delete button */
 }
 
 .addButton:hover {
     background: linear-gradient(135deg, #008b8b, #20b2aa);
-}
-
-.ticketClass {
-    width: 100%;
-    height: 38px;
-    padding: 0 12px;
-    border: 2px solid #ddd;
-    border-radius: 8px;
-    background: white;
-    font-size: 14px;
-    text-align: left;
-    cursor: pointer;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    transition: border-color 0.3s ease;
-    box-sizing: border-box;
-    color: #999;
-    gap: 8px;
-    line-height: 1;
-    min-width: 100%;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    position: relative;
-}
-
-.ticketClass:hover {
-    border-color: #007bff;
+    transform: translateY(-2px);
 }
 
 .quantityInput {
     width: 100%;
-    height: 38px;
+    height: 44px;
     padding: 0 10px;
     border: 1px solid #ddd;
     border-radius: 6px;
@@ -361,6 +367,217 @@ input[type="number"] {
     display: flex;
     align-items: center;
     justify-content: flex-start;
+    outline: none;
+    transition: border-color 0.3s ease;
+    min-width: 120px;
+    color: #333;
+    z-index: 110; /* Above action buttons */
+}
+
+.quantityInput:focus {
+    border-color: #007bff;
+}
+
+.dropdown {
+    position: relative;
+    width: 100%;
+    display: inline-block;
+    z-index: 111; /* Above quantity input */
+    height: 50px;
+}
+
+.tableCell .dropdown {
+    position: relative;
+    z-index: 111; /* Same as dropdown */
+}
+
+/* Dropdown when editing */
+.editingRow .dropdown {
+    z-index: 112 !important; /* Above normal dropdown */
+}
+
+.editingRow .dropdownMenu {
+    z-index: 113 !important; /* Above editing row dropdown */
+    position: absolute;
+    top: calc(100% + 2px);
+    left: 0;
+    right: 0;
+    transform: none;
+}
+
+/* Ensure dropdowns in editing mode are above all within table */
+.editingRow .tableCell .dropdown {
+    z-index: 112 !important;
+}
+
+.editingRow .tableCell .dropdownMenu {
+    z-index: 113 !important;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+    border: 2px solid #007bff;
+}
+
+/* Dropdown for the add row */
+.tableRow:last-child .dropdown {
+    z-index: 111 !important;
+}
+
+.tableRow:last-child .dropdownMenu {
+    z-index: 113 !important;
+    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.3);
+}
+
+.tableRow:last-child .tableCell .dropdown {
+    z-index: 111 !important;
+}
+
+.dropdownButton {
+    width: 100%;
+    height: 50px;
+    padding: 0 15px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    background: white;
+    font-size: 16px;
+    text-align: left;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: border-color 0.3s ease;
+    box-sizing: border-box;
+    color: #999;
+    gap: 10px;
+    line-height: 1;
+    z-index: 112; /* Same as editing row dropdown */
+}
+
+.dropdownButton:hover {
+    border-color: #007bff;
+}
+
+.dropdownButtonSmall {
+    width: 100%;
+    min-width: 120px;
+    height: 44px;
+    padding: 0 10px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    background: white;
+    font-size: 14px;
+    text-align: left;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-sizing: border-box;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition:
+        background 0.3s ease,
+        color 0.3s ease;
+    z-index: 112; /* Same as dropdown button */
+}
+
+.dropdownButtonSmall.airlineButton {
+    background: linear-gradient(135deg, #20b2aa, #40e0d0);
+    color: white;
+    border: none;
+    font-weight: 600;
+}
+
+.dropdownButtonSmall.airlineButton:hover {
+    background: linear-gradient(135deg, #008b8b, #20b2aa);
+}
+
+.airlineButton {
+    background: linear-gradient(135deg, #20b2aa, #40e0d0);
+    color: white;
+    border: none;
+    font-weight: 600;
+    z-index: 112; /* Same as dropdown button */
+}
+
+.airlineButton:hover {
+    background: linear-gradient(135deg, #008b8b, #20b2aa);
+}
+
+.dropdownMenu {
+    position: absolute;
+    top: calc(100% + 2px);
+    left: 0;
+    right: 0;
+    background: white;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+    z-index: 113; /* Above dropdown buttons */
+    max-height: 200px;
+    overflow-y: auto;
+    width: 100%;
+    min-width: 200px;
+}
+
+.dropdownItem {
+    padding: 12px 15px;
+    cursor: pointer;
+    border-bottom: 1px solid #f0f0f0;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+    font-size: 15px;
+    z-index: 114; /* Above dropdown menu */
+}
+
+.dropdownItem:hover {
+    background-color: #f8f9fa;
+    color: #007bff;
+    padding-left: 18px;
+}
+
+.dropdownItem.selected {
+    background-color: #e3f2fd;
+    color: #1976d2;
+    font-weight: 600;
+}
+
+.dropdownItem.selected:hover {
+    background-color: #bbdefb;
+    color: #1565c0;
+}
+
+.dropdownItem:last-child {
+    border-bottom: none;
+}
+
+.inputIcon {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #666;
+    pointer-events: none;
+    transition: color 0.3s ease;
+    z-index: 115; /* Above dropdown item */
+}
+
+.clearIcon {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #666;
+    cursor: pointer;
+    transition: color 0.3s ease;
+    z-index: 115; /* Same as input icon */
+}
+
+.clearIcon:hover {
+    color: #333;
 }
 
 .actionButtons {
@@ -370,7 +587,7 @@ input[type="number"] {
     margin-top: 30px;
     margin-bottom: 30px;
     position: relative;
-    z-index: 1;
+    z-index: 1; /* Above table */
     padding: 15px 0 5px 0;
     border-top: 1px solid #eaeaea;
 }
@@ -387,6 +604,7 @@ input[type="number"] {
     transition: all 0.3s ease;
     min-width: 120px;
     box-shadow: 0 3px 8px rgba(255, 105, 180, 0.3);
+    z-index: 11; /* Above action buttons container */
 }
 
 .cancelBtn:hover {
@@ -407,6 +625,7 @@ input[type="number"] {
     transition: all 0.3s ease;
     min-width: 170px;
     box-shadow: 0 3px 8px rgba(32, 178, 170, 0.3);
+    z-index: 11; /* Same as cancel button */
 }
 
 .confirmBtn:hover {
@@ -415,88 +634,195 @@ input[type="number"] {
     box-shadow: 0 5px 12px rgba(32, 178, 170, 0.4);
 }
 
-.dropdown {
-    position: relative;
-    height: 50px;
-    display: flex;
-    align-items: center;
-    width: 100%;
-    min-width: 100px;
-}
-
-.dropdownMenu {
-    background: white;
-    border: 2px solid #ddd;
+/* Editing styles */
+.editingRow {
+    background: linear-gradient(90deg, #fff8dc, #fffacd);
+    border: 2px solid #ffd700;
     border-radius: 8px;
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
-    z-index: 9999999;
-    max-height: 300px;
-    overflow-y: auto;
-    margin-top: 4px;
-    margin-bottom: 4px;
-    position: absolute;
-    top: 100%;
-    left: 0;
-    width: 100%;
-    pointer-events: auto;
-}
-
-.dropdownItem {
-    padding: 12px 15px;
-    cursor: pointer;
-    border-bottom: 1px solid #f0f0f0;
-    transition: all 0.2s ease;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    display: flex;
-    align-items: center;
-    min-height: 44px;
-    font-size: 15px;
-    background-color: white;
+    animation: editingPulse 2s infinite;
+    box-shadow: 0 4px 12px rgba(255, 215, 0, 0.3);
     position: relative;
-    margin: 0;
-    z-index: 9999999;
+    z-index: 107; /* Same as editing cell */
+    overflow: visible;
 }
 
-.dropdownItem:hover {
-    background-color: #f8f9fa;
-    color: #20b2aa;
-    padding-left: 18px;
+@keyframes editingPulse {
+    0% {
+        box-shadow: 0 4px 12px rgba(255, 215, 0, 0.3);
+    }
+    50% {
+        box-shadow: 0 6px 16px rgba(255, 215, 0, 0.5);
+    }
+    100% {
+        box-shadow: 0 4px 12px rgba(255, 215, 0, 0.3);
+    }
 }
 
-.dropdownItem:last-child {
-    border-bottom: none;
+.editingInput {
+    border: 2px solid #ffd700;
+    background: white;
+    box-shadow: 0 0 8px rgba(255, 215, 0, 0.4);
+    animation: inputGlow 2s infinite;
+    z-index: 110; /* Same as quantity input */
 }
 
-.airlineButton {
-    background: linear-gradient(135deg, #20b2aa, #40e0d0);
+@keyframes inputGlow {
+    0% {
+        border-color: #ffd700;
+        box-shadow: 0 0 8px rgba(255, 215, 0, 0.4);
+    }
+    50% {
+        border-color: #ffed4e;
+        box-shadow: 0 0 12px rgba(255, 215, 0, 0.6);
+    }
+    100% {
+        border-color: #ffd700;
+        box-shadow: 0 0 8px rgba(255, 215, 0, 0.4);
+    }
+}
+
+.actionButtonGroup {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    width: 100%;
+    justify-content: flex-start;
+    z-index: 109; /* Same as action buttons */
+}
+
+.editButton {
+    background: linear-gradient(135deg, #4caf50, #66bb6a);
     color: white;
     border: none;
-    font-weight: 600;
-}
-
-.airlineButton:hover {
-    background: linear-gradient(135deg, #008b8b, #20b2aa);
-}
-
-.clearIcon {
-    color: white;
+    padding: 6px 8px;
+    border-radius: 6px;
     cursor: pointer;
-    transition: transform 0.2s;
+    font-size: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
-    min-width: 20px;
-    height: 20px;
+    transition: all 0.3s ease;
+    height: 28px;
+    min-width: 35px;
+    z-index: 109; /* Same as action buttons */
 }
 
-.clearIcon:hover {
-    transform: scale(1.2);
+.editButton:hover {
+    background: linear-gradient(135deg, #388e3c, #4caf50);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(76, 175, 80, 0.3);
 }
 
-.inputIcon {
-    display: none;
+.saveButton {
+    background: linear-gradient(135deg, #2196f3, #42a5f5);
+    color: white;
+    border: none;
+    padding: 6px 8px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    height: 28px;
+    min-width: 35px;
+    z-index: 109; /* Same as action buttons */
+}
+
+.saveButton:hover {
+    background: linear-gradient(135deg, #1976d2, #2196f3);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(33, 150, 243, 0.3);
+}
+
+.cancelEditButton {
+    background: linear-gradient(135deg, #f44336, #ef5350);
+    color: white;
+    border: none;
+    padding: 6px 8px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    height: 28px;
+    min-width: 35px;
+    z-index: 109; /* Same as action buttons */
+}
+
+.cancelEditButton:hover {
+    background: linear-gradient(135deg, #d32f2f, #f44336);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(244, 67, 54, 0.3);
+}
+
+/* Change tracking styles */
+.changedRow {
+    background: linear-gradient(90deg, #f0fff0, #f5fff5);
+    position: relative;
+    z-index: 106; /* Same as table cell */
+}
+
+.changedRow::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 5px;
+    background: linear-gradient(to bottom, #4caf50, #66bb6a);
+}
+
+@keyframes changeGlow {
+    0%,
+    100% {
+        opacity: 0.6;
+    }
+    50% {
+        opacity: 1;
+    }
+}
+
+.changedIndicator {
+    color: #4caf50;
+    font-size: 8px;
+    position: absolute;
+    top: -2px;
+    right: 0;
+    animation: pulse 2s infinite;
+    z-index: 108; /* Above cell content */
+}
+
+@keyframes pulse {
+    0% {
+        opacity: 0.6;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 1;
+        transform: scale(1.2);
+    }
+    100% {
+        opacity: 0.6;
+        transform: scale(1);
+    }
+}
+
+.oldValue {
+    font-size: 11px;
+    color: #666;
+    font-style: italic;
+    margin-top: 2px;
+    padding: 2px 6px;
+    background: linear-gradient(135deg, #fff3cd, #ffeaa7);
+    border: 1px solid #ffeaa7;
+    border-radius: 4px;
+    max-width: 100%;
+    word-wrap: break-word;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    z-index: 108; /* Same as changed indicator */
 }
 
 /* Responsive Design */
@@ -519,7 +845,6 @@ input[type="number"] {
 
     .tableHeader,
     .tableRow {
-        width: 100%;
         grid-template-columns: 1fr 1fr 1fr 0.8fr;
     }
 
@@ -533,18 +858,22 @@ input[type="number"] {
         min-height: 50px;
     }
 
-    .ticketClass,
+    .dropdownButton,
+    .dropdownButtonSmall,
     .quantityInput {
         height: 36px;
         font-size: 12px;
     }
 
     .deleteButton,
-    .addButton {
+    .addButton,
+    .editButton,
+    .saveButton,
+    .cancelEditButton {
         height: 32px;
         padding: 6px 8px;
         font-size: 10px;
-        min-width: 60px;
+        min-width: 30px;
         gap: 4px;
     }
 
@@ -564,21 +893,22 @@ input[type="number"] {
     }
 
     .modifiedIndicator {
-        flex-direction: column;
-        align-items: flex-start;
+        flex-direction: nowrap;
+        align-items: center;
         margin-top: 8px;
+        justify-content: space-between;
     }
 
     .oldValue {
-        margin-bottom: 8px;
+        margin-bottom: 5px;
         font-size: 11px;
-        width: 100%;
+        width: auto;
     }
 
     .resetButton {
         width: 22px;
         height: 22px;
-        margin-left: 0;
+        margin-left: 10px;
     }
 
     .formRow input {

@@ -47,7 +47,9 @@ export default function FixFlightForm({
             60000,
         seatClasses: data.seat_information.seat_type.map((type, index) => ({
             class: type,
-            quantity: data.seat_information.empty_type_seats[index],
+            quantity:
+                data.seat_information.empty_type_seats[index] +
+                data.seat_information.occupied_type_seats[index],
         })),
     });
 

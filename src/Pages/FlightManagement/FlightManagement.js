@@ -106,11 +106,14 @@ export default function FlightManagement() {
     useEffect(() => {
         const fetchFlights = async () => {
             try {
-                const response = await axios.get(`${BASE_URL}/api/v1/flight`, {
-                    headers: {
-                        Accept: "application/json",
+                const response = await axios.get(
+                    `${BASE_URL}/api/v1/flight_management`,
+                    {
+                        headers: {
+                            Accept: "application/json",
+                        },
                     },
-                });
+                );
                 setFlights(response.data);
             } catch (error) {
                 console.log(
