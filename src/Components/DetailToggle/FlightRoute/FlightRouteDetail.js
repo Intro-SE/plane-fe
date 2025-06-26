@@ -14,6 +14,16 @@ export default function FlightRouteDetail({ setToast, onClose, setLoading }) {
     const [originalValues, setOriginalValues] = useState({});
     const [changedFlightRoutes, setChangedFlightRoutes] = useState({});
 
+    // Intermediate airports editing states
+    const [editingIntermediateAirports, setEditingIntermediateAirports] =
+        useState({});
+    const [modifiedIntermediateAirports, setModifiedIntermediateAirports] =
+        useState([]);
+    const [originalIntermediateValues, setOriginalIntermediateValues] =
+        useState({});
+    const [changedIntermediateAirports, setChangedIntermediateAirports] =
+        useState({});
+
     // Dropdown states
     const [dropdowns, setDropdowns] = useState({
         departureAirport: false,
@@ -22,6 +32,8 @@ export default function FlightRouteDetail({ setToast, onClose, setLoading }) {
         routeCode: false,
         editDepartureAirport: {},
         editArrivalAirport: {},
+        editIntermediateRouteCode: {},
+        editIntermediateTransitAirport: {},
     });
 
     const dropdownRefs = useRef({});
@@ -204,6 +216,22 @@ export default function FlightRouteDetail({ setToast, onClose, setLoading }) {
                 ...prev,
                 flight_route_id: value,
             }));
+        } else if (field === "editIntermediateRouteCode") {
+            setEditingIntermediateAirports((prev) => ({
+                ...prev,
+                [routeKey]: {
+                    ...prev[routeKey],
+                    flight_route_id: value,
+                },
+            }));
+        } else if (field === "editIntermediateTransitAirport") {
+            setEditingIntermediateAirports((prev) => ({
+                ...prev,
+                [routeKey]: {
+                    ...prev[routeKey],
+                    transit_airport_name: value,
+                },
+            }));
         }
 
         if (field.startsWith("edit") && routeKey) {
@@ -295,6 +323,112 @@ export default function FlightRouteDetail({ setToast, onClose, setLoading }) {
             ...newIntermediateAirport,
             [field]: value,
         });
+    };
+
+    // Handle edit intermediate airport
+    const handleEditIntermediate = (airport, index) => {
+        const key = `intermediate_${index}`;
+        setEditingIntermediateAirports({
+            ...editingIntermediateAirports,
+            [key]: {
+                flight_route_id: airport.flight_route_id,
+                transit_airport_name: airport.transit_airport_name,
+                stop_time: airport.stop_time,
+                note: airport.note,
+            },
+        });
+
+        // Lưu giá trị gốc để so sánh sau này
+        setOriginalIntermediateValues({
+            ...originalIntermediateValues,
+            [key]: {
+                flight_route_id: airport.flight_route_id,
+                transit_airport_name: airport.transit_airport_name,
+                stop_time: airport.stop_time,
+                note: airport.note,
+            },
+        });
+    };
+
+    const handleSaveEditIntermediate = (airport, index) => {
+        const key = `intermediate_${index}`;
+        const editedData = editingIntermediateAirports[key];
+        const original = originalIntermediateValues[key];
+
+        // Kiểm tra có thay đổi không
+        const hasChanged =
+            original?.flight_route_id !== editedData.flight_route_id ||
+            original?.transit_airport_name !==
+                editedData.transit_airport_name ||
+            original?.stop_time !== editedData.stop_time ||
+            original?.note !== editedData.note;
+
+        // Cập nhật intermediateAirports array
+        setIntermediateAirports(
+            intermediateAirports.map((item, i) => {
+                if (i === index) {
+                    return { ...item, ...editedData };
+                }
+                return item;
+            }),
+        );
+
+        // Cập nhật trạng thái thay đổi
+        if (hasChanged) {
+            setChangedIntermediateAirports({
+                ...changedIntermediateAirports,
+                [key]: {
+                    original: original,
+                    current: editedData,
+                },
+            });
+        }
+
+        // Thêm vào modified intermediate airports nếu không phải item mới
+        if (
+            !newIntermediateAirports.some(
+                (item) =>
+                    item.flight_route_id === airport.flight_route_id &&
+                    item.transit_airport_name ===
+                        airport.transit_airport_name &&
+                    item.stop_time === airport.stop_time,
+            )
+        ) {
+            const existingIndex = modifiedIntermediateAirports.findIndex(
+                (item, i) => i === index,
+            );
+            if (existingIndex >= 0) {
+                const updated = [...modifiedIntermediateAirports];
+                updated[existingIndex] = { ...airport, ...editedData };
+                setModifiedIntermediateAirports(updated);
+            } else {
+                setModifiedIntermediateAirports([
+                    ...modifiedIntermediateAirports,
+                    { ...airport, ...editedData, originalIndex: index },
+                ]);
+            }
+        }
+
+        // Xóa khỏi editing state
+        const newEditingIntermediateAirports = {
+            ...editingIntermediateAirports,
+        };
+        delete newEditingIntermediateAirports[key];
+        setEditingIntermediateAirports(newEditingIntermediateAirports);
+    };
+
+    const handleCancelEditIntermediate = (airport, index) => {
+        const key = `intermediate_${index}`;
+        const newEditingIntermediateAirports = {
+            ...editingIntermediateAirports,
+        };
+        delete newEditingIntermediateAirports[key];
+        setEditingIntermediateAirports(newEditingIntermediateAirports);
+
+        // Xóa giá trị gốc nếu hủy edit
+        const newOriginalIntermediateValues = { ...originalIntermediateValues };
+        delete newOriginalIntermediateValues[key];
+        setOriginalIntermediateValues(newOriginalIntermediateValues);
     };
 
     // Handle cancel button
@@ -398,6 +532,7 @@ export default function FlightRouteDetail({ setToast, onClose, setLoading }) {
 
     // Handle save button
     const handleSave = async () => {
+        console.log(modifiedIntermediateAirports);
         const saveFlightRoutes = async () => {
             for (const flightRoute of newFlightRoutes) {
                 await axios.post(
@@ -417,15 +552,15 @@ export default function FlightRouteDetail({ setToast, onClose, setLoading }) {
         };
 
         const saveModifiedFlightRoutes = async () => {
-            // for (const flightRoute of modifiedFlightRoutes) {
-            //     await axios.put(
-            //         `http://localhost:8000/api/v1/flightroutes_crud/${flightRoute.code}`,
-            //         {
-            //             departure_airport_id: flightRoute.departureAirportID,
-            //             arrival_airport_id: flightRoute.arrivalAirportID,
-            //         },
-            //     );
-            // }
+            for (const flightRoute of modifiedFlightRoutes) {
+                await axios.put(
+                    `http://localhost:8000/api/v1/flightroutes_crud?FlightRoute_id=${flightRoute.code}`,
+                    {
+                        departure_airport_id: flightRoute.departureAirportID,
+                        arrival_airport_id: flightRoute.arrivalAirportID,
+                    },
+                );
+            }
         };
 
         const saveIntermediateAirports = async () => {
@@ -449,11 +584,28 @@ export default function FlightRouteDetail({ setToast, onClose, setLoading }) {
             });
         };
 
+        const saveModifiedIntermediateAirports = async () => {
+            for (const intermediateAirport of modifiedIntermediateAirports) {
+                await axios.put(
+                    `http://localhost:8000/api/v1/regulation/update_transit`,
+                    {
+                        flight_detail_id: intermediateAirport.flight_detail_id,
+                        flight_route_id: intermediateAirport.flight_route_id,
+                        transit_airport_name:
+                            intermediateAirport.transit_airport_name,
+                        stop_time: intermediateAirport.stop_time,
+                        note: intermediateAirport.note,
+                    },
+                );
+            }
+        };
+
         try {
             await Promise.all([
                 saveFlightRoutes(),
                 saveModifiedFlightRoutes(),
                 saveIntermediateAirports(),
+                saveModifiedIntermediateAirports(),
             ]);
         } catch (error) {
             console.error(
@@ -755,28 +907,24 @@ export default function FlightRouteDetail({ setToast, onClose, setLoading }) {
                                             <>
                                                 <button
                                                     className={
-                                                        styles.editButton
+                                                        isNewRoute
+                                                            ? styles.deleteButton
+                                                            : styles.editButton
                                                     }
                                                     onClick={() =>
-                                                        handleEdit(route)
+                                                        isNewRoute
+                                                            ? handleDeleteRoute(
+                                                                  route.internalId,
+                                                              )
+                                                            : handleEdit(route)
                                                     }
                                                 >
-                                                    <Edit size={14} />
-                                                </button>
-                                                {isNewRoute && (
-                                                    <button
-                                                        className={
-                                                            styles.deleteButton
-                                                        }
-                                                        onClick={() =>
-                                                            handleDeleteRoute(
-                                                                route.internalId,
-                                                            )
-                                                        }
-                                                    >
+                                                    {isNewRoute ? (
                                                         <Trash2 size={14} />
-                                                    </button>
-                                                )}
+                                                    ) : (
+                                                        <Edit size={14} />
+                                                    )}
+                                                </button>
                                             </>
                                         )}
                                     </div>
@@ -946,7 +1094,7 @@ export default function FlightRouteDetail({ setToast, onClose, setLoading }) {
                 {/* Intermediate Airports Table */}
                 <h2 className={styles.sectionHeader}>Sân bay trung gian</h2>
                 <div
-                    className={`${styles.tableContainer} ${styles.intermediateAirportsTable}`}
+                    className={`${styles.tableContainer} ${styles.intermediateAirportsTable} ${Object.keys(editingIntermediateAirports).length > 0 ? styles.editing : ""}`}
                 >
                     <div className={styles.tableHeaderFive}>
                         <div className={styles.tableHeaderCell}>
@@ -966,63 +1114,405 @@ export default function FlightRouteDetail({ setToast, onClose, setLoading }) {
                         </div>
                     </div>
 
-                    {intermediateAirports.map((stop, index) => (
-                        <div key={index} className={styles.tableRowFive}>
-                            <div className={styles.tableCell}>
-                                {stop.flight_route_id}
+                    {intermediateAirports.map((stop, index) => {
+                        const key = `intermediate_${index}`;
+                        const isEditing = editingIntermediateAirports[key];
+                        const isNewItem = newIntermediateAirports.some(
+                            (item) =>
+                                item.flight_route_id === stop.flight_route_id &&
+                                item.transit_airport_name ===
+                                    stop.transit_airport_name &&
+                                item.stop_time === stop.stop_time,
+                        );
+                        const hasChanged = changedIntermediateAirports[key];
+
+                        return (
+                            <div
+                                key={index}
+                                className={`${styles.tableRowFive} ${isEditing ? styles.editingRow : ""} ${hasChanged ? styles.changedRow : ""}`}
+                            >
+                                <div className={styles.tableCell}>
+                                    <div className={styles.cellContent}>
+                                        {isEditing ? (
+                                            <div
+                                                className={styles.dropdown}
+                                                ref={(el) =>
+                                                    (dropdownRefs.current[
+                                                        `editIntermediateRouteCode_${key}`
+                                                    ] = el)
+                                                }
+                                                style={{
+                                                    zIndex: dropdowns
+                                                        .editIntermediateRouteCode[
+                                                        key
+                                                    ]
+                                                        ? 999999
+                                                        : 1000,
+                                                }}
+                                            >
+                                                <button
+                                                    className={`${styles.dropdownButtonSmall} ${editingIntermediateAirports[key]?.flight_route_id ? styles.airlineButton : ""} ${styles.editingInput}`}
+                                                    onClick={() =>
+                                                        toggleDropdown(
+                                                            "editIntermediateRouteCode",
+                                                            key,
+                                                        )
+                                                    }
+                                                >
+                                                    {editingIntermediateAirports[
+                                                        key
+                                                    ]?.flight_route_id ||
+                                                        "Mã tuyến bay"}
+                                                    <ChevronDown
+                                                        size={20}
+                                                        className={
+                                                            styles.inputIcon
+                                                        }
+                                                    />
+                                                </button>
+                                                {dropdowns
+                                                    .editIntermediateRouteCode[
+                                                    key
+                                                ] && (
+                                                    <div
+                                                        className={
+                                                            styles.dropdownMenu
+                                                        }
+                                                    >
+                                                        {flightRoutes.map(
+                                                            (
+                                                                route,
+                                                                routeIndex,
+                                                            ) => (
+                                                                <div
+                                                                    key={
+                                                                        routeIndex
+                                                                    }
+                                                                    className={`${styles.dropdownItem} ${
+                                                                        editingIntermediateAirports[
+                                                                            key
+                                                                        ]
+                                                                            ?.flight_route_id ===
+                                                                        route.code
+                                                                            ? styles.selected
+                                                                            : ""
+                                                                    }`}
+                                                                    onClick={() =>
+                                                                        selectOption(
+                                                                            "editIntermediateRouteCode",
+                                                                            route.code,
+                                                                            key,
+                                                                        )
+                                                                    }
+                                                                >
+                                                                    {route.code}
+                                                                </div>
+                                                            ),
+                                                        )}
+                                                    </div>
+                                                )}
+                                            </div>
+                                        ) : (
+                                            <>
+                                                <span>
+                                                    {stop.flight_route_id}
+                                                </span>
+                                                {hasChanged &&
+                                                    hasChanged.original
+                                                        .flight_route_id !==
+                                                        stop.flight_route_id && (
+                                                        <div
+                                                            className={
+                                                                styles.oldValue
+                                                            }
+                                                        >
+                                                            Cũ:{" "}
+                                                            {
+                                                                hasChanged
+                                                                    .original
+                                                                    .flight_route_id
+                                                            }
+                                                        </div>
+                                                    )}
+                                            </>
+                                        )}
+                                    </div>
+                                </div>
+                                <div className={styles.tableCell}>
+                                    <div className={styles.cellContent}>
+                                        {isEditing ? (
+                                            <div
+                                                className={styles.dropdown}
+                                                ref={(el) =>
+                                                    (dropdownRefs.current[
+                                                        `editIntermediateTransitAirport_${key}`
+                                                    ] = el)
+                                                }
+                                                style={{
+                                                    zIndex: dropdowns
+                                                        .editIntermediateTransitAirport[
+                                                        key
+                                                    ]
+                                                        ? 999999
+                                                        : 1000,
+                                                }}
+                                            >
+                                                <button
+                                                    className={`${styles.dropdownButtonSmall} ${editingIntermediateAirports[key]?.transit_airport_name ? styles.airlineButton : ""} ${styles.editingInput}`}
+                                                    onClick={() =>
+                                                        toggleDropdown(
+                                                            "editIntermediateTransitAirport",
+                                                            key,
+                                                        )
+                                                    }
+                                                >
+                                                    {editingIntermediateAirports[
+                                                        key
+                                                    ]?.transit_airport_name ||
+                                                        "Sân bay trung gian"}
+                                                    <ChevronDown
+                                                        size={20}
+                                                        className={
+                                                            styles.inputIcon
+                                                        }
+                                                    />
+                                                </button>
+                                                {dropdowns
+                                                    .editIntermediateTransitAirport[
+                                                    key
+                                                ] && (
+                                                    <div
+                                                        className={
+                                                            styles.dropdownMenu
+                                                        }
+                                                    >
+                                                        {airports.map(
+                                                            (
+                                                                airport,
+                                                                airportIndex,
+                                                            ) => (
+                                                                <div
+                                                                    key={
+                                                                        airportIndex
+                                                                    }
+                                                                    className={`${styles.dropdownItem} ${
+                                                                        editingIntermediateAirports[
+                                                                            key
+                                                                        ]
+                                                                            ?.transit_airport_name ===
+                                                                        airport.airport_name
+                                                                            ? styles.selected
+                                                                            : ""
+                                                                    }`}
+                                                                    onClick={() =>
+                                                                        selectOption(
+                                                                            "editIntermediateTransitAirport",
+                                                                            airport.airport_name,
+                                                                            key,
+                                                                        )
+                                                                    }
+                                                                >
+                                                                    {
+                                                                        airport.airport_name
+                                                                    }
+                                                                </div>
+                                                            ),
+                                                        )}
+                                                    </div>
+                                                )}
+                                            </div>
+                                        ) : (
+                                            <>
+                                                <span>
+                                                    {stop.transit_airport_name}
+                                                </span>
+                                                {hasChanged &&
+                                                    hasChanged.original
+                                                        .transit_airport_name !==
+                                                        stop.transit_airport_name && (
+                                                        <div
+                                                            className={
+                                                                styles.oldValue
+                                                            }
+                                                        >
+                                                            Cũ:{" "}
+                                                            {
+                                                                hasChanged
+                                                                    .original
+                                                                    .transit_airport_name
+                                                            }
+                                                        </div>
+                                                    )}
+                                            </>
+                                        )}
+                                    </div>
+                                </div>
+                                <div className={styles.tableCell}>
+                                    <div className={styles.cellContent}>
+                                        {isEditing ? (
+                                            <input
+                                                type="text"
+                                                className={`${styles.quantityInput} ${styles.editingInput}`}
+                                                placeholder="Thời gian dừng"
+                                                value={
+                                                    editingIntermediateAirports[
+                                                        key
+                                                    ]?.stop_time || ""
+                                                }
+                                                onChange={(e) => {
+                                                    setEditingIntermediateAirports(
+                                                        {
+                                                            ...editingIntermediateAirports,
+                                                            [key]: {
+                                                                ...editingIntermediateAirports[
+                                                                    key
+                                                                ],
+                                                                stop_time:
+                                                                    e.target
+                                                                        .value,
+                                                            },
+                                                        },
+                                                    );
+                                                }}
+                                            />
+                                        ) : (
+                                            <>
+                                                <span>{stop.stop_time}</span>
+                                                {hasChanged &&
+                                                    hasChanged.original
+                                                        .stop_time !==
+                                                        stop.stop_time && (
+                                                        <div
+                                                            className={
+                                                                styles.oldValue
+                                                            }
+                                                        >
+                                                            Cũ:{" "}
+                                                            {
+                                                                hasChanged
+                                                                    .original
+                                                                    .stop_time
+                                                            }
+                                                        </div>
+                                                    )}
+                                            </>
+                                        )}
+                                    </div>
+                                </div>
+                                <div className={styles.tableCell}>
+                                    <div className={styles.cellContent}>
+                                        {isEditing ? (
+                                            <input
+                                                type="text"
+                                                className={`${styles.quantityInput} ${styles.editingInput}`}
+                                                placeholder="Ghi chú"
+                                                value={
+                                                    editingIntermediateAirports[
+                                                        key
+                                                    ]?.note || ""
+                                                }
+                                                onChange={(e) => {
+                                                    setEditingIntermediateAirports(
+                                                        {
+                                                            ...editingIntermediateAirports,
+                                                            [key]: {
+                                                                ...editingIntermediateAirports[
+                                                                    key
+                                                                ],
+                                                                note: e.target
+                                                                    .value,
+                                                            },
+                                                        },
+                                                    );
+                                                }}
+                                            />
+                                        ) : (
+                                            <>
+                                                <span>{stop.note}</span>
+                                                {hasChanged &&
+                                                    hasChanged.original.note !==
+                                                        stop.note && (
+                                                        <div
+                                                            className={
+                                                                styles.oldValue
+                                                            }
+                                                        >
+                                                            Cũ:{" "}
+                                                            {
+                                                                hasChanged
+                                                                    .original
+                                                                    .note
+                                                            }
+                                                        </div>
+                                                    )}
+                                            </>
+                                        )}
+                                    </div>
+                                </div>
+                                <div className={styles.tableCell}>
+                                    <div className={styles.actionButtonGroup}>
+                                        {isEditing ? (
+                                            <>
+                                                <button
+                                                    className={
+                                                        styles.saveEditButton
+                                                    }
+                                                    onClick={() =>
+                                                        handleSaveEditIntermediate(
+                                                            stop,
+                                                            index,
+                                                        )
+                                                    }
+                                                >
+                                                    <Save size={14} />
+                                                </button>
+                                                <button
+                                                    className={
+                                                        styles.cancelEditButton
+                                                    }
+                                                    onClick={() =>
+                                                        handleCancelEditIntermediate(
+                                                            stop,
+                                                            index,
+                                                        )
+                                                    }
+                                                >
+                                                    <X size={14} />
+                                                </button>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <button
+                                                    className={
+                                                        isNewItem
+                                                            ? styles.deleteButton
+                                                            : styles.editButton
+                                                    }
+                                                    onClick={() =>
+                                                        isNewItem
+                                                            ? handleDeleteIntermediate(
+                                                                  index,
+                                                                  stop,
+                                                              )
+                                                            : handleEditIntermediate(
+                                                                  stop,
+                                                                  index,
+                                                              )
+                                                    }
+                                                >
+                                                    {isNewItem ? (
+                                                        <Trash2 size={14} />
+                                                    ) : (
+                                                        <Edit size={14} />
+                                                    )}
+                                                </button>
+                                            </>
+                                        )}
+                                    </div>
+                                </div>
                             </div>
-                            <div className={styles.tableCell}>
-                                {stop.transit_airport_name}
-                            </div>
-                            <div className={styles.tableCell}>
-                                {stop.stop_time}
-                            </div>
-                            <div className={styles.tableCell}>{stop.note}</div>
-                            <div className={styles.tableCell}>
-                                <button
-                                    className={`${styles.deleteButton} ${
-                                        !newIntermediateAirports.some(
-                                            (item) =>
-                                                item.flight_route_id ===
-                                                    stop.flight_route_id &&
-                                                item.transit_airport_name ===
-                                                    stop.transit_airport_name &&
-                                                item.stop_time ===
-                                                    stop.stop_time,
-                                        )
-                                            ? styles.disabledButton
-                                            : ""
-                                    }`}
-                                    onClick={() =>
-                                        newIntermediateAirports.some(
-                                            (item) =>
-                                                item.flight_route_id ===
-                                                    stop.flight_route_id &&
-                                                item.transit_airport_name ===
-                                                    stop.transit_airport_name &&
-                                                item.stop_time ===
-                                                    stop.stop_time,
-                                        ) &&
-                                        handleDeleteIntermediate(index, stop)
-                                    }
-                                    disabled={
-                                        !newIntermediateAirports.some(
-                                            (item) =>
-                                                item.flight_route_id ===
-                                                    stop.flight_route_id &&
-                                                item.transit_airport_name ===
-                                                    stop.transit_airport_name &&
-                                                item.stop_time ===
-                                                    stop.stop_time,
-                                        )
-                                    }
-                                >
-                                    <Trash2 size={16} />
-                                    Xóa
-                                </button>
-                            </div>
-                        </div>
-                    ))}
+                        );
+                    })}
 
                     <div className={styles.tableRowFive}>
                         <div className={styles.tableCell}>

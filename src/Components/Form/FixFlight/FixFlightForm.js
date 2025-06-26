@@ -177,7 +177,7 @@ export default function FixFlightForm({
             flight_duration: parseInt(formData.duration, 10) || null,
             total_seats: parseInt(formData.totalSeats, 10) || null,
             seat_type: formData.seatClasses.map((item) => item.class),
-            empty_type_seats: formData.seatClasses.map((item) =>
+            total_type_seats: formData.seatClasses.map((item) =>
                 parseInt(item.quantity, 10),
             ),
         };

@@ -189,13 +189,12 @@ export default function TicketClassDetail({ setToast, onClose, setLoading }) {
                 await axios.post(
                     "http://localhost:8000/api/v1/regulation/create_ticket_class",
                     {
-                        ticket_class_id: ticket_class.ticket_class_id,
                         ticket_class_name: ticket_class.ticket_class_name,
                     },
                 );
             }
 
-            // // Cập nhật các hạng vé đã chỉnh sửa
+            // Cập nhật các hạng vé đã chỉnh sửa
             for (const ticket_class of modifiedTicketClasses) {
                 await axios.put(
                     `http://localhost:8000/api/v1/regulation/update_ticket_class`,
@@ -344,28 +343,26 @@ export default function TicketClassDetail({ setToast, onClose, setLoading }) {
                                             <>
                                                 <button
                                                     className={
-                                                        styles.editButton
+                                                        isNewTicketClass
+                                                            ? styles.deleteButton
+                                                            : styles.editButton
                                                     }
                                                     onClick={() =>
-                                                        handleEdit(ticketClass)
+                                                        isNewTicketClass
+                                                            ? handleDelete(
+                                                                  ticketClass.internal_id,
+                                                              )
+                                                            : handleEdit(
+                                                                  ticketClass,
+                                                              )
                                                     }
                                                 >
-                                                    <Edit size={14} />
-                                                </button>
-                                                {isNewTicketClass && (
-                                                    <button
-                                                        className={
-                                                            styles.deleteButton
-                                                        }
-                                                        onClick={() =>
-                                                            handleDelete(
-                                                                ticketClass.internal_id,
-                                                            )
-                                                        }
-                                                    >
+                                                    {isNewTicketClass ? (
                                                         <Trash2 size={14} />
-                                                    </button>
-                                                )}
+                                                    ) : (
+                                                        <Edit size={14} />
+                                                    )}
+                                                </button>
                                             </>
                                         )}
                                     </div>
