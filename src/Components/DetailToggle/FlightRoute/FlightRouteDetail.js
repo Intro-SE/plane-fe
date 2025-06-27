@@ -8,13 +8,13 @@ export default function FlightRouteDetail({ setToast, onClose, setLoading }) {
     const [newFlightRoutes, setNewFlightRoutes] = useState([]);
     const [intermediateAirports, setIntermediateAirports] = useState([]);
     const [newIntermediateAirports, setNewIntermediateAirports] = useState([]);
+    const [deletedIntermediateAirports, setDeletedIntermediateAirports] =
+        useState([]);
     const [airports, setAirports] = useState([]);
     const [editingFlightRoutes, setEditingFlightRoutes] = useState({});
     const [modifiedFlightRoutes, setModifiedFlightRoutes] = useState([]);
     const [originalValues, setOriginalValues] = useState({});
     const [changedFlightRoutes, setChangedFlightRoutes] = useState({});
-
-    // Intermediate airports editing states
     const [editingIntermediateAirports, setEditingIntermediateAirports] =
         useState({});
     const [modifiedIntermediateAirports, setModifiedIntermediateAirports] =
@@ -23,8 +23,6 @@ export default function FlightRouteDetail({ setToast, onClose, setLoading }) {
         useState({});
     const [changedIntermediateAirports, setChangedIntermediateAirports] =
         useState({});
-
-    // Dropdown states
     const [dropdowns, setDropdowns] = useState({
         departureAirport: false,
         arrivalAirport: false,
@@ -76,7 +74,6 @@ export default function FlightRouteDetail({ setToast, onClose, setLoading }) {
         fetchAllData();
     }, [setLoading]);
 
-    // Handle click outside to close dropdowns
     useEffect(() => {
         const handleClickOutside = (event) => {
             Object.keys(dropdowns).forEach((key) => {
@@ -99,7 +96,6 @@ export default function FlightRouteDetail({ setToast, onClose, setLoading }) {
         };
     }, [dropdowns]);
 
-    // State for new flight route
     const [newFlightRoute, setNewFlightRoute] = useState({
         code: "",
         departureAirport: "",
@@ -108,7 +104,6 @@ export default function FlightRouteDetail({ setToast, onClose, setLoading }) {
         arrivalAirportID: "",
     });
 
-    // State for new intermediate airport
     const [newIntermediateAirport, setNewIntermediateAirport] = useState({
         flight_route_id: "",
         transit_airport_name: "",
@@ -116,23 +111,18 @@ export default function FlightRouteDetail({ setToast, onClose, setLoading }) {
         note: "",
     });
 
-    // Handle delete flight route
     const handleDeleteRoute = (internalId) => {
-        // Remove from newFlightRoutes array
         setNewFlightRoutes(
             newFlightRoutes.filter((route) => route.internalId !== internalId),
         );
-        // Remove from flightRoutes array
         setFlightRoutes(
             flightRoutes.filter((route) => route.internalId !== internalId),
         );
-        // Xóa khỏi editing state nếu đang edit
         const newEditingFlightRoutes = { ...editingFlightRoutes };
         delete newEditingFlightRoutes[internalId];
         setEditingFlightRoutes(newEditingFlightRoutes);
     };
 
-    // Handle add new flight route
     const handleAddRoute = () => {
         if (newFlightRoute.departureAirport && newFlightRoute.arrivalAirport) {
             const internalId = `internal_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
@@ -154,7 +144,6 @@ export default function FlightRouteDetail({ setToast, onClose, setLoading }) {
         }
     };
 
-    // Handle change in new flight route
     const handleNewRouteChange = (field, value) => {
         setNewFlightRoute({
             ...newFlightRoute,
@@ -162,7 +151,6 @@ export default function FlightRouteDetail({ setToast, onClose, setLoading }) {
         });
     };
 
-    // Toggle dropdown
     const toggleDropdown = (dropdown, routeKey = null) => {
         if (dropdown.startsWith("edit") && routeKey) {
             setDropdowns((prev) => ({
@@ -180,7 +168,6 @@ export default function FlightRouteDetail({ setToast, onClose, setLoading }) {
         }
     };
 
-    // Select option from dropdown
     const selectOption = (field, value, routeKey = null) => {
         if (field === "departureAirport" || field === "arrivalAirport") {
             const { name, id } = value;
@@ -250,7 +237,6 @@ export default function FlightRouteDetail({ setToast, onClose, setLoading }) {
         }
     };
 
-    // Clear selection
     const clearSelection = (field, event) => {
         event.stopPropagation();
         if (field === "departureAirport" || field === "arrivalAirport") {
@@ -272,27 +258,38 @@ export default function FlightRouteDetail({ setToast, onClose, setLoading }) {
         }
     };
 
-    // Handle delete intermediate airport
     const handleDeleteIntermediate = (index, airport) => {
-        // Remove from intermediateAirports array using index
+        const isNewItem = newIntermediateAirports.some(
+            (item) =>
+                item.flight_route_id === airport.flight_route_id &&
+                item.transit_airport_name === airport.transit_airport_name &&
+                item.stop_time === airport.stop_time,
+        );
+
+        if (isNewItem) {
+            setNewIntermediateAirports(
+                newIntermediateAirports.filter(
+                    (item) =>
+                        !(
+                            item.flight_route_id === airport.flight_route_id &&
+                            item.transit_airport_name ===
+                                airport.transit_airport_name &&
+                            item.stop_time === airport.stop_time
+                        ),
+                ),
+            );
+        } else {
+            setDeletedIntermediateAirports((prev) => [
+                ...prev,
+                { ...airport, originalIndex: index },
+            ]);
+        }
+
         setIntermediateAirports(
             intermediateAirports.filter((_, i) => i !== index),
         );
-        // Remove from newIntermediateAirports array using matching properties
-        setNewIntermediateAirports(
-            newIntermediateAirports.filter(
-                (item) =>
-                    !(
-                        item.flight_route_id === airport.flight_route_id &&
-                        item.transit_airport_name ===
-                            airport.transit_airport_name &&
-                        item.stop_time === airport.stop_time
-                    ),
-            ),
-        );
     };
 
-    // Handle add intermediate airport
     const handleAddIntermediate = () => {
         if (
             newIntermediateAirport.flight_route_id &&
@@ -317,7 +314,6 @@ export default function FlightRouteDetail({ setToast, onClose, setLoading }) {
         }
     };
 
-    // Handle change in new intermediate airport
     const handleNewIntermediateChange = (field, value) => {
         setNewIntermediateAirport({
             ...newIntermediateAirport,
@@ -325,7 +321,6 @@ export default function FlightRouteDetail({ setToast, onClose, setLoading }) {
         });
     };
 
-    // Handle edit intermediate airport
     const handleEditIntermediate = (airport, index) => {
         const key = `intermediate_${index}`;
         setEditingIntermediateAirports({
@@ -338,7 +333,6 @@ export default function FlightRouteDetail({ setToast, onClose, setLoading }) {
             },
         });
 
-        // Lưu giá trị gốc để so sánh sau này
         setOriginalIntermediateValues({
             ...originalIntermediateValues,
             [key]: {
@@ -355,7 +349,6 @@ export default function FlightRouteDetail({ setToast, onClose, setLoading }) {
         const editedData = editingIntermediateAirports[key];
         const original = originalIntermediateValues[key];
 
-        // Kiểm tra có thay đổi không
         const hasChanged =
             original?.flight_route_id !== editedData.flight_route_id ||
             original?.transit_airport_name !==
@@ -363,7 +356,6 @@ export default function FlightRouteDetail({ setToast, onClose, setLoading }) {
             original?.stop_time !== editedData.stop_time ||
             original?.note !== editedData.note;
 
-        // Cập nhật intermediateAirports array
         setIntermediateAirports(
             intermediateAirports.map((item, i) => {
                 if (i === index) {
@@ -373,7 +365,6 @@ export default function FlightRouteDetail({ setToast, onClose, setLoading }) {
             }),
         );
 
-        // Cập nhật trạng thái thay đổi
         if (hasChanged) {
             setChangedIntermediateAirports({
                 ...changedIntermediateAirports,
@@ -384,7 +375,6 @@ export default function FlightRouteDetail({ setToast, onClose, setLoading }) {
             });
         }
 
-        // Thêm vào modified intermediate airports nếu không phải item mới
         if (
             !newIntermediateAirports.some(
                 (item) =>
@@ -409,7 +399,6 @@ export default function FlightRouteDetail({ setToast, onClose, setLoading }) {
             }
         }
 
-        // Xóa khỏi editing state
         const newEditingIntermediateAirports = {
             ...editingIntermediateAirports,
         };
@@ -425,18 +414,15 @@ export default function FlightRouteDetail({ setToast, onClose, setLoading }) {
         delete newEditingIntermediateAirports[key];
         setEditingIntermediateAirports(newEditingIntermediateAirports);
 
-        // Xóa giá trị gốc nếu hủy edit
         const newOriginalIntermediateValues = { ...originalIntermediateValues };
         delete newOriginalIntermediateValues[key];
         setOriginalIntermediateValues(newOriginalIntermediateValues);
     };
 
-    // Handle cancel button
     const handleCancel = () => {
         onClose();
     };
 
-    // Handle edit flight route
     const handleEdit = (route) => {
         const key = route.internalId || route.code;
         setEditingFlightRoutes({
@@ -450,7 +436,6 @@ export default function FlightRouteDetail({ setToast, onClose, setLoading }) {
             },
         });
 
-        // Lưu giá trị gốc để so sánh sau này
         setOriginalValues({
             ...originalValues,
             [key]: {
@@ -465,12 +450,10 @@ export default function FlightRouteDetail({ setToast, onClose, setLoading }) {
         const editedData = editingFlightRoutes[key];
         const original = originalValues[key];
 
-        // Kiểm tra có thay đổi không
         const hasChanged =
             original?.departureAirport !== editedData.departureAirport ||
             original?.arrivalAirport !== editedData.arrivalAirport;
 
-        // Cập nhật flightRoutes array
         setFlightRoutes(
             flightRoutes.map((r) => {
                 const rKey = r.internalId || r.code;
@@ -481,7 +464,6 @@ export default function FlightRouteDetail({ setToast, onClose, setLoading }) {
             }),
         );
 
-        // Cập nhật trạng thái thay đổi
         if (hasChanged) {
             setChangedFlightRoutes({
                 ...changedFlightRoutes,
@@ -495,7 +477,6 @@ export default function FlightRouteDetail({ setToast, onClose, setLoading }) {
             });
         }
 
-        // Thêm vào modified flight routes nếu không phải route mới
         if (!route.internalId) {
             const existingIndex = modifiedFlightRoutes.findIndex(
                 (r) => r.code === route.code,
@@ -512,7 +493,6 @@ export default function FlightRouteDetail({ setToast, onClose, setLoading }) {
             }
         }
 
-        // Xóa khỏi editing state
         const newEditingFlightRoutes = { ...editingFlightRoutes };
         delete newEditingFlightRoutes[key];
         setEditingFlightRoutes(newEditingFlightRoutes);
@@ -524,15 +504,12 @@ export default function FlightRouteDetail({ setToast, onClose, setLoading }) {
         delete newEditingFlightRoutes[key];
         setEditingFlightRoutes(newEditingFlightRoutes);
 
-        // Xóa giá trị gốc nếu hủy edit
         const newOriginalValues = { ...originalValues };
         delete newOriginalValues[key];
         setOriginalValues(newOriginalValues);
     };
 
-    // Handle save button
     const handleSave = async () => {
-        console.log(modifiedIntermediateAirports);
         const saveFlightRoutes = async () => {
             for (const flightRoute of newFlightRoutes) {
                 await axios.post(
@@ -543,12 +520,6 @@ export default function FlightRouteDetail({ setToast, onClose, setLoading }) {
                     },
                 );
             }
-
-            setToast({
-                show: true,
-                type: "success",
-                message: "Cập nhật tuyến bay thành công!",
-            });
         };
 
         const saveModifiedFlightRoutes = async () => {
@@ -576,12 +547,6 @@ export default function FlightRouteDetail({ setToast, onClose, setLoading }) {
                     },
                 );
             }
-
-            setToast({
-                show: true,
-                type: "success",
-                message: "Cập nhật sân bay trung gian thành công!",
-            });
         };
 
         const saveModifiedIntermediateAirports = async () => {
@@ -600,13 +565,37 @@ export default function FlightRouteDetail({ setToast, onClose, setLoading }) {
             }
         };
 
+        const deleteIntermediateAirports = async () => {
+            for (const intermediateAirport of deletedIntermediateAirports) {
+                if (intermediateAirport.flight_detail_id) {
+                    await axios.delete(
+                        `http://localhost:8000/api/v1/regulation/delete_transit_airport`,
+                        {
+                            data: {
+                                flight_route_id:
+                                    intermediateAirport.flight_route_id,
+                                transit_airport_name:
+                                    intermediateAirport.transit_airport_name,
+                            },
+                        },
+                    );
+                }
+            }
+        };
+
         try {
             await Promise.all([
                 saveFlightRoutes(),
                 saveModifiedFlightRoutes(),
                 saveIntermediateAirports(),
                 saveModifiedIntermediateAirports(),
+                deleteIntermediateAirports(),
             ]);
+            setToast({
+                show: true,
+                type: "success",
+                message: "Cập nhật tuyến bay và sân bay trung gian thành công!",
+            });
         } catch (error) {
             console.error(
                 "Lỗi khi cập nhật dữ liệu:",
@@ -629,7 +618,11 @@ export default function FlightRouteDetail({ setToast, onClose, setLoading }) {
 
                 {/* Flight Routes Table */}
                 <div
-                    className={`${styles.tableContainer} ${styles.flightRoutesTable} ${Object.keys(editingFlightRoutes).length > 0 ? styles.editing : ""}`}
+                    className={`${styles.tableContainer} ${styles.flightRoutesTable} ${
+                        Object.keys(editingFlightRoutes).length > 0
+                            ? styles.editing
+                            : ""
+                    }`}
                 >
                     <div className={styles.tableHeader}>
                         <div className={styles.tableHeaderCell}>
@@ -657,7 +650,9 @@ export default function FlightRouteDetail({ setToast, onClose, setLoading }) {
                         return (
                             <div
                                 key={index}
-                                className={`${styles.tableRow} ${isEditing ? styles.editingRow : ""} ${hasChanged ? styles.changedRow : ""}`}
+                                className={`${styles.tableRow} ${isEditing ? styles.editingRow : ""} ${
+                                    hasChanged ? styles.changedRow : ""
+                                }`}
                             >
                                 <div className={styles.tableCell}>
                                     <div className={styles.cellContent}>
@@ -684,7 +679,12 @@ export default function FlightRouteDetail({ setToast, onClose, setLoading }) {
                                                 }}
                                             >
                                                 <button
-                                                    className={`${styles.dropdownButtonSmall} ${editingFlightRoutes[key]?.departureAirport ? styles.airlineButton : ""} ${styles.editingInput}`}
+                                                    className={`${styles.dropdownButtonSmall} ${
+                                                        editingFlightRoutes[key]
+                                                            ?.departureAirport
+                                                            ? styles.airlineButton
+                                                            : ""
+                                                    } ${styles.editingInput}`}
                                                     onClick={() =>
                                                         toggleDropdown(
                                                             "editDepartureAirport",
@@ -790,7 +790,12 @@ export default function FlightRouteDetail({ setToast, onClose, setLoading }) {
                                                 }}
                                             >
                                                 <button
-                                                    className={`${styles.dropdownButtonSmall} ${editingFlightRoutes[key]?.arrivalAirport ? styles.airlineButton : ""} ${styles.editingInput}`}
+                                                    className={`${styles.dropdownButtonSmall} ${
+                                                        editingFlightRoutes[key]
+                                                            ?.arrivalAirport
+                                                            ? styles.airlineButton
+                                                            : ""
+                                                    } ${styles.editingInput}`}
                                                     onClick={() =>
                                                         toggleDropdown(
                                                             "editArrivalAirport",
@@ -960,7 +965,11 @@ export default function FlightRouteDetail({ setToast, onClose, setLoading }) {
                                 }}
                             >
                                 <button
-                                    className={`${styles.dropdownButton} ${newFlightRoute.departureAirport ? styles.airlineButton : ""}`}
+                                    className={`${styles.dropdownButton} ${
+                                        newFlightRoute.departureAirport
+                                            ? styles.airlineButton
+                                            : ""
+                                    }`}
                                     onClick={() =>
                                         toggleDropdown("departureAirport")
                                     }
@@ -1026,7 +1035,11 @@ export default function FlightRouteDetail({ setToast, onClose, setLoading }) {
                                 }}
                             >
                                 <button
-                                    className={`${styles.dropdownButton} ${newFlightRoute.arrivalAirport ? styles.airlineButton : ""}`}
+                                    className={`${styles.dropdownButton} ${
+                                        newFlightRoute.arrivalAirport
+                                            ? styles.airlineButton
+                                            : ""
+                                    }`}
                                     onClick={() =>
                                         toggleDropdown("arrivalAirport")
                                     }
@@ -1094,7 +1107,11 @@ export default function FlightRouteDetail({ setToast, onClose, setLoading }) {
                 {/* Intermediate Airports Table */}
                 <h2 className={styles.sectionHeader}>Sân bay trung gian</h2>
                 <div
-                    className={`${styles.tableContainer} ${styles.intermediateAirportsTable} ${Object.keys(editingIntermediateAirports).length > 0 ? styles.editing : ""}`}
+                    className={`${styles.tableContainer} ${styles.intermediateAirportsTable} ${
+                        Object.keys(editingIntermediateAirports).length > 0
+                            ? styles.editing
+                            : ""
+                    }`}
                 >
                     <div className={styles.tableHeaderFive}>
                         <div className={styles.tableHeaderCell}>
@@ -1129,7 +1146,9 @@ export default function FlightRouteDetail({ setToast, onClose, setLoading }) {
                         return (
                             <div
                                 key={index}
-                                className={`${styles.tableRowFive} ${isEditing ? styles.editingRow : ""} ${hasChanged ? styles.changedRow : ""}`}
+                                className={`${styles.tableRowFive} ${isEditing ? styles.editingRow : ""} ${
+                                    hasChanged ? styles.changedRow : ""
+                                }`}
                             >
                                 <div className={styles.tableCell}>
                                     <div className={styles.cellContent}>
@@ -1151,7 +1170,13 @@ export default function FlightRouteDetail({ setToast, onClose, setLoading }) {
                                                 }}
                                             >
                                                 <button
-                                                    className={`${styles.dropdownButtonSmall} ${editingIntermediateAirports[key]?.flight_route_id ? styles.airlineButton : ""} ${styles.editingInput}`}
+                                                    className={`${styles.dropdownButtonSmall} ${
+                                                        editingIntermediateAirports[
+                                                            key
+                                                        ]?.flight_route_id
+                                                            ? styles.airlineButton
+                                                            : ""
+                                                    } ${styles.editingInput}`}
                                                     onClick={() =>
                                                         toggleDropdown(
                                                             "editIntermediateRouteCode",
@@ -1258,7 +1283,13 @@ export default function FlightRouteDetail({ setToast, onClose, setLoading }) {
                                                 }}
                                             >
                                                 <button
-                                                    className={`${styles.dropdownButtonSmall} ${editingIntermediateAirports[key]?.transit_airport_name ? styles.airlineButton : ""} ${styles.editingInput}`}
+                                                    className={`${styles.dropdownButtonSmall} ${
+                                                        editingIntermediateAirports[
+                                                            key
+                                                        ]?.transit_airport_name
+                                                            ? styles.airlineButton
+                                                            : ""
+                                                    } ${styles.editingInput}`}
                                                     onClick={() =>
                                                         toggleDropdown(
                                                             "editIntermediateTransitAirport",
@@ -1482,29 +1513,33 @@ export default function FlightRouteDetail({ setToast, onClose, setLoading }) {
                                             </>
                                         ) : (
                                             <>
+                                                {!isNewItem && (
+                                                    <button
+                                                        className={
+                                                            styles.editButton
+                                                        }
+                                                        onClick={() =>
+                                                            handleEditIntermediate(
+                                                                stop,
+                                                                index,
+                                                            )
+                                                        }
+                                                    >
+                                                        <Edit size={14} />
+                                                    </button>
+                                                )}
                                                 <button
                                                     className={
-                                                        isNewItem
-                                                            ? styles.deleteButton
-                                                            : styles.editButton
+                                                        styles.deleteButton
                                                     }
                                                     onClick={() =>
-                                                        isNewItem
-                                                            ? handleDeleteIntermediate(
-                                                                  index,
-                                                                  stop,
-                                                              )
-                                                            : handleEditIntermediate(
-                                                                  stop,
-                                                                  index,
-                                                              )
+                                                        handleDeleteIntermediate(
+                                                            index,
+                                                            stop,
+                                                        )
                                                     }
                                                 >
-                                                    {isNewItem ? (
-                                                        <Trash2 size={14} />
-                                                    ) : (
-                                                        <Edit size={14} />
-                                                    )}
+                                                    <Trash2 size={14} />
                                                 </button>
                                             </>
                                         )}
@@ -1528,7 +1563,11 @@ export default function FlightRouteDetail({ setToast, onClose, setLoading }) {
                                 }}
                             >
                                 <button
-                                    className={`${styles.dropdownButton} ${newIntermediateAirport.flight_route_id ? styles.airlineButton : ""}`}
+                                    className={`${styles.dropdownButton} ${
+                                        newIntermediateAirport.flight_route_id
+                                            ? styles.airlineButton
+                                            : ""
+                                    }`}
                                     onClick={() => toggleDropdown("routeCode")}
                                 >
                                     {newIntermediateAirport.flight_route_id ||
@@ -1586,7 +1625,11 @@ export default function FlightRouteDetail({ setToast, onClose, setLoading }) {
                                 }}
                             >
                                 <button
-                                    className={`${styles.dropdownButton} ${newIntermediateAirport.transit_airport_name ? styles.airlineButton : ""}`}
+                                    className={`${styles.dropdownButton} ${
+                                        newIntermediateAirport.transit_airport_name
+                                            ? styles.airlineButton
+                                            : ""
+                                    }`}
                                     onClick={() =>
                                         toggleDropdown("transitAirport")
                                     }

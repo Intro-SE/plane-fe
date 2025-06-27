@@ -751,7 +751,7 @@ export default function RegulationForm({ setToast, setOpenForm, setLoading }) {
                         </div>
 
                         <div className={styles.formRow}>
-                            <label>THỜI GIAN DỪA TỐI THIỂU (PHÚT)</label>
+                            <label>THỜI GIAN DỪNG TỐI THIỂU (PHÚT)</label>
                             <div className={styles.inputWithReset}>
                                 <input
                                     type="number"
@@ -791,7 +791,7 @@ export default function RegulationForm({ setToast, setOpenForm, setLoading }) {
                         </div>
 
                         <div className={styles.formRow}>
-                            <label>THỜI GIAN DỪA TỐI ĐA (PHÚT)</label>
+                            <label>THỜI GIAN DỪNG TỐI ĐA (PHÚT)</label>
                             <div className={styles.inputWithReset}>
                                 <input
                                     type="number"
