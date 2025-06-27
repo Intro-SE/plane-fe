@@ -359,9 +359,9 @@ export default function BookingManagement() {
                   </tr>
                   <tr>
                     <td>Sân bay đi:</td>
-                    <td>{detailData.departure_airport}</td>
+                    <td>{detailData.departure_name}</td>
                     <td>Sân bay đến:</td>
-                    <td>{detailData.arrival_airport}</td>
+                    <td>{detailData.arrival_name}</td>
                   </tr>
                   <tr>
                     <td>Hạng vé:</td>
