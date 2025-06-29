@@ -1,0 +1,43 @@
+name: React CI/CD
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on:  ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        node: [20, 22, 24]
+
+    steps:
+      # 1. checkout code
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # 2. setup node
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+          cache: 'npm'
+
+      # 3. install dependencies
+      - name: Install dependencies
+        run: npm install
+
+      # 4. lint
+      - name: Run ESLint
+        run: npm run lint
+
+      # 5. test
+      - name: Run tests
+        run: npm test
+
+      # 6. build
+      - name: Build
+        run: npm run build
