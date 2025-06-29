@@ -24,7 +24,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node }}
-          cache: 'npm'
+          # cache: 'npm'
 
       # 3. install dependencies
       - name: Install dependencies
