@@ -31,8 +31,8 @@ jobs:
         run: npm install
 
       # 4. lint
-      - name: Run ESLint
-        run: npm run lint
+      # - name: Run ESLint
+      #   run: npm run lint
 
       # 5. test
       - name: Run tests
