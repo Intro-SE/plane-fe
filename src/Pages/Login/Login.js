@@ -58,6 +58,7 @@ export default function Login() {
                     gender: result.gender,
                     created_date: result.created_date,
                 });
+                localStorage.setItem("employee", JSON.stringify(result));
                 navigate(from, { replace: true });
             } else {
                 console.warn("Login failed!");
@@ -149,7 +150,7 @@ export default function Login() {
                         className={styles["sign-in-button"]}
                         onClick={handleLogin}
                     >
-                        Sign in
+                        Đăng nhập
                     </button>
                 </div>
 
@@ -169,9 +170,6 @@ export default function Login() {
                         />
                         /7Airlines
                     </div>
-                    {/* <div className={styles["copyright"]}>
-                        © Perfect Login 2021
-                    </div> */}
                 </div>
             </div>
         </div>

@@ -2,26 +2,54 @@ import { createContext, useState, useEffect } from "react";
 
 export const AuthContext = createContext();
 
+const AUTO_LOGOUT_TIME = 5 * 60 * 60 * 1000;
+
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
-    const [loading, setLoading] = useState(true); // Thêm loading
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const storedUser = localStorage.getItem("user");
-        if (storedUser) {
-            setUser(JSON.parse(storedUser));
+        const loginTime = localStorage.getItem("loginTime");
+
+        if (storedUser && loginTime) {
+            const now = Date.now();
+            const elapsed = now - parseInt(loginTime, 10);
+
+            if (elapsed < AUTO_LOGOUT_TIME) {
+                setUser(JSON.parse(storedUser));
+
+                // Thiết lập hẹn giờ auto logout phần còn lại
+                const remainingTime = AUTO_LOGOUT_TIME - elapsed;
+                const timer = setTimeout(() => {
+                    logout();
+                }, remainingTime);
+
+                setLoading(false);
+                return () => clearTimeout(timer); // cleanup
+            } else {
+                logout(); // Hết hạn, tự động đăng xuất
+            }
         }
-        setLoading(false); // Kết thúc load
+
+        setLoading(false);
     }, []);
 
     const login = (userData) => {
         setUser(userData);
         localStorage.setItem("user", JSON.stringify(userData));
+        localStorage.setItem("loginTime", Date.now().toString());
+
+        // Tự động logout sau 1 tiếng
+        setTimeout(() => {
+            logout();
+        }, AUTO_LOGOUT_TIME);
     };
 
     const logout = () => {
         setUser(null);
         localStorage.removeItem("user");
+        localStorage.removeItem("loginTime");
     };
 
     const isAuthenticated = !!user;

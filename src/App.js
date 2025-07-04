@@ -8,6 +8,7 @@ import FlightManagement from "./Pages/FlightManagement/FlightManagement";
 import BookingManagement from "./Pages/BookingManagement/BookingManagement";
 import Regulation from "./Pages/RegulationSetting/RegulationSetting";
 import TicketManagement from "./Pages/TicketManagement/TicketManagement";
+import Revenue from "./Pages/Revenue/Revenue";
 
 import { AuthProvider } from "./AuthContext";
 import PrivateRoute from "./PrivateRoute";
@@ -44,6 +45,14 @@ function App() {
                         element={
                             <PrivateRoute>
                                 <TicketManagement />
+                            </PrivateRoute>
+                        }
+                    />
+                    <Route
+                        path="/bao-cao-doanh-thu"
+                        element={
+                            <PrivateRoute>
+                                <Revenue />
                             </PrivateRoute>
                         }
                     />

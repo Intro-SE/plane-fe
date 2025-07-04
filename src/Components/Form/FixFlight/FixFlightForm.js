@@ -8,15 +8,16 @@ import {
     Plus,
     Trash2,
     X,
+    Lock,
 } from "lucide-react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import styles from "./FixFlightForm.module.css";
+import axios from "axios";
 
 export default function FixFlightForm({
     onClose,
     routeData,
-    seatClassData,
     onSendData,
     data,
 }) {
@@ -46,9 +47,42 @@ export default function FixFlightForm({
             60000,
         seatClasses: data.seat_information.seat_type.map((type, index) => ({
             class: type,
-            quantity: data.seat_information.empty_type_seats[index],
+            quantity:
+                data.seat_information.empty_type_seats[index] +
+                data.seat_information.occupied_type_seats[index],
         })),
     });
+
+    const [seatClassData, setSeatClassData] = useState([]);
+
+    useEffect(() => {
+        const fetchTicketClasses = async () => {
+            try {
+                const response = await axios.get(
+                    "http://localhost:8000/api/v1/flight_management/ticket_route",
+                    {
+                        params: {
+                            flight_route_id: formData.airline,
+                            skip: 0,
+                            limit: 1000,
+                        },
+                    },
+                );
+                const seatData = response.data.map((ticketClass) => {
+                    return ticketClass.ticket_class_name;
+                });
+                setSeatClassData(seatData);
+            } catch (error) {
+                console.error(
+                    "Lỗi khi lấy hạng vé:",
+                    error.response?.data || error.message,
+                );
+            }
+        };
+        if (formData.airline) {
+            fetchTicketClasses();
+        }
+    }, [formData.airline]);
 
     const [dropdowns, setDropdowns] = useState({
         airline: false,
@@ -74,10 +108,21 @@ export default function FixFlightForm({
 
     const clearSelection = (field, event) => {
         event.stopPropagation();
-        setFormData((prev) => ({
-            ...prev,
-            [field]: "",
-        }));
+
+        // If clearing airline, also clear departure and destination
+        if (field === "airline") {
+            setFormData((prev) => ({
+                ...prev,
+                airline: "",
+                departure: "",
+                destination: "",
+            }));
+        } else {
+            setFormData((prev) => ({
+                ...prev,
+                [field]: "",
+            }));
+        }
     };
 
     // Handle click outside to close dropdowns
@@ -132,7 +177,7 @@ export default function FixFlightForm({
             flight_duration: parseInt(formData.duration, 10) || null,
             total_seats: parseInt(formData.totalSeats, 10) || null,
             seat_type: formData.seatClasses.map((item) => item.class),
-            empty_type_seats: formData.seatClasses.map((item) =>
+            total_type_seats: formData.seatClasses.map((item) =>
                 parseInt(item.quantity, 10),
             ),
         };
@@ -143,7 +188,7 @@ export default function FixFlightForm({
     return (
         <div className={styles.container}>
             <div className={styles.header}>
-                <h2>Biểu mẫu sửa một chuyến bay mới</h2>
+                <h2>Biểu mẫu sửa một chuyến bay</h2>
             </div>
 
             <div className={styles.form}>
@@ -154,13 +199,16 @@ export default function FixFlightForm({
                         <input
                             type="text"
                             value={formData.flightCode}
-                            onChange={(e) =>
-                                handleInputChange("flightCode", e.target.value)
-                            }
-                            className={styles.input}
+                            onChange={(e) => {
+                                // Keep the flight code locked
+                                // handleInputChange("flightCode", e.target.value)
+                            }}
+                            className={`${styles.input} ${styles.disabledDropdown} ${styles.airlineButton}`}
                             placeholder="Mã chuyến bay"
+                            title="Mã chuyến bay không thể thay đổi"
+                            readOnly
                         />
-                        <Plane className={styles.inputIcon} size={20} />
+                        <Lock className={styles.inputIcon} size={20} />
                     </div>
 
                     {/* Airline Dropdown */}
@@ -174,6 +222,7 @@ export default function FixFlightForm({
                         <button
                             className={`${styles.dropdownButton} ${formData.airline ? styles.airlineButton : ""}`}
                             onClick={() => toggleDropdown("airline")}
+                            title="Chọn mã tuyến bay"
                         >
                             {formData.airline || "Mã tuyến bay"}
                             {formData.airline ? (
@@ -206,6 +255,7 @@ export default function FixFlightForm({
                                                         route.arrival_airport
                                                             ?.airport_name ||
                                                         "Unknown Arrival",
+                                                    seatClasses: [],
                                                 });
                                                 selectOption(
                                                     "airline",
@@ -233,18 +283,34 @@ export default function FixFlightForm({
                         }}
                     >
                         <button
-                            className={`${styles.dropdownButton} ${formData.departure ? styles.airlineButton : ""}`}
-                            onClick={() => toggleDropdown("departure")}
+                            className={`${styles.dropdownButton} ${formData.departure ? styles.airlineButton : ""} ${formData.airline ? styles.disabledDropdown : ""}`}
+                            title={
+                                formData.airline
+                                    ? "Đã được khóa khi chọn mã tuyến bay"
+                                    : "Chọn sân bay đi"
+                            }
+                            onClick={() =>
+                                formData.airline
+                                    ? null
+                                    : toggleDropdown("departure")
+                            }
                         >
                             {formData.departure || "Sân bay đi"}
                             {formData.departure ? (
-                                <X
-                                    size={20}
-                                    onClick={(e) =>
-                                        clearSelection("departure", e)
-                                    }
-                                    className={styles.clearIcon}
-                                />
+                                formData.airline ? (
+                                    <Lock
+                                        className={styles.inputIcon}
+                                        size={20}
+                                    />
+                                ) : (
+                                    <X
+                                        size={20}
+                                        onClick={(e) => {
+                                            clearSelection("departure", e);
+                                        }}
+                                        className={styles.clearIcon}
+                                    />
+                                )
                             ) : (
                                 <Plane className={styles.inputIcon} size={20} />
                             )}
@@ -279,18 +345,34 @@ export default function FixFlightForm({
                         }}
                     >
                         <button
-                            className={`${styles.dropdownButton} ${formData.destination ? styles.airlineButton : ""}`}
-                            onClick={() => toggleDropdown("destination")}
+                            className={`${styles.dropdownButton} ${formData.destination ? styles.airlineButton : ""} ${formData.airline ? styles.disabledDropdown : ""}`}
+                            title={
+                                formData.airline
+                                    ? "Đã được khóa khi chọn mã tuyến bay"
+                                    : "Chọn sân bay đến"
+                            }
+                            onClick={() =>
+                                formData.airline
+                                    ? null
+                                    : toggleDropdown("destination")
+                            }
                         >
                             {formData.destination || "Sân bay đến"}
                             {formData.destination ? (
-                                <X
-                                    size={20}
-                                    onClick={(e) =>
-                                        clearSelection("destination", e)
-                                    }
-                                    className={styles.clearIcon}
-                                />
+                                formData.airline ? (
+                                    <Lock
+                                        className={styles.inputIcon}
+                                        size={20}
+                                    />
+                                ) : (
+                                    <X
+                                        size={20}
+                                        onClick={(e) => {
+                                            clearSelection("destination", e);
+                                        }}
+                                        className={styles.clearIcon}
+                                    />
+                                )
                             ) : (
                                 <Plane className={styles.inputIcon} size={20} />
                             )}
@@ -446,6 +528,7 @@ export default function FixFlightForm({
                                 <button
                                     className={styles.deleteButton}
                                     onClick={() => {
+                                        // Xóa khỏi formData.seatClasses
                                         setFormData((prev) => ({
                                             ...prev,
                                             seatClasses:
@@ -495,28 +578,58 @@ export default function FixFlightForm({
                                         <ChevronDown size={16} />
                                     )}
                                 </button>
-                                {dropdowns.seatClass && (
-                                    <div className={styles.dropdownMenu}>
-                                        {seatClassData.map((option) => (
+                                {dropdowns.seatClass &&
+                                    (seatClassData.filter(
+                                        (option) =>
+                                            !formData.seatClasses.some(
+                                                (seatClass) =>
+                                                    seatClass.class === option,
+                                            ),
+                                    ).length > 0 ? (
+                                        <div className={styles.dropdownMenu}>
+                                            {seatClassData
+                                                .filter(
+                                                    (option) =>
+                                                        !formData.seatClasses.some(
+                                                            (seatClass) =>
+                                                                seatClass.class ===
+                                                                option,
+                                                        ),
+                                                )
+                                                .map((option) => (
+                                                    <div
+                                                        key={option}
+                                                        className={
+                                                            styles.dropdownItem
+                                                        }
+                                                        onClick={() => {
+                                                            setNewSeatClass(
+                                                                (prev) => ({
+                                                                    ...prev,
+                                                                    class: option,
+                                                                }),
+                                                            );
+                                                            setDropdowns(
+                                                                (prev) => ({
+                                                                    ...prev,
+                                                                    seatClass: false,
+                                                                }),
+                                                            );
+                                                        }}
+                                                    >
+                                                        {option}
+                                                    </div>
+                                                ))}
+                                        </div>
+                                    ) : (
+                                        <div className={styles.dropdownMenu}>
                                             <div
-                                                key={option}
-                                                className={styles.dropdownItem}
-                                                onClick={() => {
-                                                    setNewSeatClass((prev) => ({
-                                                        ...prev,
-                                                        class: option,
-                                                    }));
-                                                    setDropdowns((prev) => ({
-                                                        ...prev,
-                                                        seatClass: false,
-                                                    }));
-                                                }}
+                                                className={`${styles.dropdownItem} ${styles.disabledItem}`}
                                             >
-                                                {option}
+                                                Không còn hạng vé nào để chọn
                                             </div>
-                                        ))}
-                                    </div>
-                                )}
+                                        </div>
+                                    ))}
                             </div>
                         </div>
                         <div className={styles.tableCell}>
@@ -541,11 +654,14 @@ export default function FixFlightForm({
                                         newSeatClass.class &&
                                         newSeatClass.quantity
                                     ) {
+                                        const newSeatClassEntry = {
+                                            ...newSeatClass,
+                                        };
                                         setFormData((prev) => ({
                                             ...prev,
                                             seatClasses: [
                                                 ...prev.seatClasses,
-                                                newSeatClass,
+                                                newSeatClassEntry,
                                             ],
                                         }));
                                         setNewSeatClass({

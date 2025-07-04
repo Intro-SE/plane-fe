@@ -1,0 +1,26 @@
+.regulation-container {
+    display: flex;
+    min-height: 100vh;
+    width: 100%;
+}
+
+.sidebar-section {
+    width: 250px; /* Điều chỉnh chiều rộng của sidebar tùy ý */
+}
+
+.content-section {
+    flex: 1;
+    padding: 20px;
+    background-color: #ffffff; /* Màu nền cho phần nội dung */
+}
+
+/* Responsive cho màn hình nhỏ */
+@media (max-width: 768px) {
+    .regulation-container {
+        flex-direction: column;
+    }
+
+    .sidebar-section {
+        width: 100%;
+    }
+}

@@ -1,0 +1,859 @@
+.container {
+    padding: 0;
+    font-family:
+        -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    z-index: 1;
+}
+
+.card {
+    background-color: white;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    width: fit-content;
+    margin: 0;
+    display: inline-block;
+    position: relative;
+    z-index: 10;
+}
+
+.header {
+    background: linear-gradient(135deg, #d4af37, #f4e78b);
+    color: #333;
+    padding: 16px;
+    margin: -24px -24px 24px -24px;
+    border-radius: 12px 12px 0 0;
+    text-align: center;
+    font-size: 24px;
+    font-weight: bold;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    letter-spacing: 0.5px;
+}
+
+.sectionHeader {
+    background: linear-gradient(135deg, #d4af37, #f4e78b);
+    color: #333;
+    padding: 12px;
+    margin: 30px -24px 20px -24px;
+    border-radius: 12px 12px 0 0;
+    text-align: center;
+    font-size: 24px;
+    font-weight: bold;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    letter-spacing: 0.5px;
+    position: relative;
+    z-index: 20;
+}
+
+.tableContainer {
+    border: 2px solid #ddd;
+    border-radius: 12px;
+    overflow: visible;
+    background: white;
+    margin-top: 20px;
+    table-layout: fixed;
+    width: 100%;
+    position: relative;
+    z-index: 999997;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+/* Đảm bảo table container không cắt dropdown khi editing */
+.tableContainer:has(.editingRow) {
+    overflow: visible;
+    z-index: 999998;
+}
+
+/* Backup cho browser không hỗ trợ :has() */
+.tableContainer.editing {
+    overflow: visible !important;
+    z-index: 999998 !important;
+}
+
+/* Đảm bảo bảng tuyến bay luôn có z-index cao hơn bảng sân bay trung gian */
+.flightRoutesTable {
+    z-index: 999998 !important;
+}
+
+.intermediateAirportsTable {
+    z-index: 999997 !important;
+}
+
+.tableHeader {
+    display: grid;
+    grid-template-columns: 2fr 2.2fr 2.2fr 0.6fr;
+    background: linear-gradient(135deg, #20b2aa, #40e0d0);
+    border-bottom: 2px solid #ddd;
+    min-height: 45px;
+    border-radius: 10px 10px 0 0;
+    width: 100%;
+}
+
+/* Header for the intermediate airport table with 5 columns */
+.tableHeaderFive {
+    display: grid;
+    grid-template-columns: 1.3fr 1.5fr 1.6fr 1.9fr 0.6fr;
+    background: linear-gradient(135deg, #20b2aa, #40e0d0);
+    border-bottom: 2px solid #ddd;
+    min-height: 45px;
+    border-radius: 10px 10px 0 0;
+    width: 100%;
+    max-width: 100%;
+    min-width: 1000px;
+}
+
+.tableHeaderCell {
+    padding: 12px 10px;
+    font-weight: 700;
+    color: white;
+    border-right: 1px solid rgba(255, 255, 255, 0.2);
+    text-align: left;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    font-size: 15px;
+    letter-spacing: 0px;
+    box-sizing: border-box;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.tableHeaderCell:last-child {
+    border-right: none;
+}
+
+.tableRow {
+    display: grid;
+    grid-template-columns: 2fr 2.2fr 2.2fr 0.6fr;
+    /* grid-template-columns: 1.5fr 1.5fr 1.5fr 0.4fr; */
+    border-bottom: 1px solid #f0f0f0;
+    position: relative;
+    z-index: 10;
+    width: 100%;
+    min-height: 56px;
+}
+
+/* Row for the intermediate airport table with 5 columns */
+.tableRowFive {
+    display: grid;
+    grid-template-columns: 1.3fr 1.5fr 1.6fr 1.9fr 0.6fr;
+    border-bottom: 1px solid #f0f0f0;
+    position: relative;
+    z-index: 10;
+    width: 100%;
+    min-height: 56px;
+}
+
+.tableCell {
+    padding: 8px 10px;
+    border-right: 1px solid #f0f0f0;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    position: relative;
+    overflow: visible;
+    width: 100%;
+    min-width: 0;
+    min-height: 56px;
+    box-sizing: border-box;
+    font-size: 15px;
+    z-index: 1;
+}
+
+/* Table cell khi đang editing */
+.editingRow .tableCell {
+    overflow: visible;
+    z-index: 999999;
+}
+
+/* Đặc biệt hóa cho cột thao tác (cột cuối cùng) */
+.tableRow > .tableCell:last-child,
+.tableRowFive > .tableCell:last-child {
+    justify-content: center;
+}
+
+.tableCell:last-child {
+    border-right: none;
+}
+
+.deleteButton {
+    background: linear-gradient(135deg, #ffa500, #ffd700);
+    color: #333;
+    border: none;
+    padding: 6px 8px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    transition: all 0.3s ease;
+    height: 28px;
+    min-width: 35px;
+}
+
+.deleteButton:hover {
+    background: linear-gradient(135deg, #ff8c00, #ffa500);
+    transform: translateY(-2px);
+}
+
+.disabledButton {
+    background: linear-gradient(135deg, #cccccc, #dddddd) !important;
+    color: #888888 !important;
+    cursor: not-allowed;
+    opacity: 0.7;
+    box-shadow: none;
+}
+
+.disabledButton:hover {
+    background: linear-gradient(135deg, #cccccc, #dddddd) !important;
+    transform: none;
+    box-shadow: none;
+}
+
+.addButton {
+    background: linear-gradient(135deg, #20b2aa, #40e0d0);
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    transition: all 0.3s ease;
+    height: 36px;
+    width: fit-content;
+    min-width: 80px;
+}
+
+.addButton:hover {
+    background: linear-gradient(135deg, #008b8b, #20b2aa);
+    transform: translateY(-2px);
+}
+
+.actionButtons {
+    display: flex;
+    gap: 25px;
+    margin-top: 25px;
+    justify-content: center;
+    align-items: center;
+    padding: 0 20px;
+}
+
+.cancelButton {
+    background: linear-gradient(135deg, #ff69b4, #ff91c7);
+    color: white;
+    border: none;
+    padding: 16px 32px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    min-width: 150px;
+    box-shadow: 0 3px 8px rgba(255, 105, 180, 0.3);
+}
+
+.cancelButton:hover {
+    background: linear-gradient(135deg, #ff1493, #ff69b4);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 12px rgba(255, 105, 180, 0.4);
+}
+
+.saveButton {
+    background: linear-gradient(135deg, #20b2aa, #40e0d0);
+    color: white;
+    border: none;
+    padding: 16px 32px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    min-width: 200px;
+    box-shadow: 0 3px 8px rgba(32, 178, 170, 0.3);
+}
+
+.saveButton:hover {
+    background: linear-gradient(135deg, #008b8b, #20b2aa);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 12px rgba(32, 178, 170, 0.4);
+}
+
+.quantityInput {
+    width: 100%;
+    height: 50px;
+    padding: 0 15px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    font-size: 16px;
+    text-align: left;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    outline: none;
+    transition: border-color 0.3s ease;
+    min-width: 120px;
+    color: #333;
+}
+
+.quantityInput:focus {
+    border-color: #007bff;
+}
+
+.dropdown {
+    position: relative;
+    width: 100%;
+    display: inline-block;
+    z-index: 999998;
+    height: 50px;
+}
+
+.tableCell .dropdown {
+    position: relative;
+    z-index: 999998;
+}
+
+/* Dropdown khi đang editing */
+.editingRow .dropdown {
+    z-index: 9999998 !important;
+    position: relative;
+}
+
+.editingRow .dropdownMenu {
+    z-index: 9999999 !important;
+    position: absolute;
+    top: calc(100% + 2px);
+    left: 0;
+    right: 0;
+    transform: none;
+}
+
+/* Đặc biệt cho dropdown editing - đảm bảo hiển thị trên tất cả */
+.editingRow .tableCell .dropdown {
+    z-index: 9999998 !important;
+}
+
+.editingRow .tableCell .dropdownMenu {
+    z-index: 9999999 !important;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+    border: 2px solid #007bff;
+}
+
+/* Style cho dropdown khi thêm mới - đảm bảo đè lên bảng sân bay trung gian */
+.tableRow:last-child .dropdown {
+    z-index: 999998 !important;
+}
+
+.tableRow:last-child .dropdownMenu {
+    z-index: 9999999 !important;
+    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.3);
+}
+
+.tableRowFive:last-child .dropdown {
+    z-index: 999998 !important;
+}
+
+.tableRowFive:last-child .dropdownMenu {
+    z-index: 9999999 !important;
+    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.3);
+}
+
+/* Đảm bảo dropdown khi thêm mới luôn có z-index cao - chỉ target row thêm mới */
+.tableRow:last-child .tableCell .dropdown,
+.tableRowFive:last-child .tableCell .dropdown {
+    z-index: 999998 !important;
+}
+
+.dropdownButton {
+    width: 100%;
+    height: 50px;
+    padding: 0 15px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    background: white;
+    font-size: 16px;
+    text-align: left;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: border-color 0.3s ease;
+    box-sizing: border-box;
+    color: #999;
+    gap: 10px;
+    line-height: 1;
+}
+
+.dropdownButton:hover {
+    border-color: #007bff;
+}
+
+.disabledDropdown {
+    background: linear-gradient(135deg, #e8f4f8, #f2f9fb);
+    cursor: not-allowed;
+    border: 2px solid #c8e1e9;
+    position: relative;
+    box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+}
+
+.disabledDropdown .inputIcon {
+    opacity: 0.5;
+}
+
+.disabledDropdown::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    right: 40px;
+    transform: translateY(-50%);
+    width: 18px;
+    height: 18px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='%2320b2aa' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect width='18' height='11' x='3' y='11' rx='2' ry='2'/%3E%3Cpath d='M7 11V7a5 5 0 0 1 10 0v4'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: center;
+    opacity: 0.8;
+}
+
+.disabledDropdown:hover {
+    border-color: #a8d1d9;
+    box-shadow: inset 0 0 8px rgba(32, 178, 170, 0.1);
+}
+
+.airlineButton {
+    background: linear-gradient(135deg, #20b2aa, #40e0d0);
+    color: white;
+    border: none;
+    font-weight: 600;
+}
+
+.airlineButton:hover {
+    background: linear-gradient(135deg, #008b8b, #20b2aa);
+}
+
+.airlineButton.disabledDropdown {
+    background: linear-gradient(135deg, #b5e8e4, #d1f0ed);
+    border: 2px solid #95d8d3;
+    opacity: 0.95;
+    color: #333;
+}
+
+.airlineButton.disabledDropdown:hover {
+    background: linear-gradient(135deg, #b5e8e4, #d1f0ed);
+    border: 2px solid #95d8d3;
+    box-shadow: inset 0 0 8px rgba(32, 178, 170, 0.1);
+}
+
+.airlineButton.disabledDropdown::after {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect width='18' height='11' x='3' y='11' rx='2' ry='2'/%3E%3Cpath d='M7 11V7a5 5 0 0 1 10 0v4'/%3E%3C/svg%3E");
+    right: 40px;
+}
+
+.dropdownButtonSmall {
+    width: 100%;
+    min-width: 120px;
+    height: 44px;
+    padding: 0 10px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    background: white;
+    font-size: 14px;
+    text-align: left;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-sizing: border-box;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition:
+        background 0.3s ease,
+        color 0.3s ease;
+}
+
+.dropdownButtonSmall.airlineButton {
+    background: linear-gradient(135deg, #20b2aa, #40e0d0);
+    color: white;
+    border: none;
+    font-weight: 600;
+}
+
+.dropdownButtonSmall.airlineButton:hover {
+    background: linear-gradient(135deg, #008b8b, #20b2aa);
+}
+
+.airlineButton {
+    background: linear-gradient(135deg, #20b2aa, #40e0d0);
+    color: white;
+    border: none;
+    font-weight: 600;
+}
+
+.airlineButton:hover {
+    background: linear-gradient(135deg, #008b8b, #20b2aa);
+}
+
+.airlineButton.disabledDropdown {
+    background: linear-gradient(135deg, #b5e8e4, #d1f0ed);
+    border: 2px solid #95d8d3;
+    opacity: 0.95;
+    color: #333;
+}
+
+.airlineButton.disabledDropdown:hover {
+    background: linear-gradient(135deg, #b5e8e4, #d1f0ed);
+    border: 2px solid #95d8d3;
+    box-shadow: inset 0 0 8px rgba(32, 178, 170, 0.1);
+}
+
+.airlineButton.disabledDropdown::after {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect width='18' height='11' x='3' y='11' rx='2' ry='2'/%3E%3Cpath d='M7 11V7a5 5 0 0 1 10 0v4'/%3E%3C/svg%3E");
+    right: 40px;
+}
+
+/* For small dropdown buttons */
+.dropdownButtonSmall.airlineButton {
+    background: linear-gradient(135deg, #20b2aa, #40e0d0);
+    color: white;
+    border: none;
+    font-weight: 600;
+
+    color: #333;
+}
+
+.airlineButton.disabledDropdown:hover {
+    background: linear-gradient(135deg, #b5e8e4, #d1f0ed);
+    border: 2px solid #95d8d3;
+    box-shadow: inset 0 0 8px rgba(32, 178, 170, 0.1);
+}
+
+.airlineButton.disabledDropdown::after {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect width='18' height='11' x='3' y='11' rx='2' ry='2'/%3E%3Cpath d='M7 11V7a5 5 0 0 1 10 0v4'/%3E%3C/svg%3E");
+    right: 40px;
+}
+
+/* For small dropdown buttons */
+.dropdownButtonSmall.airlineButton {
+    background: linear-gradient(135deg, #20b2aa, #40e0d0);
+    color: white;
+    border: none;
+    font-weight: 600;
+}
+
+.dropdownButtonSmall.airlineButton:hover {
+    background: linear-gradient(135deg, #008b8b, #20b2aa);
+}
+
+.ticketClass {
+    width: 100%;
+    height: 38px;
+    padding: 0 12px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    background: white;
+    font-size: 14px;
+    text-align: left;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: border-color 0.3s ease;
+    box-sizing: border-box;
+    color: #999;
+    z-index: 2;
+    gap: 8px;
+    line-height: 1;
+}
+
+.dropdownMenu {
+    position: absolute;
+    top: calc(100% + 2px);
+    left: 0;
+    right: 0;
+    background: white;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+    z-index: 9999999;
+    max-height: 200px;
+    overflow-y: auto;
+    width: 100%;
+    min-width: 200px;
+}
+
+.dropdownItem {
+    padding: 12px 15px;
+    cursor: pointer;
+    border-bottom: 1px solid #f0f0f0;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+    font-size: 15px;
+}
+
+.dropdownItem:hover {
+    background-color: #f8f9fa;
+    color: #007bff;
+    padding-left: 18px;
+}
+
+.dropdownItem.selected {
+    background-color: #e3f2fd;
+    color: #1976d2;
+    font-weight: 600;
+}
+
+.dropdownItem.selected:hover {
+    background-color: #bbdefb;
+    color: #1565c0;
+}
+
+.dropdownItem:last-child {
+    border-bottom: none;
+}
+
+.inputIcon {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #666;
+    pointer-events: none;
+    transition: color 0.3s ease;
+}
+
+.clearIcon {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #666;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.clearIcon:hover {
+    color: #333;
+}
+
+.disabledInput {
+    background-color: #f5f5f5;
+    color: #888;
+    cursor: not-allowed;
+    border: 1px dashed #ccc;
+    position: relative;
+}
+
+.disabledInput::after {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 14px;
+}
+
+/* Editing styles */
+.editingRow {
+    background: linear-gradient(90deg, #fff8dc, #fffacd);
+    border: 2px solid #ffd700;
+    border-radius: 8px;
+    animation: editingPulse 2s infinite;
+    box-shadow: 0 4px 12px rgba(255, 215, 0, 0.3);
+    position: relative;
+    z-index: 999999;
+    overflow: visible;
+}
+
+@keyframes editingPulse {
+    0% {
+        box-shadow: 0 4px 12px rgba(255, 215, 0, 0.3);
+    }
+    50% {
+        box-shadow: 0 6px 16px rgba(255, 215, 0, 0.5);
+    }
+    100% {
+        box-shadow: 0 4px 12px rgba(255, 215, 0, 0.3);
+    }
+}
+
+.editingInput {
+    border: 2px solid #ffd700;
+    background: white;
+    box-shadow: 0 0 8px rgba(255, 215, 0, 0.4);
+    animation: inputGlow 2s infinite;
+}
+
+@keyframes inputGlow {
+    0% {
+        border-color: #ffd700;
+        box-shadow: 0 0 8px rgba(255, 215, 0, 0.4);
+    }
+    50% {
+        border-color: #ffed4e;
+        box-shadow: 0 0 12px rgba(255, 215, 0, 0.6);
+    }
+    100% {
+        border-color: #ffd700;
+        box-shadow: 0 0 8px rgba(255, 215, 0, 0.4);
+    }
+}
+
+.actionButtonGroup {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    width: 100%;
+    justify-content: flex-start;
+}
+
+.editButton {
+    background: linear-gradient(135deg, #4caf50, #66bb6a);
+    color: white;
+    border: none;
+    padding: 6px 8px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    height: 28px;
+    min-width: 35px;
+}
+
+.editButton:hover {
+    background: linear-gradient(135deg, #388e3c, #4caf50);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(76, 175, 80, 0.3);
+}
+
+.saveEditButton {
+    background: linear-gradient(135deg, #2196f3, #42a5f5);
+    color: white;
+    border: none;
+    padding: 6px 8px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    height: 28px;
+    min-width: 35px;
+}
+
+.saveEditButton:hover {
+    background: linear-gradient(135deg, #1976d2, #2196f3);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(33, 150, 243, 0.3);
+}
+
+.cancelEditButton {
+    background: linear-gradient(135deg, #f44336, #ef5350);
+    color: white;
+    border: none;
+    padding: 6px 8px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    height: 28px;
+    min-width: 35px;
+}
+
+.cancelEditButton:hover {
+    background: linear-gradient(135deg, #d32f2f, #f44336);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(244, 67, 54, 0.3);
+}
+
+/* Change tracking styles */
+.changedRow {
+    background: linear-gradient(90deg, #f0fff0, #f5fff5);
+    position: relative;
+}
+
+.changedRow::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 5px;
+    background: linear-gradient(to bottom, #4caf50, #66bb6a);
+}
+
+@keyframes changeGlow {
+    0%,
+    100% {
+        opacity: 0.6;
+    }
+    50% {
+        opacity: 1;
+    }
+}
+
+.cellContent {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
+    position: relative;
+}
+
+.changedIndicator {
+    color: #4caf50;
+    font-size: 8px;
+    position: absolute;
+    top: -2px;
+    right: 0;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        opacity: 0.6;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 1;
+        transform: scale(1.2);
+    }
+    100% {
+        opacity: 0.6;
+        transform: scale(1);
+    }
+}
+
+.oldValue {
+    font-size: 11px;
+    color: #666;
+    font-style: italic;
+    margin-top: 2px;
+    padding: 2px 6px;
+    background: linear-gradient(135deg, #fff3cd, #ffeaa7);
+    border: 1px solid #ffeaa7;
+    border-radius: 4px;
+    max-width: 100%;
+    word-wrap: break-word;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}

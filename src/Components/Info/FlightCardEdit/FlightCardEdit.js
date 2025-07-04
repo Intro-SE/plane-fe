@@ -13,7 +13,7 @@ export default function FlightCardEdit({
 }) {
     const {
         flight_id,
-        flight_route_id,
+        // flight_route_id,
         departure_date,
         total_seats,
 
@@ -203,7 +203,8 @@ export default function FlightCardEdit({
                                 <tbody>
                                     {intermediate_stops.map((item, index) => (
                                         <tr key={index}>
-                                            <td>{index + 1}</td>
+                                            {/* <td>{index + 1}</td> */}
+                                            <td>{item.stop_number}</td>
                                             <td>{item.stop_name}</td>
                                             <td>{item.stop_time}</td>
                                             <td>{item.note}</td>
