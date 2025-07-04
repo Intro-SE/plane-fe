@@ -5,11 +5,10 @@ import FixFlightForm from "../../Components/Form/FixFlight/FixFlightForm";
 import FlightCardEdit from "../../Components/Info/FlightCardEdit/FlightCardEdit";
 import ConfirmDialog from "../../Components/Dialog/Confirm/ConfirmDialog";
 import MessageDialog from "../../Components/Dialog/Message/MessageDialog";
-import FlightBookingInfo from "../../Components/Form/AddFlightBooking/AddFlightBooking.js";
 import styles from "./FlightManagement.module.css";
 import TopBar from "../../Components/TopBar/TopBar";
 import { useState, useEffect } from "react";
-import { Plus, Trash2, X, Loader } from "lucide-react";
+import { Plus, Trash2, Loader } from "lucide-react";
 import axios from "axios";
 import { BASE_URL } from "../api.js";
 

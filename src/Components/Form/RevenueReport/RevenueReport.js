@@ -5,8 +5,6 @@ import axios from "axios";
 import MessageDialog from "../../Dialog/Message/MessageDialog";
 
 export default function RevenueReport({ state, responseData }) {
-    const now = new Date();
-
     const [activeTab, setActiveTab] = useState("monthly");
 
     // Monthly report variables

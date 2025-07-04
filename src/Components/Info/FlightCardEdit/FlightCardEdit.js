@@ -13,7 +13,7 @@ export default function FlightCardEdit({
 }) {
     const {
         flight_id,
-        flight_route_id,
+        // flight_route_id,
         departure_date,
         total_seats,
 

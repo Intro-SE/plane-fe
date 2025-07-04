@@ -4,7 +4,7 @@ import FlightCard from "../../Components/Info/FlightCard/FlightCard.js";
 import styles from "./FlightLookup.module.css";
 import TopBar from "../../Components/TopBar/TopBar.js";
 import { useEffect, useState } from "react";
-import { Search, Loader } from "lucide-react";
+import { Loader } from "lucide-react";
 import axios from "axios";
 import { BASE_URL } from "../api.js";
 

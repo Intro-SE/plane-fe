@@ -1,6 +1,6 @@
 import styles from "./TopBar.module.css";
 import airlineLogo from "../../Assets/logo.png";
-import { FaSignInAlt, FaUser, FaInfoCircle } from "react-icons/fa";
+import { FaSignInAlt, FaUser } from "react-icons/fa";
 import ConfirmDialog from "../Dialog/Confirm/ConfirmDialog";
 import { useState, useContext } from "react";
 import { AuthContext } from "../../AuthContext";
